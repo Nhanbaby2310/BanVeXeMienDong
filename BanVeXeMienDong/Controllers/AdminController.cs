@@ -56,6 +56,7 @@ namespace BanVeXeMienDong.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditUser(int id, string username, string role)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
@@ -80,7 +81,9 @@ namespace BanVeXeMienDong.Controllers
             return RedirectToAction("Users");
         }
 
-        // 🗑️ Xóa user
+        // 🗑️ Xóa user (POST + AntiForgery - chống CSRF)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteUser(int id)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
@@ -135,6 +138,7 @@ namespace BanVeXeMienDong.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditTicketPrice(int id, decimal giaVe)
         {
             var ticket = _repository.GetAll().FirstOrDefault(t => t.Id == id);
@@ -162,7 +166,9 @@ namespace BanVeXeMienDong.Controllers
             return RedirectToAction("Tickets");
         }
 
-        // 🗑️ Xóa vé
+        // 🗑️ Xóa vé (POST + AntiForgery - chống CSRF)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteTicket(int id)
         {
             var ticket = _repository.GetAll().FirstOrDefault(t => t.Id == id);

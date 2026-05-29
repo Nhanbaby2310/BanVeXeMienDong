@@ -73,9 +73,13 @@
                                 </td>
                                 <td class="item-total">@((item.Price * item.Quantity).ToString("N0")) VND</td>
                                 <td>
-                                    <a href="/Cart/RemoveFromCart/@item.Id" class="btn-delete" onclick="return confirm('Bạn có chắc chắn?')">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <form method="post" action="/Cart/RemoveFromCart" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="itemId" value="@item.Id" />
+                                        <button type="submit" class="btn-delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         }
@@ -103,9 +107,12 @@
                     <a href="/Checkout/Index" class="btn btn-primary">
                         <i class="bi bi-credit-card"></i> Thanh Toán
                     </a>
-                    <a href="/Cart/ClearCart" class="btn btn-danger" onclick="return confirm('Xóa toàn bộ giỏ hàng?')">
-                        <i class="bi bi-trash"></i> Xóa Tất Cả
-                    </a>
+                    <form method="post" action="/Cart/ClearCart" style="display:inline;" onsubmit="return confirm('Xóa toàn bộ giỏ hàng?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Xóa Tất Cả
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -396,6 +403,12 @@
 </style>
 
 <script>
+    // Lấy Anti-Forgery Token từ DOM để dùng trong AJAX requests
+    function getAntiForgeryToken() {
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        return tokenInput ? tokenInput.value : '';
+    }
+
     function updateQuantity(input) {
         const itemId = input.getAttribute('data-item-id');
         const newQuantity = parseInt(input.value);
@@ -406,12 +419,15 @@
             return;
         }
 
-        // Gửi request cập nhật
-        fetch(`/Cart/UpdateQuantity?itemId=${itemId}&quantity=${newQuantity}`, {
+        // Gửi request cập nhật (POST + AntiForgeryToken)
+        const formData = new FormData();
+        formData.append('itemId', itemId);
+        formData.append('quantity', newQuantity);
+        formData.append('__RequestVerificationToken', getAntiForgeryToken());
+
+        fetch('/Cart/UpdateQuantity', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            body: formData
         })
         .then(response => {
             if (response.ok) {
@@ -438,12 +454,15 @@
             return;
         }
 
-        // Gửi request cập nhật giá
-        fetch(`/Cart/UpdatePrice?itemId=${itemId}&price=${newPrice}`, {
+        // Gửi request cập nhật giá (POST + AntiForgeryToken)
+        const formData = new FormData();
+        formData.append('itemId', itemId);
+        formData.append('price', newPrice);
+        formData.append('__RequestVerificationToken', getAntiForgeryToken());
+
+        fetch('/Cart/UpdatePrice', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            body: formData
         })
         .then(response => {
             if (response.ok) {

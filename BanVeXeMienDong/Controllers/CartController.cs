@@ -15,7 +15,7 @@ namespace BanVeXeMienDong.Controllers
             _cartService = cartService;
         }
 
-        // 🛒 Xem giỏ hàng
+        // 🛒 Xem giỏ hàng (GET - an toàn, không thay đổi dữ liệu)
         public IActionResult Index()
         {
             var cart = _cartService.GetCart();
@@ -27,7 +27,9 @@ namespace BanVeXeMienDong.Controllers
             return View(cart);
         }
 
-        // ➕ Thêm vào giỏ hàng
+        // ➕ Thêm vào giỏ hàng (POST + AntiForgery)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddToCart(string ticketCode, string route, string seats, decimal price, string busClass, string departureTime)
         {
             var item = new CartItem
@@ -47,7 +49,9 @@ namespace BanVeXeMienDong.Controllers
             return RedirectToAction("Index");
         }
 
-        // 🗑️ Xóa khỏi giỏ hàng
+        // 🗑️ Xóa khỏi giỏ hàng (POST + AntiForgery)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult RemoveFromCart(int itemId)
         {
             _cartService.RemoveFromCart(itemId);
@@ -55,7 +59,9 @@ namespace BanVeXeMienDong.Controllers
             return RedirectToAction("Index");
         }
 
-        // 🗑️ Xóa toàn bộ giỏ hàng
+        // 🗑️ Xóa toàn bộ giỏ hàng (POST + AntiForgery)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ClearCart()
         {
             _cartService.ClearCart();
@@ -63,8 +69,9 @@ namespace BanVeXeMienDong.Controllers
             return RedirectToAction("Index");
         }
 
-        // ✏️ Cập nhật số lượng
+        // ✏️ Cập nhật số lượng (POST + AntiForgery)
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantity(int itemId, int quantity)
         {
             if (quantity < 1)
@@ -76,8 +83,9 @@ namespace BanVeXeMienDong.Controllers
             return Ok(new { message = "✅ Cập nhật số lượng thành công!" });
         }
 
-        // ✏️ Cập nhật giá
+        // ✏️ Cập nhật giá (POST + AntiForgery)
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult UpdatePrice(int itemId, decimal price)
         {
             if (price < 0)
@@ -90,28 +98,15 @@ namespace BanVeXeMienDong.Controllers
             if (item != null)
             {
                 item.Price = price;
-                // Cập nhật item trong session trực tiếp
-                var updatedCart = cart;
-                SaveCartDirectly(updatedCart);
+                _cartService.ClearCart();
+                foreach (var cartItem in cart)
+                {
+                    _cartService.AddToCart(cartItem);
+                }
                 return Ok(new { message = "✅ Cập nhật giá thành công!" });
             }
 
             return NotFound(new { message = "Không tìm thấy item" });
-        }
-
-        // Helper method để lưu giỏ hàng trực tiếp
-        private void SaveCartDirectly(List<CartItem> cart)
-        {
-            var session = HttpContext?.Session;
-            if (session != null)
-            {
-                var cartJson = System.Text.Json.JsonSerializer.Serialize(cart, new System.Text.Json.JsonSerializerOptions 
-                { 
-                    PropertyNameCaseInsensitive = true,
-                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
-                });
-                session.SetString("cart", cartJson);
-            }
         }
     }
 }

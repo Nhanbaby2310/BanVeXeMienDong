@@ -108,9 +108,13 @@
     <div class="order-actions">
         @if (Model.Status == "Confirmed")
         {
-            <a href="/Checkout/CancelOrder/@Model.Id" class="btn btn-danger" onclick="return confirm('Bạn chắc chắn muốn hủy đơn hàng?')">
-                <i class="bi bi-x-circle"></i> Hủy Đơn Hàng
-            </a>
+            <form method="post" action="/Checkout/CancelOrder/@Model.Id" style="display:inline;" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng?')">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-x-circle"></i> Hủy Đơn Hàng
+                </button>
+            </form>
         }
         <a href="/Checkout/MyOrders" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Quay Lại Danh Sách

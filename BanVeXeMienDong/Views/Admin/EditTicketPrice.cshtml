@@ -94,6 +94,7 @@
         </div>
         <div class="card-body">
             <form method="post" asp-action="EditTicketPrice" asp-controller="Admin" asp-route-id="@Model.Id">
+                @Html.AntiForgeryToken()
                 <div class="mb-3">
                     <label class="form-label" for="giaVe">
                         <i class="bi bi-currency-dollar"></i> Giá Vé Mới (VND)

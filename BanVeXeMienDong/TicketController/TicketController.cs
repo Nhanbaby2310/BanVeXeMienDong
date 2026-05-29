@@ -436,7 +436,7 @@ namespace BanVeXeMienDong.Controllers
                 numberOfSeats = ticket.SoGhe.Split(',').Length;
             }
 
-            decimal pricePerSeat = MockTicketRepository.GetTicketPrice(selectedClass);
+            decimal pricePerSeat = TicketRepository.GetTicketPrice(selectedClass);
             ticket.GiaVe = pricePerSeat * numberOfSeats;
 
             if (ticket.GiaVe <= 0)
