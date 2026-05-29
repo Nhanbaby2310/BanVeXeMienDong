@@ -544,8 +544,8 @@ namespace BanVeXeMienDong.Controllers
                 TicketCode = ticketCode,
                 Route = route,
                 Seats = ticket.SoGhe,
-                Price = ticket.GiaVe,
-                Quantity = numberOfSeats,  // 👈 SỐ LƯỢNG = SỐ GHẾ
+                Price = ticket.GiaVe,      // 👈 TỔNG GIÁ (pricePerSeat × số ghế) - KHÔNG nhân thêm Quantity
+                Quantity = numberOfSeats,  // 👈 SỐ LƯỢNG GHẾ (chỉ dùng để hiển thị)
                 BusClass = ticket.HangXe.ToString(),
                 DepartureTime = ticket.NgayDi.ToString("dd/MM/yyyy HH:mm")
             };
@@ -619,8 +619,8 @@ namespace BanVeXeMienDong.Controllers
                 TicketCode = ticketCode,
                 Route = route,
                 Seats = selectedSeatsStr,
-                Price = totalPrice,
-                Quantity = seats.Count,
+                Price = totalPrice,        // 👈 TỔNG GIÁ (ticketPrice × số ghế) - KHÔNG nhân thêm Quantity
+                Quantity = seats.Count,    // 👈 SỐ LƯỢNG GHẾ (chỉ dùng để hiển thị)
                 BusClass = "Standard",
                 DepartureTime = departureTimeStr
             };

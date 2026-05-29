@@ -94,7 +94,9 @@ namespace BanVeXeMienDong.Services
         public decimal GetTotal()
         {
             var cart = GetCart();
-            return cart.Sum(x => x.Price * x.Quantity);
+            // Price = tổng giá vé (đã bao gồm số ghế), Quantity chỉ dùng để hiển thị số ghế
+            // Nên tổng = Sum(Price) thay vì Sum(Price * Quantity) để tránh double-counting
+            return cart.Sum(x => x.Price);
         }
 
         public int GetCartCount()

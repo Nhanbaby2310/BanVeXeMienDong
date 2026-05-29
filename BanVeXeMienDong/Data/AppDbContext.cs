@@ -15,21 +15,22 @@ namespace BanVeXeMienDong.Data
             base.OnModelCreating(modelBuilder);
 
             // Thêm dữ liệu mặc định (test data)
-            // Mật khẩu: "quanly" được hash thành: NKN46HZxLgle0QWaTuROoqx8k4Md1PWOXpgIU6a3mZ4=
-            // Mật khẩu: "123456" được hash thành: N9XB5N9pqH5Vn/F0LrfWvJwFWYW+Xc2yXgNM7f2RJIc=
+            // Mật khẩu được hash bằng BCrypt (có salt tự động, an toàn hơn SHA256)
+            // Mật khẩu: "quanly"
+            // Mật khẩu: "123456"
             modelBuilder.Entity<User>().HasData(
                 new User 
                 { 
                     Id = 1, 
                     Username = "quanly", 
-                    Password = "NKN46HZxLgle0QWaTuROoqx8k4Md1PWOXpgIU6a3mZ4=",
+                    Password = "$2b$12$snU6xHH.nozC1IgEE6cn6eAVOsFOzur1osYECANDaWkb3WeUDCGEu",
                     Role = "Admin"
                 },
                 new User 
                 { 
                     Id = 2, 
                     Username = "user", 
-                    Password = "N9XB5N9pqH5Vn/F0LrfWvJwFWYW+Xc2yXgNM7f2RJIc=",
+                    Password = "$2b$12$LN/7WwlEt7bdf7DgcEXpsOPxpiQSj1ImEiU7sYI2slFep84O7wAN.",
                     Role = "User"
                 }
             );

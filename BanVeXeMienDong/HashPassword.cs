@@ -1,19 +1,18 @@
-using System.Security.Cryptography;
-using System.Text;
-
-// Tool để hash mật khẩu
+// Tool để hash mật khẩu - Sử dụng BCrypt (an toàn, có salt tự động)
+// Chạy: dotnet run -- hash <password>
 class PasswordHasher
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        string password = "quanly";
-        
-        using var sha = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(password);
-        var hash = sha.ComputeHash(bytes);
-        var hashString = Convert.ToBase64String(hash);
-        
+        string password = args.Length > 0 ? args[0] : "quanly";
+
+        // BCrypt tự động tạo salt ngẫu nhiên, workFactor = 12 (mặc định)
+        string hash = BCrypt.Net.BCrypt.HashPassword(password);
+
         Console.WriteLine($"Password: {password}");
-        Console.WriteLine($"Hash: {hashString}");
+        Console.WriteLine($"BCrypt Hash: {hash}");
+        Console.WriteLine();
+        Console.WriteLine("// Verify test:");
+        Console.WriteLine($"Verify result: {BCrypt.Net.BCrypt.Verify(password, hash)}");
     }
 }

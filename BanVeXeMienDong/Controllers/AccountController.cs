@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BanVeXeMienDong.Models;
 using BanVeXeMienDong.Data;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BanVeXeMienDong.Controllers
 {
@@ -15,13 +13,16 @@ namespace BanVeXeMienDong.Controllers
             _context = context;
         }
 
-        // HASH PASSWORD
+        // HASH PASSWORD - Sử dụng BCrypt (an toàn, có salt tự động)
         private string Hash(string password)
         {
-            using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        // VERIFY PASSWORD - So sánh password với hash BCrypt
+        private bool VerifyPassword(string password, string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
 
         public IActionResult Register()
@@ -84,12 +85,10 @@ namespace BanVeXeMienDong.Controllers
                 return View();
             }
 
-            var pass = Hash(user.Password);
-
             var u = _context.Users
-                .FirstOrDefault(x => x.Username == user.Username && x.Password == pass);
+                .FirstOrDefault(x => x.Username == user.Username);
 
-            if (u != null)
+            if (u != null && VerifyPassword(user.Password, u.Password))
             {
                 HttpContext.Session.SetString("user", u.Username);
                 HttpContext.Session.SetString("role", u.Role);
