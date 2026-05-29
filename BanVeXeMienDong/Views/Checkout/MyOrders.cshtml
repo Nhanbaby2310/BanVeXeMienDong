@@ -57,6 +57,9 @@
                         </a>
                         @if (order.Status == "Confirmed")
                         {
+                            <a href="/Checkout/ETicket/@order.Id" class="btn btn-success">
+                                <i class="bi bi-qr-code"></i> Vé Điện Tử
+                            </a>
                             <form method="post" action="/Checkout/CancelOrder/@order.Id" style="display:inline;" onsubmit="return confirm('Hủy đơn hàng?')">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-danger">

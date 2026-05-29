@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using BanVeXeMienDong.Data;
 using BanVeXeMienDong.Attributes;
 using BanVeXeMienDong.Repositories;
+using BanVeXeMienDong.Models;
+using System.Text.Json;
 
 namespace BanVeXeMienDong.Controllers
 {
@@ -175,10 +177,68 @@ namespace BanVeXeMienDong.Controllers
             if (ticket == null)
                 return NotFound();
 
-            _repository.Remove(ticket); // Giả sử có method Remove
+            _repository.Remove(ticket);
 
             TempData["Success"] = "✅ Xóa vé thành công!";
             return RedirectToAction("Tickets");
+        }
+
+        // 📦 QUẢN LÝ ĐƠN HÀNG - Danh sách tất cả đơn hàng
+        public IActionResult Orders(string status = "")
+        {
+            var orders = _context.Orders.AsQueryable();
+
+            if (!string.IsNullOrEmpty(status))
+                orders = orders.Where(o => o.Status == status);
+
+            var orderList = orders.OrderByDescending(o => o.OrderDate).ToList();
+
+            ViewBag.TotalOrders = orderList.Count;
+            ViewBag.TotalRevenue = orderList.Where(o => o.Status == "Confirmed").Sum(o => o.TotalAmount);
+            ViewBag.ConfirmedCount = orderList.Count(o => o.Status == "Confirmed");
+            ViewBag.CancelledCount = orderList.Count(o => o.Status == "Cancelled");
+            ViewBag.PendingCount = orderList.Count(o => o.Status == "Pending");
+            ViewBag.CurrentFilter = status;
+
+            return View(orderList);
+        }
+
+        // 📄 Chi tiết đơn hàng (Admin)
+        public IActionResult OrderDetail(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            if (order == null)
+                return NotFound();
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == order.UserId);
+            ViewBag.Username = user?.Username ?? "Unknown";
+
+            var items = JsonSerializer.Deserialize<List<CartItem>>(order.ItemsJson);
+            ViewBag.Items = items;
+
+            return View(order);
+        }
+
+        // ✅ Thay đổi trạng thái đơn hàng
+        [HttpPost]
+        public IActionResult UpdateOrderStatus(int id, string newStatus)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            if (order == null)
+                return NotFound();
+
+            var validStatuses = new[] { "Pending", "Confirmed", "Cancelled" };
+            if (!validStatuses.Contains(newStatus))
+            {
+                TempData["Error"] = "Trạng thái không hợp lệ";
+                return RedirectToAction("Orders");
+            }
+
+            order.Status = newStatus;
+            _context.SaveChanges();
+
+            TempData["Success"] = $"✅ Cập nhật trạng thái đơn #{order.OrderCode} → {newStatus}";
+            return RedirectToAction("Orders");
         }
     }
 }
