@@ -71,7 +71,7 @@
                                            data-item-id="@item.Id" min="1" max="10"
                                            onchange="updateQuantity(this)" />
                                 </td>
-                                <td class="item-total">@((item.Price * item.Quantity).ToString("N0")) VND</td>
+                                <td class="item-total">@(item.Price.ToString("N0")) VND</td>
                                 <td>
                                     <a href="/Cart/RemoveFromCart/@item.Id" class="btn-delete" onclick="return confirm('Bạn có chắc chắn?')">
                                         <i class="bi bi-trash"></i>
