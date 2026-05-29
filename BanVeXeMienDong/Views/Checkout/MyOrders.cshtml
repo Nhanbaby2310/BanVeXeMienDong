@@ -57,6 +57,10 @@
                         </a>
                         @if (order.Status == "Confirmed")
                         {
+                            <a href="/Checkout/ETicket/@order.Id" class="btn btn-success">
+                                <i class="bi bi-qr-code"></i> Vé Điện Tử
+                            </a>
+                        }
                             <a href="/Checkout/CancelOrder/@order.Id" class="btn btn-danger" onclick="return confirm('Hủy đơn hàng?')">
                                 <i class="bi bi-x-circle"></i> Hủy Đơn
                             </a>

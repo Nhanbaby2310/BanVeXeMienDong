@@ -229,6 +229,57 @@
         margin-bottom: 20px;
     }
 
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding: 15px 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .pagination-info {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .page-btn {
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        color: #667eea;
+        background: #f0f4ff;
+        border: 1px solid #e0e7ff;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .page-btn:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .page-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+
     @@media (max-width: 768px) {
         .filter-form {
             flex-direction: column;
@@ -259,5 +310,38 @@
 </style>
         </table>
     </div>
+
+    <!-- Pagination -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Hiển thị trang <strong>@ViewBag.CurrentPage</strong> / <strong>@ViewBag.TotalPages</strong>
+                (@ViewBag.TotalItems kết quả)
+            </div>
+            <div class="pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <a href="/Ticket/Index?page=@(ViewBag.CurrentPage - 1)&diemDi=@ViewBag.DiemDi&diemDen=@ViewBag.DiemDen&ngayDi=@ViewBag.NgayDi" class="page-btn">
+                        <i class="bi bi-chevron-left"></i> Trước
+                    </a>
+                }
+
+                @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                {
+                    var isActive = i == (int)ViewBag.CurrentPage;
+                    <a href="/Ticket/Index?page=@i&diemDi=@ViewBag.DiemDi&diemDen=@ViewBag.DiemDen&ngayDi=@ViewBag.NgayDi"
+                       class="page-btn @(isActive ? "active" : "")">@i</a>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <a href="/Ticket/Index?page=@(ViewBag.CurrentPage + 1)&diemDi=@ViewBag.DiemDi&diemDen=@ViewBag.DiemDen&ngayDi=@ViewBag.NgayDi" class="page-btn">
+                        Sau <i class="bi bi-chevron-right"></i>
+                    </a>
+                }
+            </div>
+        </div>
+    }
 }
 

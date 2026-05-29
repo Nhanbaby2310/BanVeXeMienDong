@@ -113,5 +113,148 @@ namespace BanVeXeMienDong.Controllers
         {
             return View();
         }
+
+        // 👤 TRANG HỒ SƠ CÁ NHÂN
+        public IActionResult Profile()
+        {
+            var userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+                return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            return View(user);
+        }
+
+        // ✏️ CẬP NHẬT HỒ SƠ
+        [HttpPost]
+        public IActionResult Profile(string fullName, string email, string phone)
+        {
+            var userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+                return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            user.FullName = fullName;
+            user.Email = email;
+            user.Phone = phone;
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Cập nhật hồ sơ thành công!";
+            return View(user);
+        }
+
+        // 🔑 ĐỔI MẬT KHẨU
+        [HttpPost]
+        public IActionResult ChangePassword(string currentPassword, string newPassword, string confirmNewPassword)
+        {
+            var userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+                return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            // Verify current password
+            if (Hash(currentPassword) != user.Password)
+            {
+                TempData["Error"] = "Mật khẩu hiện tại không đúng";
+                return RedirectToAction("Profile");
+            }
+
+            if (newPassword != confirmNewPassword)
+            {
+                TempData["Error"] = "Mật khẩu mới không khớp";
+                return RedirectToAction("Profile");
+            }
+
+            if (newPassword.Length < 6)
+            {
+                TempData["Error"] = "Mật khẩu mới phải có ít nhất 6 ký tự";
+                return RedirectToAction("Profile");
+            }
+
+            user.Password = Hash(newPassword);
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Đổi mật khẩu thành công!";
+            return RedirectToAction("Profile");
+        }
+
+        // 🔓 QUÊN MẬT KHẨU
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(string username, string email)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Username == username && u.Email == email);
+            if (user == null)
+            {
+                ViewBag.Error = "Không tìm thấy tài khoản với thông tin này";
+                return View();
+            }
+
+            // Generate reset token
+            var token = Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+            user.ResetToken = token;
+            user.ResetTokenExpiry = DateTime.Now.AddHours(1);
+            _context.SaveChanges();
+
+            ViewBag.Success = $"Mã đặt lại mật khẩu của bạn là: {token} (có hiệu lực 1 giờ)";
+            ViewBag.ShowResetForm = true;
+            ViewBag.Username = username;
+            return View();
+        }
+
+        // 🔄 RESET MẬT KHẨU
+        [HttpPost]
+        public IActionResult ResetPassword(string username, string token, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu xác nhận không khớp";
+                ViewBag.ShowResetForm = true;
+                ViewBag.Username = username;
+                return View("ForgotPassword");
+            }
+
+            if (newPassword.Length < 6)
+            {
+                ViewBag.Error = "Mật khẩu mới phải có ít nhất 6 ký tự";
+                ViewBag.ShowResetForm = true;
+                ViewBag.Username = username;
+                return View("ForgotPassword");
+            }
+
+            var user = _context.Users.FirstOrDefault(u =>
+                u.Username == username &&
+                u.ResetToken == token &&
+                u.ResetTokenExpiry > DateTime.Now);
+
+            if (user == null)
+            {
+                ViewBag.Error = "Mã đặt lại không hợp lệ hoặc đã hết hạn";
+                ViewBag.ShowResetForm = true;
+                ViewBag.Username = username;
+                return View("ForgotPassword");
+            }
+
+            user.Password = Hash(newPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Đặt lại mật khẩu thành công! Vui lòng đăng nhập.";
+            return RedirectToAction("Login");
+        }
     }
 }

@@ -154,5 +154,31 @@ namespace BanVeXeMienDong.Controllers
 
             return RedirectToAction("MyOrders");
         }
+
+        // 🎫 VÉ ĐIỆN TỬ - Hiển thị vé với QR code
+        public IActionResult ETicket(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            if (order == null)
+                return NotFound();
+
+            var userId = HttpContext.Session.GetInt32("userId");
+            if (order.UserId != userId)
+                return Unauthorized();
+
+            if (order.Status != "Confirmed")
+            {
+                TempData["Error"] = "Chỉ có thể xem vé cho đơn hàng đã xác nhận";
+                return RedirectToAction("MyOrders");
+            }
+
+            var items = JsonSerializer.Deserialize<List<CartItem>>(order.ItemsJson);
+            ViewBag.Items = items;
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == order.UserId);
+            ViewBag.Username = user?.FullName ?? user?.Username ?? "Khách hàng";
+
+            return View(order);
+        }
     }
 }

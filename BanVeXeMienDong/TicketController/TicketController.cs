@@ -18,8 +18,9 @@ namespace BanVeXeMienDong.Controllers
         }
 
         // 👉 KHÔNG CẦN ĐĂNG NHẬP - Xem danh sách vé khả dụng cho người dùng
-        public IActionResult Index(string? diemDi = null, string? diemDen = null, DateTime? ngayDi = null)
+        public IActionResult Index(string? diemDi = null, string? diemDen = null, DateTime? ngayDi = null, int page = 1)
         {
+            const int pageSize = 15;
             var allTickets = _repository.GetAll();
 
             // Lọc theo điểm đi nếu có
@@ -37,6 +38,16 @@ namespace BanVeXeMienDong.Controllers
             // Sắp xếp theo ngày đi
             allTickets = allTickets.OrderBy(t => t.NgayDi).ToList();
 
+            // Pagination
+            var totalItems = allTickets.Count;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, totalPages));
+            var pagedTickets = allTickets.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
             // Lưu các filter vào ViewBag để hiển thị trong view
             ViewBag.DiemDi = diemDi;
             ViewBag.DiemDen = diemDen;
@@ -50,7 +61,7 @@ namespace BanVeXeMienDong.Controllers
 
             ViewBag.Routes = routes;
 
-            return View(allTickets);
+            return View(pagedTickets);
         }
 
         // 📍 BƯỚC 1: Chọn tuyến đường trước hoặc xem kết quả nếu có parameters
