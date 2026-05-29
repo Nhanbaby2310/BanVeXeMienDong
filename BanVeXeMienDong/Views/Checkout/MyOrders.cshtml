@@ -57,9 +57,12 @@
                         </a>
                         @if (order.Status == "Confirmed")
                         {
-                            <a href="/Checkout/CancelOrder/@order.Id" class="btn btn-danger" onclick="return confirm('Hủy đơn hàng?')">
-                                <i class="bi bi-x-circle"></i> Hủy Đơn
-                            </a>
+                            <form method="post" action="/Checkout/CancelOrder/@order.Id" style="display:inline;" onsubmit="return confirm('Hủy đơn hàng?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-x-circle"></i> Hủy Đơn
+                                </button>
+                            </form>
                         }
                     </div>
                 </div>

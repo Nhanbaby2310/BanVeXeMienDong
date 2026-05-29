@@ -38,6 +38,7 @@ namespace BanVeXeMienDong.Controllers
 
         // ✅ Xử lý thanh toán
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ProcessPayment(string paymentMethod, string phoneNumber, string email, string notes)
         {
             var cart = _cartService.GetCart();
@@ -130,7 +131,9 @@ namespace BanVeXeMienDong.Controllers
             return View(order);
         }
 
-        // ❌ Hủy đơn hàng
+        // ❌ Hủy đơn hàng (POST + AntiForgery - chống CSRF)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CancelOrder(int id)
         {
             var order = _context.Orders.FirstOrDefault(o => o.Id == id);

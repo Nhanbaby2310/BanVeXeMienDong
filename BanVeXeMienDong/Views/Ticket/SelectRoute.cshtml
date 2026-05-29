@@ -236,7 +236,7 @@
                         var bookedCount = tickets.Count(t => t.DiemDi == ticket.DiemDi && t.DiemDen == ticket.DiemDen && t.NgayDi.Date == ticket.NgayDi.Date && t.NgayDi.TimeOfDay == ticket.NgayDi.TimeOfDay);
                         var tripKey = $"{ticket.DiemDi}-{ticket.DiemDen}-{ticket.NgayDi:yyyy-MM-dd HH:mm}";
 
-                        <div class="result-card">
+                        <div class="result-card" data-price="@ticket.GiaVe" data-bustype="@(ticket.HangXe == BusClass.Premium ? "vip" : "standard")" data-rating="@rating.ToString("F1")" data-departure="@ticket.NgayDi.ToString("yyyy-MM-ddTHH:mm")">
                             <!-- Image -->
                             <div class="card-image">
                                 <div class="card-image-placeholder">🚌</div>
@@ -386,6 +386,7 @@
                     <div style="display: flex; gap: 12px; align-items: center; width: 100%; box-sizing: border-box; padding: 16px 24px; background: #f9fafb; border-top: 1px solid #e5e7eb; border-radius: 0 0 10px 10px;">
                         <!-- Continue Button Form -->
                         <form method="post" action="/Ticket/SelectBusClass" id="continueForm" style="flex: 1;">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="diemDi" id="formDiemDi">
                             <input type="hidden" name="diemDen" id="formDiemDen">
                             <input type="hidden" name="ngayGio" id="formNgayGio">
@@ -428,11 +429,142 @@
     }
 
     function sortResults(type) {
-        // Add sorting logic here
-        console.log('Sorting by:', type);
+        const container = document.getElementById('resultsContainer');
+        const cards = Array.from(container.querySelectorAll('.result-card'));
+
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price);
+            const priceB = parseFloat(b.dataset.price);
+            const depA = new Date(a.dataset.departure);
+            const depB = new Date(b.dataset.departure);
+
+            switch (type) {
+                case 'price-asc': return priceA - priceB;
+                case 'price-desc': return priceB - priceA;
+                case 'time-asc': return depA - depB;
+                default: return 0;
+            }
+        });
+
+        // Re-append sorted cards
+        cards.forEach(card => container.appendChild(card));
+
+        // Update active button
         document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
     }
+
+    // ===== SIDEBAR FILTER SYSTEM =====
+    function applyFilters() {
+        const cards = document.querySelectorAll('.result-card');
+        let visibleCount = 0;
+
+        // 1. Get price range
+        const maxPrice = parseInt(document.getElementById('maxPrice')?.value || '99999999');
+        const minPrice = parseInt(document.getElementById('minPrice')?.value || '0');
+
+        // 2. Get selected bus types
+        const busTypeChecks = document.querySelectorAll('.filter-section input[value="limousine"], .filter-section input[value="giuong"], .filter-section input[value="thuong"]');
+        const selectedBusTypes = [];
+        busTypeChecks.forEach(cb => {
+            if (cb.checked) selectedBusTypes.push(cb.value);
+        });
+
+        // Map filter values to data attributes
+        const busTypeMap = {
+            'limousine': 'vip',
+            'giuong': 'vip',
+            'thuong': 'standard'
+        };
+
+        // 3. Get selected amenities
+        const amenityChecks = document.querySelectorAll('.filter-section input[value="wifi"], .filter-section input[value="toilet"], .filter-section input[value="water"], .filter-section input[value="food"]');
+        const selectedAmenities = [];
+        amenityChecks.forEach(cb => {
+            if (cb.checked) selectedAmenities.push(cb.value);
+        });
+
+        // 4. Get rating filter
+        const ratingChecks = document.querySelectorAll('.filter-section input[value="5star"], .filter-section input[value="4star"], .filter-section input[value="3star"]');
+        const selectedRatings = [];
+        ratingChecks.forEach(cb => {
+            if (cb.checked) selectedRatings.push(cb.value);
+        });
+
+        // Apply filters to each card
+        cards.forEach(card => {
+            let visible = true;
+            const cardPrice = parseFloat(card.dataset.price);
+            const cardBusType = card.dataset.bustype;
+            const cardRating = parseFloat(card.dataset.rating);
+
+            // Price filter
+            if (cardPrice < minPrice || cardPrice > maxPrice) {
+                visible = false;
+            }
+
+            // Bus type filter (only apply if at least one is checked)
+            if (selectedBusTypes.length > 0) {
+                const matchedTypes = selectedBusTypes.map(t => busTypeMap[t] || t);
+                if (!matchedTypes.includes(cardBusType)) {
+                    visible = false;
+                }
+            }
+
+            // Rating filter
+            if (selectedRatings.length > 0) {
+                let ratingMatch = false;
+                selectedRatings.forEach(r => {
+                    if (r === '5star' && cardRating >= 4.5) ratingMatch = true;
+                    if (r === '4star' && cardRating >= 4.0 && cardRating < 4.5) ratingMatch = true;
+                    if (r === '3star' && cardRating >= 3.5 && cardRating < 4.0) ratingMatch = true;
+                });
+                if (!ratingMatch) visible = false;
+            }
+
+            // Amenity filter - all cards have WiFi, Toilet, Water by default
+            // Only "food" is not available, so if food is checked → hide cards
+            if (selectedAmenities.includes('food')) {
+                visible = false; // No cards have food amenity
+            }
+
+            // Show/hide
+            card.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+        });
+
+        // Update results count
+        document.getElementById('resultsCount').textContent = `Kết quả: ${visibleCount} chuyến xe`;
+    }
+
+    // Attach filter listeners to all checkboxes and inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        // Price range slider
+        const priceRange = document.getElementById('priceRange');
+        const maxPriceInput = document.getElementById('maxPrice');
+        const minPriceInput = document.getElementById('minPrice');
+
+        if (priceRange) {
+            priceRange.addEventListener('input', function() {
+                maxPriceInput.value = this.value;
+                applyFilters();
+            });
+        }
+        if (maxPriceInput) {
+            maxPriceInput.addEventListener('change', function() {
+                if (priceRange) priceRange.value = this.value;
+                applyFilters();
+            });
+        }
+        if (minPriceInput) {
+            minPriceInput.addEventListener('change', applyFilters);
+        }
+
+        // All filter checkboxes
+        document.querySelectorAll('.filter-options input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', applyFilters);
+        });
+    });
 
     // Seat Selector Functions
     function showSeatSelector(button, diemDi, diemDen, ngayGio, giaVe) {
@@ -604,8 +736,8 @@
         }
     }
 
-    // Update price filter
-    document.getElementById('priceRange')?.addEventListener('change', function() {
+    // Update price filter display
+    document.getElementById('priceRange')?.addEventListener('input', function() {
         document.getElementById('maxPrice').value = this.value;
     });
 

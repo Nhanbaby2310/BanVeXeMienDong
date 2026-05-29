@@ -79,9 +79,12 @@
                                 </a>
                                 @if (user.Id != 1)
                                 {
-                                    <a href="/Admin/DeleteUser/@user.Id" class="action-btn delete-btn" onclick="return confirm('Bạn có chắc chắn muốn xóa?')" title="Xóa">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <form method="post" action="/Admin/DeleteUser/@user.Id" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="action-btn delete-btn" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 }
                             </td>
                         </tr>

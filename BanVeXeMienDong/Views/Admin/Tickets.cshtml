@@ -313,11 +313,12 @@
                             <a href="@Url.Action("EditTicketPrice", "Admin", new { id = ticket.Id })" class="btn btn-edit">
                                 <i class="bi bi-pencil"></i> Sửa Giá
                             </a>
-                            <a href="@Url.Action("DeleteTicket", "Admin", new { id = ticket.Id })" 
-                               class="btn btn-delete" 
-                               onclick="return confirm('Xóa vé này?');">
-                                <i class="bi bi-trash"></i> Xóa
-                            </a>
+                            <form method="post" action="@Url.Action("DeleteTicket", "Admin", new { id = ticket.Id })" style="display:inline;" onsubmit="return confirm('Xóa vé này?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-delete">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </button>
+                            </form>
                         </div>
                     </div>
                 }

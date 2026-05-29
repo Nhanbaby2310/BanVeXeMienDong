@@ -24,10 +24,18 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICartService, CartService>();
 
-// Repository
-builder.Services.AddScoped<ITicketRepository, MockTicketRepository>();
+// 👉 Repository - Sử dụng TicketRepository thực (EF Core, persist vào DB)
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 var app = builder.Build();
+
+// 👉 Seed dữ liệu mẫu vào DB khi khởi động (nếu bảng Tickets trống)
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate(); // Tự động chạy migrations
+    DbSeeder.SeedTickets(context);
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

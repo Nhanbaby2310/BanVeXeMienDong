@@ -21,6 +21,7 @@
         }
 
         <form method="post">
+            @Html.AntiForgeryToken()
             <div class="form-group">
                 <label for="username">Tài khoản:</label>
                 <input type="text" id="username" name="Username" class="form-control" placeholder="Nhập tài khoản" required />

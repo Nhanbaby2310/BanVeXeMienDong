@@ -9,6 +9,7 @@ namespace BanVeXeMienDong.Services
         void RemoveFromCart(int itemId);
         void UpdateCart(int itemId, int quantity);
         List<CartItem> GetCart();
+        void SaveCart(List<CartItem> cart);
         void ClearCart();
         decimal GetTotal();
         int GetCartCount();
@@ -44,7 +45,7 @@ namespace BanVeXeMienDong.Services
             }
             cart.Add(item);
 
-            SaveCart(cart);
+            SaveCartInternal(cart);
         }
 
         public void RemoveFromCart(int itemId)
@@ -54,7 +55,7 @@ namespace BanVeXeMienDong.Services
             if (item != null)
             {
                 cart.Remove(item);
-                SaveCart(cart);
+                SaveCartInternal(cart);
             }
         }
 
@@ -65,7 +66,7 @@ namespace BanVeXeMienDong.Services
             if (item != null)
             {
                 item.Quantity = quantity;
-                SaveCart(cart);
+                SaveCartInternal(cart);
             }
         }
 
@@ -91,6 +92,11 @@ namespace BanVeXeMienDong.Services
             }
         }
 
+        public void SaveCart(List<CartItem> cart)
+        {
+            SaveCartInternal(cart);
+        }
+
         public decimal GetTotal()
         {
             var cart = GetCart();
@@ -103,7 +109,7 @@ namespace BanVeXeMienDong.Services
             return cart.Sum(x => x.Quantity);
         }
 
-        private void SaveCart(List<CartItem> cart)
+        private void SaveCartInternal(List<CartItem> cart)
         {
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session != null)

@@ -22,7 +22,7 @@
                             </div>
                             <div class="item-price">
                                 <span class="quantity">x@item.Quantity</span>
-                                <span class="price">@((item.Price * item.Quantity).ToString("N0")) VND</span>
+                                <span class="price">@(item.Price.ToString("N0")) VND</span>
                             </div>
                         </div>
                     }
@@ -42,6 +42,7 @@
             <h2>💳 Thông Tin Thanh Toán</h2>
 
             <form method="post" action="/Checkout/ProcessPayment">
+                @Html.AntiForgeryToken()
                 <!-- Phương Thức Thanh Toán -->
                 <div class="form-group">
                     <label>Phương Thức Thanh Toán:</label>
