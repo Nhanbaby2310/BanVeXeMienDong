@@ -183,6 +183,7 @@
     <div class="bus-class-selection">
         <div class="row">
             <form method="post" action="/Ticket/ConfirmBusClass" style="width: 100%;">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="diemDi" value="@(ViewBag.DiemDi ?? "")" />
                 <input type="hidden" name="diemDen" value="@(ViewBag.DiemDen ?? "")" />
                 <input type="hidden" name="ngayGio" value="@(ViewBag.NgayGio?.ToString("yyyy-MM-ddTHH:mm") ?? "")" />
@@ -205,6 +206,7 @@
 
         <div class="row">
             <form method="post" action="/Ticket/ConfirmBusClass" style="width: 100%;">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="diemDi" value="@(ViewBag.DiemDi ?? "")" />
                 <input type="hidden" name="diemDen" value="@(ViewBag.DiemDen ?? "")" />
                 <input type="hidden" name="ngayGio" value="@(ViewBag.NgayGio?.ToString("yyyy-MM-ddTHH:mm") ?? "")" />

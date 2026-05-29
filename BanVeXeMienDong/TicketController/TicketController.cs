@@ -189,6 +189,7 @@ namespace BanVeXeMienDong.Controllers
 
         // 🚌 BƯỚC 3: Chọn hạng xe
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SelectBusClass(string diemDi, string diemDen, DateTime ngayGio, string selectedSeats = "", string submitType = "selectBusClass")
         {
             if (string.IsNullOrEmpty(diemDi) || string.IsNullOrEmpty(diemDen) || ngayGio == default)
@@ -245,6 +246,7 @@ namespace BanVeXeMienDong.Controllers
 
         // 👉 BƯỚC 4: Xác nhận hạng xe và đi đến chọn ghế
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ConfirmBusClass(int busClassValue, string diemDi, string diemDen, DateTime ngayGio)
         {
             if (string.IsNullOrEmpty(diemDi) || string.IsNullOrEmpty(diemDen) || ngayGio == default)
@@ -331,6 +333,7 @@ namespace BanVeXeMienDong.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Ticket ticket, int busClassValue = 0, string submitType = "addToCart")
         {
             // Lấy từ TempData (flow mới: SelectDateTime → SelectRoute → ConfirmBusClass → Create)

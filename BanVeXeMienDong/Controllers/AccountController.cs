@@ -30,6 +30,7 @@ namespace BanVeXeMienDong.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Register(User user, string confirmPassword)
         {
             // Kiểm tra dữ liệu đầu vào
@@ -75,6 +76,7 @@ namespace BanVeXeMienDong.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Login(User user)
         {
             // Kiểm tra dữ liệu đầu vào

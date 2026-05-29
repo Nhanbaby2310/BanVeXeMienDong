@@ -315,7 +315,6 @@
                             </a>
                             <form method="post" action="@Url.Action("DeleteTicket", "Admin", new { id = ticket.Id })" style="display:inline;" onsubmit="return confirm('Xóa vé này?');">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@ticket.Id" />
                                 <button type="submit" class="btn btn-delete">
                                     <i class="bi bi-trash"></i> Xóa
                                 </button>

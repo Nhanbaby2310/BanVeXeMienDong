@@ -81,7 +81,6 @@
                                 {
                                     <form method="post" action="/Admin/DeleteUser/@user.Id" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
                                         @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@user.Id" />
                                         <button type="submit" class="action-btn delete-btn" title="Xóa">
                                             <i class="bi bi-trash"></i>
                                         </button>

@@ -110,7 +110,6 @@
         {
             <form method="post" action="/Checkout/CancelOrder/@Model.Id" style="display:inline;" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng?')">
                 @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.Id" />
                 <button type="submit" class="btn btn-danger">
                     <i class="bi bi-x-circle"></i> Hủy Đơn Hàng
                 </button>

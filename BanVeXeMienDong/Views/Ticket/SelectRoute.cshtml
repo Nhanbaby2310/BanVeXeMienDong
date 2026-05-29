@@ -386,6 +386,7 @@
                     <div style="display: flex; gap: 12px; align-items: center; width: 100%; box-sizing: border-box; padding: 16px 24px; background: #f9fafb; border-top: 1px solid #e5e7eb; border-radius: 0 0 10px 10px;">
                         <!-- Continue Button Form -->
                         <form method="post" action="/Ticket/SelectBusClass" id="continueForm" style="flex: 1;">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="diemDi" id="formDiemDi">
                             <input type="hidden" name="diemDen" id="formDiemDen">
                             <input type="hidden" name="ngayGio" id="formNgayGio">

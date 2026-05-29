@@ -151,6 +151,7 @@
     <div class="col-lg-8 mx-auto">
         <!-- Ticket Form Section -->
         <form method="post" class="needs-validation" id="ticketForm">
+            @Html.AntiForgeryToken()
             <input type="hidden" id="selectedSeat" name="SoGhe" />
             <input type="hidden" name="busClassValue" value="@(ViewBag.BusClassValue ?? 0)" />
             <input type="hidden" id="busClassHidden" value="@(ViewBag.BusClassValue ?? 0)" />

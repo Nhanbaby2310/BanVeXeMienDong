@@ -98,11 +98,7 @@ namespace BanVeXeMienDong.Controllers
             if (item != null)
             {
                 item.Price = price;
-                _cartService.ClearCart();
-                foreach (var cartItem in cart)
-                {
-                    _cartService.AddToCart(cartItem);
-                }
+                _cartService.SaveCart(cart); // Lưu trực tiếp, giữ nguyên ID
                 return Ok(new { message = "✅ Cập nhật giá thành công!" });
             }
 
