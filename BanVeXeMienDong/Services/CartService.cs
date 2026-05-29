@@ -100,7 +100,8 @@ namespace BanVeXeMienDong.Services
         public decimal GetTotal()
         {
             var cart = GetCart();
-            return cart.Sum(x => x.Price * x.Quantity);
+            // Price đã là tổng giá (pricePerSeat × số ghế), KHÔNG nhân thêm Quantity
+            return cart.Sum(x => x.Price);
         }
 
         public int GetCartCount()
