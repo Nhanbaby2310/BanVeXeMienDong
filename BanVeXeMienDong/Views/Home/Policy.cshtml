@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Chính Sách Hủy Vé & Hoàn Tiền";
+}
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-2xl font-bold text-gray-900 mb-2"><i class="bi bi-file-earmark-text text-blue-600 me-2"></i>Chính Sách Hủy Vé & Hoàn Tiền</h1>
+    <p class="text-sm text-gray-500 mb-8">Cập nhật lần cuối: 01/01/2024</p>
+
+    <!-- Cancellation Table -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
+        <div class="px-6 py-4 bg-blue-50 border-b border-blue-100">
+            <h2 class="font-bold text-gray-900"><i class="bi bi-clock-history text-blue-600 me-2"></i>Bảng Phí Hủy Vé</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Thời gian hủy</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-700">Phí hủy</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-700">Hoàn lại</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <tr class="hover:bg-green-50">
+                        <td class="px-6 py-4 text-gray-700">Trước 24 giờ khởi hành</td>
+                        <td class="px-6 py-4 text-center"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">0%</span></td>
+                        <td class="px-6 py-4 text-center font-bold text-green-600">100%</td>
+                    </tr>
+                    <tr class="hover:bg-yellow-50">
+                        <td class="px-6 py-4 text-gray-700">12 - 24 giờ trước khởi hành</td>
+                        <td class="px-6 py-4 text-center"><span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">20%</span></td>
+                        <td class="px-6 py-4 text-center font-bold text-yellow-600">80%</td>
+                    </tr>
+                    <tr class="hover:bg-orange-50">
+                        <td class="px-6 py-4 text-gray-700">4 - 12 giờ trước khởi hành</td>
+                        <td class="px-6 py-4 text-center"><span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">50%</span></td>
+                        <td class="px-6 py-4 text-center font-bold text-orange-600">50%</td>
+                    </tr>
+                    <tr class="hover:bg-red-50">
+                        <td class="px-6 py-4 text-gray-700">Dưới 4 giờ trước khởi hành</td>
+                        <td class="px-6 py-4 text-center"><span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">80%</span></td>
+                        <td class="px-6 py-4 text-center font-bold text-red-600">20%</td>
+                    </tr>
+                    <tr class="hover:bg-red-50">
+                        <td class="px-6 py-4 text-gray-700">Sau giờ khởi hành (No-show)</td>
+                        <td class="px-6 py-4 text-center"><span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">100%</span></td>
+                        <td class="px-6 py-4 text-center font-bold text-red-600">0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-8">
+        <h2 class="font-bold text-gray-900 mb-4"><i class="bi bi-list-ol text-blue-600 me-2"></i>Cách Hủy Vé</h2>
+        <div class="space-y-4">
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 text-sm">Đăng nhập vào tài khoản</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Truy cập website và đăng nhập với tài khoản đã đặt vé</p>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 text-sm">Vào mục "Đơn hàng của tôi"</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Tìm đơn hàng cần hủy trong danh sách</p>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">3</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 text-sm">Nhấn "Hủy đơn"</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Xác nhận hủy và tiền sẽ được hoàn theo chính sách phía trên</p>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">4</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 text-sm">Nhận hoàn tiền</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Tiền được hoàn trong 3-7 ngày làm việc về phương thức thanh toán ban đầu</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8">
+        <h3 class="font-bold text-amber-800 text-sm mb-3"><i class="bi bi-exclamation-triangle me-1"></i> Lưu Ý Quan Trọng</h3>
+        <ul class="text-xs text-amber-700 space-y-2">
+            <li class="flex gap-2"><i class="bi bi-dot text-lg"></i>Thời gian hủy được tính từ lúc nhấn nút "Hủy đơn" đến giờ khởi hành của chuyến xe</li>
+            <li class="flex gap-2"><i class="bi bi-dot text-lg"></i>Vé khuyến mãi, vé Flash Sale có thể áp dụng chính sách hủy riêng</li>
+            <li class="flex gap-2"><i class="bi bi-dot text-lg"></i>Trường hợp nhà xe hủy chuyến: hoàn 100% và bồi thường thêm 10%</li>
+            <li class="flex gap-2"><i class="bi bi-dot text-lg"></i>Mọi thắc mắc vui lòng liên hệ hotline <strong>1900 6067</strong></li>
+        </ul>
+    </div>
+
+    <div class="text-center">
+        <a href="/" class="text-sm text-gray-500 hover:text-blue-600 font-medium"><i class="bi bi-arrow-left me-1"></i> Quay về trang chủ</a>
+    </div>
+</div>

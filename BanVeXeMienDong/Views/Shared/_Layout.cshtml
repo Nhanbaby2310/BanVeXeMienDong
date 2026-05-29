@@ -16,6 +16,15 @@
                         accent: { 50: '#fef2f2', 100: '#fee2e2', 400: '#f87171', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c' },
                         success: { 500: '#22c55e', 600: '#16a34a' },
                         warning: { 400: '#fbbf24', 500: '#f59e0b' }
+                    },
+                    animation: {
+                        'shimmer': 'shimmer 2s infinite linear',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
                     }
                 }
             }
@@ -147,6 +156,7 @@
 
     <!-- Main Content -->
     <main class="flex-1">
+        @await Html.PartialAsync("_Breadcrumb")
         @RenderBody()
     </main>
 
@@ -175,7 +185,7 @@
                 <div>
                     <h4 class="text-white font-semibold mb-4">Về Chúng Tôi</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition-colors">Giới thiệu</a></li>
+                        <li><a href="/Home/About" class="hover:text-white transition-colors">Giới thiệu</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Tuyển dụng</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Tin tức</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Liên hệ hợp tác</a></li>
@@ -186,8 +196,8 @@
                 <div>
                     <h4 class="text-white font-semibold mb-4">Hỗ Trợ</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition-colors">Hướng dẫn đặt vé</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Chính sách hủy vé</a></li>
+                        <li><a href="/Ticket/SelectRoute" class="hover:text-white transition-colors">Hướng dẫn đặt vé</a></li>
+                        <li><a href="/Home/Policy" class="hover:text-white transition-colors">Chính sách hủy vé</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Chính sách bảo mật</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Câu hỏi thường gặp</a></li>
                     </ul>

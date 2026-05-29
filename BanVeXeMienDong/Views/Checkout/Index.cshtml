@@ -1,5 +1,11 @@
 @{
     ViewData["Title"] = "Thanh Toán";
+    ViewBag.Breadcrumbs = new List<(string Title, string Url)>
+    {
+        ("Tìm vé", "/Ticket/SelectRoute"),
+        ("Giỏ hàng", "/Cart/Index"),
+        ("Thanh toán", "/Checkout/Index")
+    };
 }
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
