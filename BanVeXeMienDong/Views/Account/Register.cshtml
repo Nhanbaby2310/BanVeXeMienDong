@@ -1,165 +1,83 @@
-﻿@{
+@{
     ViewData["Title"] = "Đăng ký";
 }
 
-<div class="auth-container">
-    <div class="auth-box">
-        <h2>Đăng ký tài khoản</h2>
-
-        @if (!string.IsNullOrEmpty(ViewBag.Error))
-        {
-            <div class="alert alert-danger">
-                @ViewBag.Error
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(ViewBag.Success))
-        {
-            <div class="alert alert-success">
-                @ViewBag.Success
-            </div>
-        }
-
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <div class="form-group">
-                <label for="username">Tài khoản:</label>
-                <input type="text" id="username" name="Username" class="form-control" placeholder="Nhập tài khoản" required />
+<div class="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-md">
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-br from-green-600 to-emerald-700 px-8 py-8 text-center">
+                <div class="w-16 h-16 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
+                    <i class="bi bi-person-plus text-3xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Tạo Tài Khoản</h1>
+                <p class="text-green-100 text-sm mt-1">Đăng ký miễn phí và bắt đầu đặt vé</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Mật khẩu:</label>
-                <input type="password" id="password" name="Password" class="form-control" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required />
-                <small class="form-text text-muted">Mật khẩu phải có ít nhất 6 ký tự</small>
+            <!-- Form -->
+            <div class="p-8">
+                @if (!string.IsNullOrEmpty(ViewBag.Error))
+                {
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-4 flex items-center gap-2">
+                        <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Success))
+                {
+                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm mb-4 flex items-center gap-2">
+                        <i class="bi bi-check-circle"></i> @ViewBag.Success
+                    </div>
+                }
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Tài khoản</label>
+                        <div class="relative">
+                            <i class="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="username" name="Username"
+                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all"
+                                placeholder="Chọn tên đăng nhập" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Mật khẩu</label>
+                        <div class="relative">
+                            <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="password" id="password" name="Password"
+                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all"
+                                placeholder="Tối thiểu 6 ký tự" required />
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1 ml-1">Mật khẩu phải có ít nhất 6 ký tự</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-2">Xác nhận mật khẩu</label>
+                        <div class="relative">
+                            <i class="bi bi-lock-fill absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="password" id="confirmPassword" name="confirmPassword"
+                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all"
+                                placeholder="Nhập lại mật khẩu" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                        <i class="bi bi-person-check me-2"></i> Đăng Ký
+                    </button>
+                </form>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="confirmPassword">Xác nhận mật khẩu:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" required />
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
-        </form>
-
-        <div class="auth-link">
-            <p>Đã có tài khoản? <a href="/Account/Login">Đăng nhập ngay</a></p>
+        <!-- Login Link -->
+        <div class="text-center mt-6">
+            <p class="text-gray-600 text-sm">
+                Đã có tài khoản?
+                <a href="/Account/Login" class="text-blue-600 hover:text-blue-800 font-semibold ml-1">Đăng nhập</a>
+            </p>
         </div>
     </div>
 </div>
-
-<style>
-    .auth-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .auth-box {
-        background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .auth-box h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #555;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 14px;
-        transition: border-color 0.3s;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .btn-block {
-        width: 100%;
-        padding: 12px;
-        background-color: #667eea;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-top: 10px;
-    }
-
-    .btn-block:hover {
-        background-color: #5568d3;
-    }
-
-    .alert {
-        padding: 12px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-    }
-
-    .auth-link {
-        text-align: center;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-    }
-
-    .auth-link p {
-        margin: 0;
-        color: #666;
-    }
-
-    .auth-link a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .auth-link a:hover {
-        text-decoration: underline;
-    }
-
-    .form-text {
-        display: block;
-        margin-top: 5px;
-        font-size: 12px;
-        color: #999;
-    }
-</style>

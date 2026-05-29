@@ -4,115 +4,130 @@
     ViewData["Title"] = "Hồ Sơ Cá Nhân";
 }
 
-<div class="profile-container">
-    <h1><i class="bi bi-person-circle"></i> Hồ Sơ Cá Nhân</h1>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6"><i class="bi bi-person-circle text-blue-600"></i> Hồ Sơ Cá Nhân</h1>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success"><i class="bi bi-check-circle"></i> @TempData["Success"]</div>
+        <div data-toast-success="@TempData["Success"]"></div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> @TempData["Error"]</div>
+        <div data-toast-error="@TempData["Error"]"></div>
     }
 
-    <div class="profile-grid">
-        <!-- Thông tin cá nhân -->
-        <div class="profile-card">
-            <h3><i class="bi bi-person-badge"></i> Thông Tin Cá Nhân</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Personal Info -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 mb-5 flex items-center gap-2">
+                <i class="bi bi-person-badge text-blue-600"></i> Thông Tin Cá Nhân
+            </h3>
+
             <form method="post" action="/Account/Profile">
-                <div class="form-group">
-                    <label>Tài khoản</label>
-                    <input type="text" class="form-control" value="@Model.Username" disabled />
-                    <small class="text-muted">Không thể thay đổi tài khoản</small>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tài khoản</label>
+                        <input type="text" value="@Model.Username" disabled
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Vai trò</label>
+                        <div class="inline-flex px-3 py-1 rounded-full text-xs font-bold @(Model.Role == "Admin" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700")">
+                            @Model.Role
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Họ và tên</label>
+                        <input type="text" name="fullName" value="@Model.FullName" placeholder="Nhập họ và tên"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Email</label>
+                        <input type="email" name="email" value="@Model.Email" placeholder="example@email.com"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Số điện thoại</label>
+                        <input type="tel" name="phone" value="@Model.Phone" placeholder="0123 456 789"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Vai trò</label>
-                    <input type="text" class="form-control" value="@Model.Role" disabled />
-                </div>
-                <div class="form-group">
-                    <label for="fullName">Họ và Tên</label>
-                    <input type="text" id="fullName" name="fullName" class="form-control" value="@Model.FullName" placeholder="Nhập họ và tên" />
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" value="@Model.Email" placeholder="example@email.com" />
-                </div>
-                <div class="form-group">
-                    <label for="phone">Số Điện Thoại</label>
-                    <input type="tel" id="phone" name="phone" class="form-control" value="@Model.Phone" placeholder="0123456789" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-lg"></i> Lưu Thay Đổi
+
+                <button type="submit" class="mt-5 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm transition-all">
+                    <i class="bi bi-check-lg me-1"></i> Lưu Thay Đổi
                 </button>
             </form>
         </div>
 
-        <!-- Đổi mật khẩu -->
-        <div class="profile-card">
-            <h3><i class="bi bi-key"></i> Đổi Mật Khẩu</h3>
+        <!-- Change Password -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 mb-5 flex items-center gap-2">
+                <i class="bi bi-shield-lock text-amber-600"></i> Đổi Mật Khẩu
+            </h3>
+
             <form method="post" action="/Account/ChangePassword">
-                <div class="form-group">
-                    <label for="currentPassword">Mật khẩu hiện tại</label>
-                    <input type="password" id="currentPassword" name="currentPassword" class="form-control" required />
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Mật khẩu hiện tại</label>
+                        <input type="password" name="currentPassword" required
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Mật khẩu mới</label>
+                        <input type="password" name="newPassword" required minlength="6"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                        <p class="text-xs text-gray-400 mt-1">Tối thiểu 6 ký tự</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Xác nhận mật khẩu mới</label>
+                        <input type="password" name="confirmNewPassword" required
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="newPassword">Mật khẩu mới</label>
-                    <input type="password" id="newPassword" name="newPassword" class="form-control" required minlength="6" />
-                    <small class="text-muted">Tối thiểu 6 ký tự</small>
-                </div>
-                <div class="form-group">
-                    <label for="confirmNewPassword">Xác nhận mật khẩu mới</label>
-                    <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" required />
-                </div>
-                <button type="submit" class="btn btn-warning">
-                    <i class="bi bi-shield-lock"></i> Đổi Mật Khẩu
+
+                <button type="submit" class="mt-5 w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl shadow-sm transition-all">
+                    <i class="bi bi-key me-1"></i> Đổi Mật Khẩu
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Quick Links -->
-    <div class="profile-links">
-        <a href="/Checkout/MyOrders" class="link-card">
-            <i class="bi bi-receipt"></i>
-            <span>Đơn Hàng Của Tôi</span>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+        <a href="/Checkout/MyOrders" class="group bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                <i class="bi bi-receipt text-xl text-blue-600"></i>
+            </div>
+            <div>
+                <div class="font-semibold text-gray-900 text-sm">Đơn Hàng</div>
+                <div class="text-xs text-gray-400">Xem lịch sử đặt vé</div>
+            </div>
         </a>
-        <a href="/Cart/Index" class="link-card">
-            <i class="bi bi-cart3"></i>
-            <span>Giỏ Hàng</span>
+
+        <a href="/Cart/Index" class="group bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                <i class="bi bi-bag text-xl text-green-600"></i>
+            </div>
+            <div>
+                <div class="font-semibold text-gray-900 text-sm">Giỏ Hàng</div>
+                <div class="text-xs text-gray-400">Xem giỏ hàng hiện tại</div>
+            </div>
         </a>
-        <a href="/Ticket/SelectRoute" class="link-card">
-            <i class="bi bi-ticket-perforated"></i>
-            <span>Đặt Vé Mới</span>
+
+        <a href="/Ticket/SelectRoute" class="group bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                <i class="bi bi-ticket-perforated text-xl text-purple-600"></i>
+            </div>
+            <div>
+                <div class="font-semibold text-gray-900 text-sm">Đặt Vé</div>
+                <div class="text-xs text-gray-400">Tìm chuyến xe mới</div>
+            </div>
         </a>
     </div>
 </div>
-
-<style>
-    .profile-container { padding: 30px 0; max-width: 900px; margin: 0 auto; }
-    .profile-container h1 { font-size: 28px; font-weight: 700; color: #333; margin-bottom: 30px; }
-    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
-    .profile-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-    .profile-card h3 { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-weight: 600; color: #555; margin-bottom: 6px; font-size: 13px; }
-    .form-control { width: 100%; padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; box-sizing: border-box; }
-    .form-control:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
-    .form-control:disabled { background: #f8f9fa; color: #6c757d; }
-    .text-muted { font-size: 12px; color: #999; display: block; margin-top: 4px; }
-    .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; font-size: 14px; }
-    .btn-primary { background: #667eea; color: white; }
-    .btn-primary:hover { background: #5568d3; transform: translateY(-2px); }
-    .btn-warning { background: #f59e0b; color: white; }
-    .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
-    .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    .profile-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-    .link-card { background: white; padding: 20px; border-radius: 10px; text-align: center; text-decoration: none; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .link-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); color: #667eea; }
-    .link-card i { font-size: 28px; color: #667eea; }
-    .link-card span { font-weight: 600; font-size: 14px; }
-    @@media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; } .profile-links { grid-template-columns: 1fr; } }
-</style>

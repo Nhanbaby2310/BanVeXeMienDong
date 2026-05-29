@@ -1,620 +1,267 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Bán Vé Xe Miền Đông</title>
+    <title>@ViewData["Title"] - Bến Xe Miền Đông</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a5f' },
+                        accent: { 50: '#fef2f2', 100: '#fee2e2', 400: '#f87171', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c' },
+                        success: { 500: '#22c55e', 600: '#16a34a' },
+                        warning: { 400: '#fbbf24', 500: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="~/css/navbar-modern.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/animations.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/style-modern.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BanVeXeMienDong.styles.css" asp-append-version="true" />
-</head>
-
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark modern-navbar">
-            <div class="container-fluid navbar-container">
-
-                <!-- Logo -->
-                <a class="navbar-brand modern-brand" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-bus-front"></i>
-                    <span>Bán Vé Xe</span>
-                </a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-end">
-                    <ul class="navbar-nav ms-auto align-items-center navbar-menu">
-
-                        <!-- Mua vé mới -->
-                        <li class="nav-item">
-                            <a class="nav-link menu-item" asp-controller="Ticket" asp-action="SelectDateTime">
-                                <i class="bi bi-plus-circle"></i>
-                                <span>Mua vé mới</span>
-                            </a>
-                        </li>
-
-                        @if (Context.Session.GetString("user") != null)
-                        {
-                            <!-- Đơn Hàng -->
-                            <li class="nav-item">
-                                <a class="nav-link menu-item" href="/Checkout/MyOrders">
-                                    <i class="bi bi-receipt"></i>
-                                    <span>Đơn hàng</span>
-                                </a>
-                            </li>
-
-                            <!-- Giỏ Hàng -->
-                            <li class="nav-item">
-                                <a class="nav-link menu-item cart-menu-item" href="/Cart/Index">
-                                    <i class="bi bi-bag"></i>
-                                    <span>Giỏ Hàng</span>
-                                    <span class="cart-badge">
-                                        @await Component.InvokeAsync("CartCount")
-                                    </span>
-                                </a>
-                            </li>
-
-                            <!-- Admin Menu -->
-                            @if (Context.Session.GetString("role") == "Admin")
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link menu-item admin-item" href="/Admin/Index">
-                                        <i class="bi bi-shield-check"></i>
-                                        <span>Admin</span>
-                                    </a>
-                                </li>
-                            }
-                        }
-
-                        <!-- Divider -->
-                        @if (Context.Session.GetString("user") != null)
-                        {
-                            <li class="nav-item divider"></li>
-                        }
-
-                        <!-- User Section -->
-                        @if (Context.Session.GetString("user") == null)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link menu-item login-btn" href="/Account/Login">
-                                    <i class="bi bi-box-arrow-in-right"></i>
-                                    <span>Đăng nhập</span>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link menu-item register-btn" href="/Account/Register">
-                                    <i class="bi bi-person-plus"></i>
-                                    <span>Đăng ký</span>
-                                </a>
-                            </li>
-                        }
-                        else
-                        {
-                            <!-- User Badge -->
-                            <li class="nav-item user-section">
-                                <a href="/Account/Profile" class="user-info-badge" style="text-decoration:none;">
-                                    <i class="bi bi-person-circle"></i>
-                                    <span class="username">@Context.Session.GetString("user")</span>
-                                </a>
-                            </li>
-
-                            <!-- Đăng xuất -->
-                            <li class="nav-item">
-                                <a class="nav-link menu-item logout-btn" href="/Account/Logout">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    <span>Đăng xuất</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        .admin-link {
-            background-color: #f5576c;
-            color: white !important;
-            border-radius: 6px;
-            padding: 8px 12px !important;
-            transition: all 0.3s;
-        }
-
-        .admin-link:hover {
-            background-color: #e74c63;
-            transform: scale(1.05);
-        }
-
-        .cart-link {
-            position: relative;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ff6b6b;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .role-badge {
-            background-color: #e7f5ff;
-            color: #1971c2;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
+        * { font-family: 'Inter', sans-serif; }
+        .glass { backdrop-filter: blur(12px); background: rgba(255,255,255,0.85); }
+        .gradient-primary { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%); }
+        .gradient-accent { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+        .hover-lift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+        .nav-scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .toast-slide-in { animation: slideIn 0.4s ease; }
+        .toast-slide-out { animation: slideOut 0.3s ease forwards; }
+        @@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        @@keyframes progress { from { width: 100%; } to { width: 0%; } }
     </style>
+</head>
 
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Promo Banner -->
+    <div class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white text-center py-2 text-sm font-medium">
+        <span>🎉 Ưu đãi đặc biệt: Giảm 30% cho chuyến đầu tiên | Hotline: <strong>1900 6067</strong></span>
+    </div>
 
-    <main role="main" class="pb-3">
-        <div class="container">
-            @RenderBody()
+    <!-- Navbar -->
+    <nav id="mainNav" class="bg-white sticky top-0 z-50 border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+                        <i class="bi bi-bus-front text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors hidden sm:block">Bến Xe Miền Đông</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="/Ticket/SelectRoute" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                        <i class="bi bi-search me-1"></i> Tìm vé
+                    </a>
+
+                    @if (Context.Session.GetString("user") != null)
+                    {
+                        <a href="/Checkout/MyOrders" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                            <i class="bi bi-receipt me-1"></i> Đơn hàng
+                        </a>
+                        <a href="/Cart/Index" class="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                            <i class="bi bi-bag me-1"></i> Giỏ hàng
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                                @await Component.InvokeAsync("CartCount")
+                            </span>
+                        </a>
+
+                        @if (Context.Session.GetString("role") == "Admin")
+                        {
+                            <a href="/Admin/Index" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all">
+                                <i class="bi bi-shield-check me-1"></i> Admin
+                            </a>
+                        }
+
+                        <div class="h-6 w-px bg-gray-200 mx-2"></div>
+
+                        <a href="/Account/Profile" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-all">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="bi bi-person text-blue-600"></i>
+                            </div>
+                            <span>@Context.Session.GetString("user")</span>
+                        </a>
+                        <a href="/Account/Logout" class="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="h-6 w-px bg-gray-200 mx-2"></div>
+                        <a href="/Account/Login" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 border border-gray-200 hover:border-blue-300 rounded-lg transition-all">
+                            Đăng nhập
+                        </a>
+                        <a href="/Account/Register" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all">
+                            Đăng ký
+                        </a>
+                    }
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                    <i class="bi bi-list text-2xl"></i>
+                </button>
+            </div>
         </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-gray-100 bg-white pb-4 px-4">
+            <div class="flex flex-col gap-1 pt-3">
+                <a href="/Ticket/SelectRoute" class="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 rounded-lg"><i class="bi bi-search me-2"></i>Tìm vé</a>
+                @if (Context.Session.GetString("user") != null)
+                {
+                    <a href="/Checkout/MyOrders" class="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 rounded-lg"><i class="bi bi-receipt me-2"></i>Đơn hàng</a>
+                    <a href="/Cart/Index" class="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 rounded-lg"><i class="bi bi-bag me-2"></i>Giỏ hàng</a>
+                    <a href="/Account/Profile" class="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 rounded-lg"><i class="bi bi-person me-2"></i>Hồ sơ</a>
+                    @if (Context.Session.GetString("role") == "Admin")
+                    {
+                        <a href="/Admin/Index" class="px-4 py-3 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg"><i class="bi bi-shield-check me-2"></i>Admin</a>
+                    }
+                    <a href="/Account/Logout" class="px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 rounded-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập</a>
+                    <a href="/Account/Register" class="px-4 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-center"><i class="bi bi-person-plus me-2"></i>Đăng ký</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        @RenderBody()
     </main>
 
     <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-main">
-            <div class="footer-container">
-                <!-- Column 1: About -->
-                <div class="footer-col">
-                    <div class="footer-brand">
-                        <i class="bi bi-bus-front"></i>
-                        <span>Bán Vé Xe Miền Đông</span>
+    <footer class="bg-gray-900 text-gray-300 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+                            <i class="bi bi-bus-front text-white text-lg"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">Bến Xe Miền Đông</span>
                     </div>
-                    <p class="footer-desc">
-                        Hệ thống đặt vé xe khách trực tuyến hàng đầu Việt Nam. 
-                        Cam kết giá tốt nhất, dịch vụ chất lượng cao và hỗ trợ 24/7.
-                    </p>
-                    <div class="footer-social">
-                        <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
-                        <a href="#" title="YouTube"><i class="bi bi-youtube"></i></a>
-                        <a href="#" title="Instagram"><i class="bi bi-instagram"></i></a>
-                        <a href="#" title="TikTok"><i class="bi bi-tiktok"></i></a>
+                    <p class="text-sm text-gray-400 leading-relaxed mb-4">Hệ thống đặt vé xe khách trực tuyến uy tín hàng đầu Việt Nam. An toàn - Tiện lợi - Giá tốt nhất.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-colors"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-red-600 flex items-center justify-center transition-colors"><i class="bi bi-youtube"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-pink-600 flex items-center justify-center transition-colors"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-600 flex items-center justify-center transition-colors"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
 
-                <!-- Column 2: About Us -->
-                <div class="footer-col">
-                    <h4>Về Chúng Tôi</h4>
-                    <ul>
-                        <li><a href="#">Giới thiệu</a></li>
-                        <li><a href="#">Tuyển dụng</a></li>
-                        <li><a href="#">Tin tức</a></li>
-                        <li><a href="#">Liên hệ hợp tác</a></li>
-                        <li><a href="#">Quy chế hoạt động</a></li>
+                <!-- Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Về Chúng Tôi</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Giới thiệu</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tuyển dụng</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tin tức</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Liên hệ hợp tác</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 3: Support -->
-                <div class="footer-col">
-                    <h4>Hỗ Trợ</h4>
-                    <ul>
-                        <li><a href="#">Hướng dẫn đặt vé</a></li>
-                        <li><a href="#">Chính sách hủy vé</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
-                        <li><a href="#">Điều khoản sử dụng</a></li>
-                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                <!-- Support -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Hỗ Trợ</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Hướng dẫn đặt vé</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Chính sách hủy vé</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Câu hỏi thường gặp</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 4: Contact -->
-                <div class="footer-col">
-                    <h4>Liên Hệ</h4>
-                    <ul class="footer-contact">
-                        <li>
-                            <i class="bi bi-telephone-fill"></i>
-                            <span>Hotline: <strong>1900 6067</strong></span>
-                        </li>
-                        <li>
-                            <i class="bi bi-envelope-fill"></i>
-                            <span>hotro@banvexemiendong.vn</span>
-                        </li>
-                        <li>
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <span>292 Đinh Bộ Lĩnh, P.26, Q. Bình Thạnh, TP.HCM</span>
-                        </li>
-                        <li>
-                            <i class="bi bi-clock-fill"></i>
-                            <span>Hỗ trợ: 06:00 - 22:00 hàng ngày</span>
-                        </li>
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Liên Hệ</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-center gap-2"><i class="bi bi-telephone-fill text-blue-400"></i> <strong class="text-white">1900 6067</strong></li>
+                        <li class="flex items-center gap-2"><i class="bi bi-envelope-fill text-blue-400"></i> hotro&#64;benxemiendong.vn</li>
+                        <li class="flex items-start gap-2"><i class="bi bi-geo-alt-fill text-blue-400 mt-0.5"></i> 292 Đinh Bộ Lĩnh, P.26, Q.Bình Thạnh, TP.HCM</li>
+                        <li class="flex items-center gap-2"><i class="bi bi-clock-fill text-blue-400"></i> 06:00 - 22:00 hàng ngày</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Bottom -->
-        <div class="footer-bottom">
-            <div class="footer-container">
-                <div class="footer-bottom-content">
-                    <p>&copy; 2024 Bán Vé Xe Miền Đông. Tất cả quyền được bảo lưu.</p>
-                    <div class="footer-payment">
-                        <span>Chấp nhận thanh toán:</span>
-                        <i class="bi bi-credit-card-2-front" title="Visa/Mastercard"></i>
-                        <i class="bi bi-bank" title="Chuyển khoản"></i>
-                        <i class="bi bi-phone" title="Ví điện tử"></i>
-                        <i class="bi bi-cash-coin" title="Tiền mặt"></i>
-                    </div>
+        <!-- Bottom -->
+        <div class="border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-xs text-gray-500">&copy; 2024 Bến Xe Miền Đông. Tất cả quyền được bảo lưu.</p>
+                <div class="flex items-center gap-3 text-gray-500 text-xs">
+                    <span>Thanh toán:</span>
+                    <i class="bi bi-credit-card text-lg"></i>
+                    <i class="bi bi-bank text-lg"></i>
+                    <i class="bi bi-phone text-lg"></i>
+                    <i class="bi bi-cash-coin text-lg"></i>
                 </div>
             </div>
         </div>
     </footer>
 
-    <style>
-        /* ===== FOOTER STYLES ===== */
-        .site-footer {
-            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
-            color: #bdc3c7;
-            margin-top: 60px;
-        }
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
-        .footer-main {
-            padding: 50px 0 30px;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
-            gap: 40px;
-        }
-
-        .footer-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 15px;
-        }
-
-        .footer-brand i {
-            font-size: 24px;
-            color: #e74c3c;
-        }
-
-        .footer-desc {
-            font-size: 14px;
-            line-height: 1.7;
-            color: #95a5a6;
-            margin-bottom: 20px;
-        }
-
-        .footer-social {
-            display: flex;
-            gap: 12px;
-        }
-
-        .footer-social a {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ecf0f1;
-            font-size: 16px;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-
-        .footer-social a:hover {
-            background: #e74c3c;
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        .footer-col h4 {
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        .footer-col h4::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 30px;
-            height: 3px;
-            background: #e74c3c;
-            border-radius: 2px;
-        }
-
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-col ul li a {
-            color: #95a5a6;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .footer-col ul li a:hover {
-            color: #e74c3c;
-            transform: translateX(5px);
-        }
-
-        .footer-contact li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 14px !important;
-            font-size: 14px;
-        }
-
-        .footer-contact li i {
-            color: #e74c3c;
-            font-size: 16px;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px 0;
-        }
-
-        .footer-bottom .footer-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .footer-bottom-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .footer-bottom-content p {
-            margin: 0;
-            font-size: 13px;
-            color: #7f8c8d;
-        }
-
-        .footer-payment {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #7f8c8d;
-        }
-
-        .footer-payment i {
-            font-size: 20px;
-            color: #95a5a6;
-            transition: color 0.3s;
-        }
-
-        .footer-payment i:hover {
-            color: #e74c3c;
-        }
-
-        @@media (max-width: 992px) {
-            .footer-container {
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-
-            .footer-bottom-content {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
-            }
-
-            .footer-main {
-                padding: 30px 0 20px;
-            }
-        }
-    </style>
-
-    <!-- FIX LỖI SCRIPT -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/cart-update.js" asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
-
-    <!-- Toast Notification System -->
-    <div id="toast-container" class="toast-container"></div>
-
-    <style>
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .toast-item {
-            background: white;
-            border-radius: 10px;
-            padding: 14px 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 300px;
-            max-width: 420px;
-            animation: toastSlideIn 0.4s ease;
-            pointer-events: all;
-            border-left: 4px solid #667eea;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .toast-item.toast-success { border-left-color: #28a745; }
-        .toast-item.toast-error { border-left-color: #dc3545; }
-        .toast-item.toast-info { border-left-color: #17a2b8; }
-
-        .toast-item.toast-hide {
-            animation: toastSlideOut 0.3s ease forwards;
-        }
-
-        .toast-icon {
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .toast-success .toast-icon { color: #28a745; }
-        .toast-error .toast-icon { color: #dc3545; }
-        .toast-info .toast-icon { color: #17a2b8; }
-
-        .toast-message {
-            flex: 1;
-            font-size: 14px;
-            color: #333;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            font-size: 18px;
-            color: #999;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-            flex-shrink: 0;
-        }
-
-        .toast-close:hover { color: #333; }
-
-        .toast-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: #667eea;
-            animation: toastProgress 4s linear forwards;
-            border-radius: 0 0 0 10px;
-        }
-
-        .toast-success .toast-progress { background: #28a745; }
-        .toast-error .toast-progress { background: #dc3545; }
-
-        @@keyframes toastSlideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @@keyframes toastSlideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        @@keyframes toastProgress {
-            from { width: 100%; }
-            to { width: 0%; }
-        }
-
-        @@media (max-width: 480px) {
-            .toast-container { left: 10px; right: 10px; top: 10px; }
-            .toast-item { min-width: unset; width: 100%; }
-        }
-    </style>
-
+    <!-- Scripts -->
     <script>
-        // Toast notification system
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 10) {
+                nav.classList.add('nav-scrolled');
+            } else {
+                nav.classList.remove('nav-scrolled');
+            }
+        });
+
+        // Toast system
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
-            const iconMap = {
-                'success': 'bi-check-circle-fill',
-                'error': 'bi-exclamation-circle-fill',
-                'info': 'bi-info-circle-fill'
-            };
+            const colors = { success: 'border-green-500 bg-green-50', error: 'border-red-500 bg-red-50', info: 'border-blue-500 bg-blue-50' };
+            const icons = { success: 'bi-check-circle-fill text-green-600', error: 'bi-exclamation-circle-fill text-red-600', info: 'bi-info-circle-fill text-blue-600' };
 
             const toast = document.createElement('div');
-            toast.className = `toast-item toast-${type}`;
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border-l-4 shadow-lg ${colors[type]} toast-slide-in`;
             toast.innerHTML = `
-                <i class="bi ${iconMap[type] || iconMap.info} toast-icon"></i>
-                <span class="toast-message">${message}</span>
-                <button class="toast-close" onclick="this.parentElement.classList.add('toast-hide'); setTimeout(() => this.parentElement.remove(), 300);">&times;</button>
-                <div class="toast-progress"></div>
+                <i class="bi ${icons[type]} text-lg"></i>
+                <span class="text-sm font-medium text-gray-800 flex-1">${message}</span>
+                <button onclick="this.parentElement.classList.add('toast-slide-out'); setTimeout(() => this.parentElement.remove(), 300);" class="text-gray-400 hover:text-gray-600">&times;</button>
             `;
-
             container.appendChild(toast);
-
-            // Auto remove after 4 seconds
-            setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.classList.add('toast-hide');
-                    setTimeout(() => toast.remove(), 300);
-                }
-            }, 4000);
+            setTimeout(() => { if (toast.parentElement) { toast.classList.add('toast-slide-out'); setTimeout(() => toast.remove(), 300); } }, 4000);
         }
 
-        // Auto-show toasts from TempData (server-side messages)
+        // Auto-convert alerts to toasts
         document.addEventListener('DOMContentLoaded', function() {
-            // Find and convert existing alert divs to toasts
-            document.querySelectorAll('.alert-success, .alert-danger').forEach(alert => {
-                const message = alert.textContent.trim();
-                const type = alert.classList.contains('alert-success') ? 'success' : 'error';
-                if (message) {
-                    showToast(message, type);
-                    alert.style.display = 'none'; // Hide the original alert
-                }
-            });
+            document.querySelectorAll('[data-toast-success]').forEach(el => { showToast(el.dataset.toastSuccess, 'success'); el.remove(); });
+            document.querySelectorAll('[data-toast-error]').forEach(el => { showToast(el.dataset.toastError, 'error'); el.remove(); });
         });
     </script>
 
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

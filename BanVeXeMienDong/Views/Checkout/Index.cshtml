@@ -2,836 +2,120 @@
     ViewData["Title"] = "Thanh Toán";
 }
 
-<div class="checkout-container">
-    <div class="checkout-grid">
-        <!-- Tóm Tắt Đơn Hàng -->
-        <div class="order-summary">
-            <h2>📋 Tóm Tắt Đơn Hàng</h2>
-            
-            <div class="summary-items">
-                @if (ViewBag.Cart != null && ViewBag.Cart.Count > 0)
-                {
-                    @foreach (var item in ViewBag.Cart)
-                    {
-                        <div class="summary-item">
-                            <div class="item-info">
-                                <h4>@item.Route</h4>
-                                <p class="item-details">
-                                    Ghế: @item.Seats | @item.BusClass | @item.DepartureTime
-                                </p>
-                            </div>
-                            <div class="item-price">
-                                <span class="quantity">x@item.Quantity</span>
-                                <span class="price">@(item.Price.ToString("N0")) VND</span>
-                            </div>
-                        </div>
-                    }
-                }
-            </div>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6"><i class="bi bi-credit-card text-blue-600"></i> Thanh Toán</h1>
 
-            <div class="summary-total">
-                <div class="total-row">
-                    <span>Tổng Cộng:</span>
-                    <span class="total-amount">@ViewBag.Total.ToString("N0") VND</span>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Order Summary -->
+        <div class="lg:col-span-1 order-2 lg:order-1">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-20">
+                <h3 class="font-bold text-gray-900 mb-4">Đơn Hàng</h3>
+
+                <div class="space-y-3 max-h-60 overflow-y-auto">
+                    @if (ViewBag.Cart != null)
+                    {
+                        foreach (var item in ViewBag.Cart)
+                        {
+                            <div class="flex justify-between items-start py-2 border-b border-gray-50">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">@item.Route</div>
+                                    <div class="text-xs text-gray-400">@item.Seats | @item.BusClass</div>
+                                </div>
+                                <div class="text-sm font-bold text-blue-600">@item.Price.ToString("N0")đ</div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="mt-4 pt-4 border-t-2 border-blue-100">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-700">Tổng cộng</span>
+                        <span class="text-2xl font-black text-blue-600">@ViewBag.Total.ToString("N0")đ</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Form Thanh Toán -->
-        <div class="payment-form">
-            <h2>💳 Thông Tin Thanh Toán</h2>
+        <!-- Payment Form -->
+        <div class="lg:col-span-2 order-1 lg:order-2">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-900 mb-5">Thông Tin Thanh Toán</h3>
 
-            <form method="post" action="/Checkout/ProcessPayment">
-                @Html.AntiForgeryToken()
-                <!-- Phương Thức Thanh Toán -->
-                <div class="form-group">
-                    <label>Phương Thức Thanh Toán:</label>
-                    <div class="payment-methods">
-                        <label class="payment-option">
-                            <input type="radio" name="paymentMethod" value="Cash" checked />
-                            <span>💵 Thanh Toán Tiền Mặt</span>
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="paymentMethod" value="Card" />
-                            <span>💳 Thẻ Tín Dụng</span>
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="paymentMethod" value="Bank" />
-                            <span>🏦 Chuyển Khoản Ngân Hàng</span>
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="paymentMethod" value="Wallet" />
-                            <span>📱 Ví Điện Tử</span>
-                        </label>
-                    </div>
-                </div>
+                <form method="post" action="/Checkout/ProcessPayment">
+                    @Html.AntiForgeryToken()
 
-                <!-- QR Code Section for Bank Transfer -->
-                <div id="qrCodeSection" class="qr-code-section" style="display: none;">
-                    <div class="qr-header">
-                        <h3>📱 Mã QR Thanh Toán Ngân Hàng</h3>
-                        <p>Quét mã QR này bằng ứng dụng ngân hàng của bạn để hoàn tất thanh toán</p>
-                    </div>
-                    <div class="qr-container">
-                        <div id="qrCode" class="qr-code-box"></div>
-                        <div class="qr-info">
-                            <div class="qr-detail">
-                                <span class="qr-label">Số Tiền:</span>
-                                <span class="qr-value" id="qrAmount">@ViewBag.Total.ToString("N0")</span>
-                            </div>
-                            <div class="qr-detail">
-                                <span class="qr-label">Tên TK:</span>
-                                <span class="qr-value">Ban Vé Xe Miền Đông</span>
-                            </div>
-                            <div class="qr-detail">
-                                <span class="qr-label">Ngân Hàng:</span>
-                                <span class="qr-value">Vietcombank</span>
-                            </div>
+                    <!-- Payment Method -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Phương thức thanh toán</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="Cash" checked class="peer sr-only">
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+                                    <i class="bi bi-cash-coin text-2xl text-green-600"></i>
+                                    <div class="text-xs font-medium mt-1">Tiền mặt</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="Card" class="peer sr-only">
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+                                    <i class="bi bi-credit-card text-2xl text-blue-600"></i>
+                                    <div class="text-xs font-medium mt-1">Thẻ tín dụng</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="Bank" class="peer sr-only">
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+                                    <i class="bi bi-bank text-2xl text-purple-600"></i>
+                                    <div class="text-xs font-medium mt-1">Chuyển khoản</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="Wallet" class="peer sr-only">
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+                                    <i class="bi bi-phone text-2xl text-pink-600"></i>
+                                    <div class="text-xs font-medium mt-1">Ví điện tử</div>
+                                </div>
+                            </label>
                         </div>
                     </div>
-                </div>
 
-                <!-- Card Payment Section -->
-                <div id="cardPaymentSection" class="payment-section" style="display: none;">
-                    <div class="section-header">
-                        <h3>💳 Thông Tin Thẻ Tín Dụng</h3>
-                    </div>
-                    <div class="card-info-box">
-                        <div class="payment-step">
-                            <span class="step-number">1</span>
-                            <div class="step-content">
-                                <h4>Nhập thông tin thẻ</h4>
-                                <p>Điền số thẻ, ngày hết hạn và CVV</p>
-                            </div>
+                    <!-- Contact Info -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Số điện thoại</label>
+                            <input type="tel" name="phoneNumber" required placeholder="0123 456 789"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
                         </div>
-                        <div class="payment-step">
-                            <span class="step-number">2</span>
-                            <div class="step-content">
-                                <h4>Xác nhận giao dịch</h4>
-                                <p>Nhập OTP được gửi tới điện thoại của bạn</p>
-                            </div>
-                        </div>
-                        <div class="payment-step">
-                            <span class="step-number">3</span>
-                            <div class="step-content">
-                                <h4>Hoàn tất thanh toán</h4>
-                                <p>Giao dịch được xác nhận và vé sẽ được gửi ngay</p>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" required placeholder="email@example.com"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
                         </div>
                     </div>
-                    <div class="amount-info">
-                        <span class="label">Số Tiền Sẽ Bị Trừ:</span>
-                        <span class="amount">@ViewBag.Total.ToString("N0") VND</span>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú</label>
+                        <textarea name="notes" rows="2" placeholder="Ghi chú thêm (tùy chọn)"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all resize-none"></textarea>
                     </div>
-                </div>
 
-                <!-- E-Wallet Payment Section -->
-                <div id="walletPaymentSection" class="payment-section" style="display: none;">
-                    <div class="section-header">
-                        <h3>📱 Thanh Toán Ví Điện Tử</h3>
-                    </div>
-                    <div class="wallet-options">
-                        <div class="wallet-option">
-                            <div class="wallet-icon">💜</div>
-                            <div class="wallet-name">Momo</div>
-                            <div class="wallet-desc">Thanh toán nhanh qua Momo</div>
-                        </div>
-                        <div class="wallet-option">
-                            <div class="wallet-icon">🟡</div>
-                            <div class="wallet-name">ZaloPay</div>
-                            <div class="wallet-desc">Thanh toán qua ZaloPay</div>
-                        </div>
-                        <div class="wallet-option">
-                            <div class="wallet-icon">🔵</div>
-                            <div class="wallet-name">Payoo</div>
-                            <div class="wallet-desc">Thanh toán qua Payoo</div>
-                        </div>
-                    </div>
-                    <div class="wallet-instructions">
-                        <h4>📋 Hướng dẫn thanh toán:</h4>
-                        <ol>
-                            <li>Chọn ứng dụng ví điện tử của bạn</li>
-                            <li>Nhập số điện thoại và mã OTP</li>
-                            <li>Xác nhận số tiền <strong>@ViewBag.Total.ToString("N0") VND</strong></li>
-                            <li>Giao dịch sẽ hoàn tất trong vài giây</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <!-- Số Điện Thoại -->
-                <div class="form-group">
-                    <label for="phoneNumber">Số Điện Thoại:</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" 
-                           placeholder="0123456789" required />
-                </div>
-
-                <!-- Email -->
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" class="form-control" 
-                           placeholder="your@email.com" required />
-                </div>
-
-                <!-- Ghi Chú -->
-                <div class="form-group">
-                    <label for="notes">Ghi Chú (Tùy Chọn):</label>
-                    <textarea id="notes" name="notes" class="form-control" rows="3" 
-                              placeholder="Ghi chú thêm về đơn hàng..."></textarea>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <a href="/Cart/Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Quay Lại Giỏ Hàng
-                    </a>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle"></i> Xác Nhận Thanh Toán
-                    </button>
-                </div>
-
-                <!-- Điều Khoản -->
-                <div class="terms">
-                    <label>
-                        <input type="checkbox" required />
-                        Tôi đồng ý với <a href="#">điều khoản và điều kiện</a>
+                    <!-- Terms -->
+                    <label class="flex items-start gap-2 mb-6 cursor-pointer">
+                        <input type="checkbox" required class="w-4 h-4 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-600">Tôi đồng ý với <a href="#" class="text-blue-600 hover:underline">điều khoản sử dụng</a> và <a href="#" class="text-blue-600 hover:underline">chính sách bảo mật</a></span>
                     </label>
-                </div>
-            </form>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3">
+                        <a href="/Cart/Index" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all text-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                        </a>
+                        <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <i class="bi bi-check-circle me-1"></i> Xác Nhận Thanh Toán
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    .checkout-container {
-        padding: 30px 0;
-    }
-
-    .checkout-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-    }
-
-    .order-summary,
-    .payment-form {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 25px;
-        color: #333;
-    }
-
-    .summary-items {
-        max-height: 400px;
-        overflow-y: auto;
-        margin-bottom: 20px;
-        border: 1px solid #eee;
-        border-radius: 8px;
-    }
-
-    .summary-item {
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .summary-item:last-child {
-        border-bottom: none;
-    }
-
-    .item-info h4 {
-        margin: 0 0 5px 0;
-        color: #333;
-        font-weight: 600;
-    }
-
-    .item-details {
-        margin: 0;
-        font-size: 12px;
-        color: #666;
-    }
-
-    .item-price {
-        text-align: right;
-    }
-
-    .quantity {
-        display: block;
-        color: #666;
-        font-size: 12px;
-        margin-bottom: 5px;
-    }
-
-    .price {
-        display: block;
-        font-weight: 700;
-        color: #667eea;
-        font-size: 16px;
-    }
-
-    .summary-total {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 20px;
-        border-radius: 8px;
-        color: white;
-    }
-
-    .total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-    .total-amount {
-        font-size: 24px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: border-color 0.3s;
-        box-sizing: border-box;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .payment-methods {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .payment-option {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        border: 2px solid #ddd;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .payment-option:hover {
-        border-color: #667eea;
-        background: #f8f9ff;
-    }
-
-    .payment-option input[type="radio"] {
-        margin-right: 10px;
-        cursor: pointer;
-    }
-
-    .payment-option input[type="radio"]:checked + span {
-        color: #667eea;
-        font-weight: 600;
-    }
-
-    .action-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 30px;
-    }
-
-    .btn {
-        padding: 14px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .btn-secondary {
-        background: #868e96;
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        background: #748088;
-    }
-
-    .btn-success {
-        background: #51cf66;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #40c057;
-    }
-
-    .terms {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-        font-size: 13px;
-        color: #666;
-    }
-
-    .terms label {
-        display: flex;
-        align-items: center;
-        margin: 0;
-        font-weight: normal;
-        cursor: pointer;
-    }
-
-    .terms input[type="checkbox"] {
-        margin-right: 8px;
-        cursor: pointer;
-    }
-
-    .terms a {
-        color: #667eea;
-        text-decoration: none;
-    }
-
-    .terms a:hover {
-        text-decoration: underline;
-    }
-
-    /* QR Code Section Styles */
-    .qr-code-section {
-        margin-bottom: 30px;
-        padding: 20px;
-        background: linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%);
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        animation: slideIn 0.3s ease-out;
-    }
-
-    @@keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .qr-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .qr-header h3 {
-        margin: 0 0 8px 0;
-        color: #667eea;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-    .qr-header p {
-        margin: 0;
-        color: #666;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .qr-container {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .qr-code-box {
-        background: white;
-        padding: 12px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        min-width: 200px;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .qr-code-box img,
-    .qr-code-box svg {
-        max-width: 100%;
-        height: auto;
-    }
-
-    .qr-info {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .qr-detail {
-        background: white;
-        padding: 12px 16px;
-        border-radius: 6px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .qr-label {
-        color: #666;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-
-    .qr-value {
-        color: #333;
-        font-weight: 600;
-        font-size: 14px;
-        text-align: right;
-    }
-
-    /* Payment Section Styles */
-    .payment-section {
-        margin-bottom: 30px;
-        padding: 20px;
-        background: linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%);
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        animation: slideIn 0.3s ease-out;
-    }
-
-    .section-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .section-header h3 {
-        margin: 0;
-        color: #667eea;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-    /* Card Payment Styles */
-    .card-info-box {
-        display: grid;
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    .payment-step {
-        display: flex;
-        gap: 16px;
-        align-items: flex-start;
-        background: white;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .step-number {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-weight: 700;
-        border-radius: 50%;
-        flex-shrink: 0;
-        font-size: 16px;
-    }
-
-    .step-content h4 {
-        margin: 0 0 4px 0;
-        color: #333;
-        font-size: 14px;
-        font-weight: 700;
-    }
-
-    .step-content p {
-        margin: 0;
-        color: #666;
-        font-size: 12px;
-        line-height: 1.4;
-    }
-
-    .amount-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: white;
-        padding: 16px;
-        border-radius: 8px;
-        border: 2px solid #e0e0e0;
-    }
-
-    .amount-info .label {
-        color: #666;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .amount-info .amount {
-        color: #667eea;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-    /* E-Wallet Styles */
-    .wallet-options {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .wallet-option {
-        background: white;
-        padding: 16px;
-        border-radius: 8px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        border: 2px solid transparent;
-    }
-
-    .wallet-option:hover {
-        border-color: #667eea;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-    }
-
-    .wallet-icon {
-        font-size: 32px;
-        margin-bottom: 8px;
-    }
-
-    .wallet-name {
-        color: #333;
-        font-weight: 700;
-        font-size: 14px;
-        margin-bottom: 4px;
-    }
-
-    .wallet-desc {
-        color: #666;
-        font-size: 11px;
-        line-height: 1.3;
-    }
-
-    .wallet-instructions {
-        background: white;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .wallet-instructions h4 {
-        margin: 0 0 12px 0;
-        color: #333;
-        font-size: 14px;
-        font-weight: 700;
-    }
-
-    .wallet-instructions ol {
-        margin: 0;
-        padding-left: 24px;
-        list-style-type: decimal;
-    }
-
-    .wallet-instructions li {
-        color: #666;
-        font-size: 13px;
-        margin-bottom: 8px;
-        line-height: 1.4;
-    }
-
-    .wallet-instructions li strong {
-        color: #667eea;
-        font-weight: 700;
-    }
-
-    @@media (max-width: 768px) {
-        .checkout-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .payment-methods {
-            grid-template-columns: 1fr;
-        }
-
-        .action-buttons {
-            grid-template-columns: 1fr;
-        }
-
-        .qr-container {
-            flex-direction: column;
-        }
-
-        .qr-code-box {
-            min-width: 160px;
-            min-height: 160px;
-        }
-
-        .qr-info {
-            width: 100%;
-        }
-
-        .qr-detail {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-
-        .qr-value {
-            text-align: left;
-        }
-
-        .wallet-options {
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        }
-
-        .amount-info {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .payment-step {
-            gap: 12px;
-        }
-
-        .step-number {
-            width: 32px;
-            height: 32px;
-            font-size: 14px;
-        }
-
-        .step-content h4 {
-            font-size: 13px;
-        }
-
-        .step-content p {
-            font-size: 11px;
-        }
-    }
-</style>
-
-<!-- QRCode.js Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
-        const qrCodeSection = document.getElementById('qrCodeSection');
-        const cardPaymentSection = document.getElementById('cardPaymentSection');
-        const walletPaymentSection = document.getElementById('walletPaymentSection');
-        const qrCodeBox = document.getElementById('qrCode');
-        const totalAmount = @ViewBag.Total;
-
-        // Function to hide all payment sections
-        function hideAllPaymentSections() {
-            qrCodeSection.style.display = 'none';
-            cardPaymentSection.style.display = 'none';
-            walletPaymentSection.style.display = 'none';
-        }
-
-        // Function to generate QR Code
-        function generateQRCode() {
-            // Clear previous QR code
-            qrCodeBox.innerHTML = '';
-
-            // Bank account details (you can configure these in appsettings.json later)
-            const bankData = {
-                bank: 'Vietcombank',
-                accountNumber: '0123456789', // Replace with actual account number
-                accountName: 'Ban Ve Xe Mien Dong',
-                amount: totalAmount,
-                description: 'Thanh toan ve xe'
-            };
-
-            // Create QR code data string
-            const qrData = `00020126360012vn.com.vietcombank${bankData.accountNumber}5802VN5913${bankData.accountName}6009HA NOI6108100000${totalAmount}6304`;
-
-            // Alternative: Use simple URL format
-            const bankTransferUrl = `https://api.vietqr.io/image/${bankData.bank.toLowerCase()}-${bankData.accountNumber}-compact.jpg`;
-
-            // Use qrserver.com API for generating QR code
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(bankTransferUrl)}`;
-
-            // Create and display QR code
-            const img = document.createElement('img');
-            img.src = qrUrl;
-            img.alt = 'QR Code for Bank Transfer';
-            img.style.maxWidth = '100%';
-            img.style.height = 'auto';
-            qrCodeBox.appendChild(img);
-
-            console.log('✅ QR Code generated for amount:', totalAmount);
-        }
-
-        // Add event listeners to payment method radio buttons
-        paymentRadios.forEach(radio => {
-            radio.addEventListener('change', function () {
-                hideAllPaymentSections();
-
-                if (this.value === 'Bank') {
-                    qrCodeSection.style.display = 'block';
-                    generateQRCode();
-                    console.log('🏦 Bank transfer selected, QR code shown');
-                } else if (this.value === 'Card') {
-                    cardPaymentSection.style.display = 'block';
-                    console.log('💳 Card payment selected');
-                } else if (this.value === 'Wallet') {
-                    walletPaymentSection.style.display = 'block';
-                    console.log('📱 E-Wallet payment selected');
-                } else {
-                    console.log('💵 Cash payment selected');
-                }
-            });
-        });
-
-        // Generate QR on page load if Bank is selected (shouldn't happen but just in case)
-        const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
-        if (selectedPayment && selectedPayment.value === 'Bank') {
-            qrCodeSection.style.display = 'block';
-            generateQRCode();
-        }
-
-        console.log('✅ Payment system initialized with QR, Card, and Wallet options');
-    });
-</script>
-

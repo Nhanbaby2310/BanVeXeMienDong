@@ -1,12 +1,15 @@
 @model BanVeXeMienDong.Models.Order
 @{ ViewData["Title"] = "Vé Điện Tử"; }
 
-<div class="eticket-container">
-    <div class="eticket-header">
-        <div class="eticket-actions no-print">
-            <a href="/Checkout/MyOrders" class="btn-back"><i class="bi bi-arrow-left"></i> Quay lại</a>
-            <button onclick="window.print()" class="btn-print"><i class="bi bi-printer"></i> In Vé</button>
-        </div>
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <!-- Actions (hidden when printing) -->
+    <div class="flex justify-between items-center mb-6 print:hidden">
+        <a href="/Checkout/MyOrders" class="text-sm text-gray-500 hover:text-blue-600 font-medium">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all">
+            <i class="bi bi-printer me-1"></i> In vé
+        </button>
     </div>
 
     @if (ViewBag.Items != null)
@@ -14,157 +17,88 @@
         var items = (List<BanVeXeMienDong.Models.CartItem>)ViewBag.Items;
         int ticketNum = 0;
 
-        @foreach (var item in items)
+        foreach (var item in items)
         {
             ticketNum++;
             var ticketId = $"{Model.OrderCode}-{ticketNum:D2}";
+            var qrData = Uri.EscapeDataString($"TICKET:{ticketId}|ROUTE:{item.Route}|DATE:{item.DepartureTime}|SEATS:{item.Seats}");
 
-            <div class="eticket-card">
-                <!-- Left: QR Code -->
-                <div class="ticket-qr">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=@(Uri.EscapeDataString($"TICKET:{ticketId}|ROUTE:{item.Route}|DATE:{item.DepartureTime}|SEATS:{item.Seats}|ORDER:{Model.OrderCode}"))"
-                         alt="QR Code" class="qr-image" />
-                    <span class="ticket-id">@ticketId</span>
+            <div class="bg-white rounded-2xl border-2 border-gray-200 shadow-sm overflow-hidden mb-6 print:shadow-none print:border-gray-400">
+                <div class="grid grid-cols-1 sm:grid-cols-3">
+                    <!-- QR Section -->
+                    <div class="sm:col-span-1 bg-gray-50 p-6 flex flex-col items-center justify-center border-b sm:border-b-0 sm:border-r-2 border-dashed border-gray-200">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@qrData"
+                             alt="QR Code" class="w-36 h-36 rounded-lg shadow-sm">
+                        <div class="mt-3 px-3 py-1 bg-white rounded-lg border border-gray-200 text-xs font-mono font-bold text-blue-700">
+                            @ticketId
+                        </div>
+                    </div>
+
+                    <!-- Info Section -->
+                    <div class="sm:col-span-2 p-6">
+                        <!-- Brand -->
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+                                <i class="bi bi-bus-front text-white text-sm"></i>
+                            </div>
+                            <span class="text-sm font-bold text-gray-900">Bến Xe Miền Đông</span>
+                        </div>
+
+                        <!-- Route -->
+                        <div class="gradient-primary text-white px-4 py-3 rounded-xl mb-4">
+                            <div class="text-lg font-bold">@item.Route</div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase">Khởi hành</div>
+                                <div class="font-semibold text-gray-900">@item.DepartureTime</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase">Ghế</div>
+                                <div class="font-bold text-red-600">@item.Seats</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase">Loại xe</div>
+                                <div class="font-semibold text-gray-900">@item.BusClass</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase">Hành khách</div>
+                                <div class="font-semibold text-gray-900">@ViewBag.Username</div>
+                            </div>
+                        </div>
+
+                        <!-- Price & Status -->
+                        <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                            <span class="text-xl font-black text-blue-600">@item.Price.ToString("N0")đ</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold"><i class="bi bi-check-circle-fill me-1"></i>Đã xác nhận</span>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Right: Ticket Info -->
-                <div class="ticket-info">
-                    <div class="ticket-brand">
-                        <i class="bi bi-bus-front"></i>
-                        <span>Bán Vé Xe Miền Đông</span>
-                    </div>
-
-                    <div class="ticket-route">
-                        <span class="route-text">@item.Route</span>
-                    </div>
-
-                    <div class="ticket-details">
-                        <div class="detail-item">
-                            <i class="bi bi-calendar-event"></i>
-                            <div>
-                                <span class="detail-label">Khởi hành</span>
-                                <span class="detail-value">@item.DepartureTime</span>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="bi bi-chair"></i>
-                            <div>
-                                <span class="detail-label">Ghế</span>
-                                <span class="detail-value seats">@item.Seats</span>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="bi bi-truck"></i>
-                            <div>
-                                <span class="detail-label">Loại xe</span>
-                                <span class="detail-value">@item.BusClass</span>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="bi bi-person"></i>
-                            <div>
-                                <span class="detail-label">Hành khách</span>
-                                <span class="detail-value">@ViewBag.Username</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="ticket-footer-info">
-                        <div class="price-tag">@item.Price.ToString("N0") VND</div>
-                        <div class="status-tag"><i class="bi bi-check-circle-fill"></i> Đã Xác Nhận</div>
-                    </div>
-                </div>
-
-                <!-- Tear line -->
-                <div class="tear-line"></div>
             </div>
         }
     }
 
-    <div class="eticket-note">
-        <h4><i class="bi bi-info-circle"></i> Lưu ý khi sử dụng vé</h4>
-        <ul>
-            <li>Xuất trình mã QR này khi lên xe hoặc tại quầy vé</li>
-            <li>Vé có hiệu lực cho ngày và chuyến xe đã chọn</li>
-            <li>Vui lòng có mặt tại bến xe trước giờ khởi hành 15 phút</li>
-            <li>Mã đơn hàng: <strong>@Model.OrderCode</strong></li>
-            <li>Hotline hỗ trợ: <strong>1900 6067</strong></li>
+    <!-- Note -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 print:border-amber-400">
+        <h4 class="text-sm font-bold text-amber-800 mb-2"><i class="bi bi-info-circle me-1"></i> Lưu ý</h4>
+        <ul class="text-xs text-amber-700 space-y-1">
+            <li>• Xuất trình mã QR khi lên xe hoặc tại quầy vé</li>
+            <li>• Có mặt tại bến xe trước giờ khởi hành 15 phút</li>
+            <li>• Mã đơn hàng: <strong>@Model.OrderCode</strong></li>
+            <li>• Hotline: <strong>1900 6067</strong></li>
         </ul>
     </div>
 </div>
 
 <style>
-    .eticket-container { padding: 20px 0; max-width: 700px; margin: 0 auto; }
-    .eticket-header { margin-bottom: 20px; }
-    .eticket-actions { display: flex; gap: 10px; justify-content: space-between; }
-    .btn-back { background: #6c757d; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-print { background: #667eea; color: white; padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-print:hover { background: #5568d3; }
-
-    .eticket-card {
-        background: white;
-        border-radius: 14px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        margin-bottom: 20px;
-        display: grid;
-        grid-template-columns: 200px 1fr;
-        overflow: hidden;
-        position: relative;
-        border: 2px solid #e8ecf0;
-    }
-
-    .ticket-qr {
-        background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        border-right: 2px dashed #d0d5dd;
-    }
-
-    .qr-image { width: 140px; height: 140px; border-radius: 8px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .ticket-id { font-size: 11px; font-weight: 700; color: #667eea; letter-spacing: 1px; background: white; padding: 4px 10px; border-radius: 4px; }
-
-    .ticket-info { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
-
-    .ticket-brand { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #667eea; }
-    .ticket-brand i { font-size: 18px; }
-
-    .ticket-route { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 16px; border-radius: 8px; }
-    .route-text { font-size: 16px; font-weight: 700; }
-
-    .ticket-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .detail-item { display: flex; gap: 8px; align-items: flex-start; }
-    .detail-item i { color: #667eea; font-size: 16px; margin-top: 2px; }
-    .detail-label { display: block; font-size: 11px; color: #999; font-weight: 600; text-transform: uppercase; }
-    .detail-value { display: block; font-size: 14px; font-weight: 600; color: #333; }
-    .detail-value.seats { color: #e74c3c; font-weight: 800; }
-
-    .ticket-footer-info { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #f0f0f0; }
-    .price-tag { font-size: 20px; font-weight: 800; color: #667eea; }
-    .status-tag { font-size: 12px; font-weight: 700; color: #28a745; display: flex; align-items: center; gap: 4px; }
-
-    .tear-line { position: absolute; top: 0; bottom: 0; left: 200px; width: 0; }
-
-    .eticket-note { background: #fff9e6; border: 1.5px solid #ffc107; border-radius: 10px; padding: 18px 22px; margin-top: 10px; }
-    .eticket-note h4 { font-size: 15px; font-weight: 700; color: #856404; margin-bottom: 10px; }
-    .eticket-note ul { margin: 0; padding-left: 20px; }
-    .eticket-note li { font-size: 13px; color: #666; margin-bottom: 6px; line-height: 1.5; }
-
     @@media print {
-        .no-print { display: none !important; }
-        .eticket-container { max-width: 100%; padding: 0; }
-        .eticket-card { box-shadow: none; border: 2px solid #333; page-break-inside: avoid; }
-        .eticket-note { border-color: #333; }
-    }
-
-    @@media (max-width: 600px) {
-        .eticket-card { grid-template-columns: 1fr; }
-        .ticket-qr { border-right: none; border-bottom: 2px dashed #d0d5dd; padding: 20px; }
-        .qr-image { width: 120px; height: 120px; }
-        .ticket-details { grid-template-columns: 1fr; }
-        .tear-line { display: none; }
+        .print\:hidden { display: none !important; }
+        .print\:shadow-none { box-shadow: none !important; }
+        .print\:border-gray-400 { border-color: #9ca3af !important; }
+        .print\:border-amber-400 { border-color: #fbbf24 !important; }
+        nav, footer, .toast-container { display: none !important; }
+        body { background: white !important; }
     }
 </style>

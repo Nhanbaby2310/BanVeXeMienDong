@@ -1,165 +1,37 @@
 @model BanVeXeMienDong.Models.User
+@{ ViewData["Title"] = "Chỉnh sửa User"; }
 
-@{
-    ViewData["Title"] = "Chỉnh Sửa Người Dùng";
-}
+<div class="max-w-md mx-auto px-4 py-8">
+    <a href="/Admin/Users" class="text-sm text-gray-500 hover:text-blue-600 font-medium mb-4 inline-block"><i class="bi bi-arrow-left me-1"></i> Quay lại</a>
 
-<div class="edit-user-container">
-    <div class="edit-user-box">
-        <h1>✏️ Chỉnh Sửa Người Dùng</h1>
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h1 class="text-xl font-bold text-gray-900 mb-5">Chỉnh sửa User #@Model.Id</h1>
 
         @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger">
-                <i class="bi bi-exclamation-circle"></i> @TempData["Error"]
-            </div>
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-4">@TempData["Error"]</div>
         }
 
-        <form method="post" class="edit-form">
+        <form method="post">
             @Html.AntiForgeryToken()
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" class="form-control" value="@Model.Username" />
+
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Username</label>
+                <input type="text" name="username" value="@Model.Username"
+                    class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
             </div>
 
-            <div class="form-group">
-                <label for="role">Role:</label>
-                <select id="role" name="role" class="form-control">
+            <div class="mb-6">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Role</label>
+                <select name="role" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
                     <option value="Admin" selected="@(Model.Role == "Admin")">Admin</option>
                     <option value="User" selected="@(Model.Role == "User")">User</option>
                 </select>
             </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle"></i> Lưu Thay Đổi
-                </button>
-                <a href="/Admin/Users" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Hủy
-                </a>
-            </div>
+            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all">
+                <i class="bi bi-check-lg me-1"></i> Lưu Thay Đổi
+            </button>
         </form>
     </div>
 </div>
-
-<style>
-    .edit-user-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 60vh;
-        padding: 20px;
-    }
-
-    .edit-user-box {
-        background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .edit-user-box h1 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
-        font-size: 26px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: border-color 0.3s;
-        box-sizing: border-box;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 30px;
-    }
-
-    .btn {
-        flex: 1;
-        padding: 12px;
-        border-radius: 6px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-size: 14px;
-    }
-
-    .btn-primary {
-        background-color: #667eea;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background-color: #5568d3;
-    }
-
-    .btn-secondary {
-        background-color: #868e96;
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        background-color: #748088;
-    }
-
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
-
-    @@media (max-width: 600px) {
-        .edit-user-box {
-            padding: 25px;
-        }
-
-        .form-actions {
-            flex-direction: column;
-        }
-
-        .btn {
-            width: 100%;
-        }
-    }
-</style>

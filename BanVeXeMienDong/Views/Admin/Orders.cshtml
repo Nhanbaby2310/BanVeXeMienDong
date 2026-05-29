@@ -1,84 +1,108 @@
 @model List<BanVeXeMienDong.Models.Order>
 @{ ViewData["Title"] = "Quản Lý Đơn Hàng"; }
 
-<div class="orders-admin">
-    <div class="page-header">
-        <h1><i class="bi bi-receipt"></i> Quản Lý Đơn Hàng</h1>
-        <a href="/Admin/Index" class="btn btn-back"><i class="bi bi-arrow-left"></i> Dashboard</a>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-900"><i class="bi bi-receipt text-blue-600"></i> Đơn Hàng</h1>
+        <a href="/Admin/Index" class="text-sm text-gray-500 hover:text-blue-600 font-medium"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
     </div>
 
-    @if (TempData["Success"] != null) { <div class="alert alert-success"><i class="bi bi-check-circle"></i> @TempData["Success"]</div> }
-    @if (TempData["Error"] != null) { <div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> @TempData["Error"]</div> }
+    @if (TempData["Success"] != null) { <div data-toast-success="@TempData["Success"]"></div> }
+    @if (TempData["Error"] != null) { <div data-toast-error="@TempData["Error"]"></div> }
 
     <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat-box"><span class="stat-num">@ViewBag.TotalOrders</span><span class="stat-label">Tổng Đơn</span></div>
-        <div class="stat-box confirmed"><span class="stat-num">@ViewBag.ConfirmedCount</span><span class="stat-label">Đã Xác Nhận</span></div>
-        <div class="stat-box pending"><span class="stat-num">@ViewBag.PendingCount</span><span class="stat-label">Chờ Xử Lý</span></div>
-        <div class="stat-box cancelled"><span class="stat-num">@ViewBag.CancelledCount</span><span class="stat-label">Đã Hủy</span></div>
-        <div class="stat-box revenue"><span class="stat-num">@(((decimal)ViewBag.TotalRevenue).ToString("N0"))đ</span><span class="stat-label">Doanh Thu</span></div>
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+        <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
+            <div class="text-xl font-black text-gray-900">@ViewBag.TotalOrders</div>
+            <div class="text-xs text-gray-400">Tổng</div>
+        </div>
+        <div class="bg-white rounded-xl border border-green-100 p-4 text-center">
+            <div class="text-xl font-black text-green-600">@ViewBag.ConfirmedCount</div>
+            <div class="text-xs text-gray-400">Xác nhận</div>
+        </div>
+        <div class="bg-white rounded-xl border border-yellow-100 p-4 text-center">
+            <div class="text-xl font-black text-yellow-600">@ViewBag.PendingCount</div>
+            <div class="text-xs text-gray-400">Chờ</div>
+        </div>
+        <div class="bg-white rounded-xl border border-red-100 p-4 text-center">
+            <div class="text-xl font-black text-red-600">@ViewBag.CancelledCount</div>
+            <div class="text-xs text-gray-400">Hủy</div>
+        </div>
+        <div class="bg-white rounded-xl border border-blue-100 p-4 text-center">
+            <div class="text-lg font-black text-blue-600">@(((decimal)ViewBag.TotalRevenue).ToString("N0"))đ</div>
+            <div class="text-xs text-gray-400">Doanh thu</div>
+        </div>
     </div>
 
     <!-- Filter Tabs -->
-    <div class="filter-tabs">
-        <a href="/Admin/Orders" class="tab @(string.IsNullOrEmpty(ViewBag.CurrentFilter) ? "active" : "")">Tất Cả</a>
-        <a href="/Admin/Orders?status=Confirmed" class="tab @(ViewBag.CurrentFilter == "Confirmed" ? "active" : "")">Đã Xác Nhận</a>
-        <a href="/Admin/Orders?status=Pending" class="tab @(ViewBag.CurrentFilter == "Pending" ? "active" : "")">Chờ Xử Lý</a>
-        <a href="/Admin/Orders?status=Cancelled" class="tab @(ViewBag.CurrentFilter == "Cancelled" ? "active" : "")">Đã Hủy</a>
+    <div class="flex gap-2 mb-5 flex-wrap">
+        <a href="/Admin/Orders" class="px-4 py-2 rounded-lg text-sm font-medium transition-all @(string.IsNullOrEmpty(ViewBag.CurrentFilter) ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")">Tất cả</a>
+        <a href="/Admin/Orders?status=Confirmed" class="px-4 py-2 rounded-lg text-sm font-medium transition-all @(ViewBag.CurrentFilter == "Confirmed" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")">Đã xác nhận</a>
+        <a href="/Admin/Orders?status=Pending" class="px-4 py-2 rounded-lg text-sm font-medium transition-all @(ViewBag.CurrentFilter == "Pending" ? "bg-yellow-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")">Chờ xử lý</a>
+        <a href="/Admin/Orders?status=Cancelled" class="px-4 py-2 rounded-lg text-sm font-medium transition-all @(ViewBag.CurrentFilter == "Cancelled" ? "bg-red-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")">Đã hủy</a>
     </div>
 
-    <!-- Orders Table -->
+    <!-- Orders List -->
     @if (Model.Count == 0)
     {
-        <div class="empty-state"><i class="bi bi-inbox"></i><p>Không có đơn hàng nào</p></div>
+        <div class="text-center py-16 bg-white rounded-2xl border border-gray-100">
+            <i class="bi bi-inbox text-5xl text-gray-300"></i>
+            <p class="text-gray-500 mt-3">Không có đơn hàng nào</p>
+        </div>
     }
     else
     {
-        <div class="table-wrap">
-            <table class="orders-table">
-                <thead>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
-                        <th>Mã Đơn</th>
-                        <th>Ngày Đặt</th>
-                        <th>Khách Hàng</th>
-                        <th>SĐT</th>
-                        <th>Tổng Tiền</th>
-                        <th>Thanh Toán</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành Động</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Mã đơn</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Ngày</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Email</th>
+                        <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Tổng tiền</th>
+                        <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">Trạng thái</th>
+                        <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-50">
                     @foreach (var order in Model)
                     {
-                        <tr>
-                            <td><strong>@order.OrderCode</strong></td>
-                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td>@order.Email</td>
-                            <td>@order.PhoneNumber</td>
-                            <td class="price">@order.TotalAmount.ToString("N0")đ</td>
-                            <td><span class="badge pay-@order.PaymentMethod.ToLower()">@order.PaymentMethod</span></td>
-                            <td>
-                                <span class="status-badge status-@order.Status.ToLower()">@order.Status</span>
+                        var sc = order.Status switch { "Confirmed" => "bg-green-100 text-green-700", "Cancelled" => "bg-red-100 text-red-700", _ => "bg-yellow-100 text-yellow-700" };
+
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-3 font-semibold text-gray-900">@order.OrderCode</td>
+                            <td class="px-4 py-3 text-gray-500">@order.OrderDate.ToString("dd/MM HH:mm")</td>
+                            <td class="px-4 py-3 text-gray-500">@order.Email</td>
+                            <td class="px-4 py-3 text-right font-bold text-blue-600">@order.TotalAmount.ToString("N0")đ</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-bold @sc">@order.Status</span>
                             </td>
-                            <td class="actions">
-                                <a href="/Admin/OrderDetail/@order.Id" class="btn-sm btn-view" title="Xem"><i class="bi bi-eye"></i></a>
-                                @if (order.Status == "Pending")
-                                {
-                                    <form method="post" action="/Admin/UpdateOrderStatus" style="display:inline;">
-                                        <input type="hidden" name="id" value="@order.Id" />
-                                        <input type="hidden" name="newStatus" value="Confirmed" />
-                                        <button type="submit" class="btn-sm btn-confirm" title="Xác nhận"><i class="bi bi-check-lg"></i></button>
-                                    </form>
-                                }
-                                @if (order.Status != "Cancelled")
-                                {
-                                    <form method="post" action="/Admin/UpdateOrderStatus" style="display:inline;" onsubmit="return confirm('Hủy đơn hàng này?')">
-                                        <input type="hidden" name="id" value="@order.Id" />
-                                        <input type="hidden" name="newStatus" value="Cancelled" />
-                                        <button type="submit" class="btn-sm btn-cancel" title="Hủy"><i class="bi bi-x-lg"></i></button>
-                                    </form>
-                                }
+                            <td class="px-4 py-3">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <a href="/Admin/OrderDetail/@order.Id" class="w-7 h-7 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center text-xs" title="Xem">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (order.Status == "Pending")
+                                    {
+                                        <form method="post" action="/Admin/UpdateOrderStatus" class="inline">
+                                            <input type="hidden" name="id" value="@order.Id" />
+                                            <input type="hidden" name="newStatus" value="Confirmed" />
+                                            <button type="submit" class="w-7 h-7 rounded-md bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center text-xs" title="Xác nhận">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (order.Status != "Cancelled")
+                                    {
+                                        <form method="post" action="/Admin/UpdateOrderStatus" class="inline" onsubmit="return confirm('Hủy đơn này?')">
+                                            <input type="hidden" name="id" value="@order.Id" />
+                                            <input type="hidden" name="newStatus" value="Cancelled" />
+                                            <button type="submit" class="w-7 h-7 rounded-md bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs" title="Hủy">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }
@@ -87,47 +111,3 @@
         </div>
     }
 </div>
-
-<style>
-    .orders-admin { padding: 20px 0; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .page-header h1 { margin: 0; font-size: 26px; font-weight: 700; color: #333; }
-    .btn-back { background: #6c757d; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
-    .stat-box { background: white; padding: 18px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 3px solid #667eea; }
-    .stat-box.confirmed { border-top-color: #28a745; }
-    .stat-box.pending { border-top-color: #ffc107; }
-    .stat-box.cancelled { border-top-color: #dc3545; }
-    .stat-box.revenue { border-top-color: #17a2b8; }
-    .stat-num { display: block; font-size: 24px; font-weight: 800; color: #333; }
-    .stat-label { font-size: 12px; color: #666; font-weight: 600; text-transform: uppercase; }
-    .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab { padding: 8px 18px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600; background: #f0f0f0; color: #555; transition: all 0.3s; }
-    .tab.active, .tab:hover { background: #667eea; color: white; }
-    .table-wrap { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); overflow-x: auto; }
-    .orders-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .orders-table thead { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-    .orders-table th { padding: 14px 12px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; }
-    .orders-table td { padding: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
-    .orders-table tbody tr:hover { background: #f9f9ff; }
-    .price { font-weight: 700; color: #667eea; }
-    .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-    .status-badge { padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .status-confirmed { background: #d4edda; color: #155724; }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-cancelled { background: #f8d7da; color: #721c24; }
-    .actions { display: flex; gap: 5px; }
-    .btn-sm { width: 30px; height: 30px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; }
-    .btn-view { background: #e7f5ff; color: #1971c2; }
-    .btn-view:hover { background: #1971c2; color: white; }
-    .btn-confirm { background: #d4edda; color: #155724; }
-    .btn-confirm:hover { background: #28a745; color: white; }
-    .btn-cancel { background: #f8d7da; color: #721c24; }
-    .btn-cancel:hover { background: #dc3545; color: white; }
-    .empty-state { text-align: center; padding: 60px; color: #999; }
-    .empty-state i { font-size: 50px; display: block; margin-bottom: 10px; }
-    .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
-    .alert-success { background: #d4edda; color: #155724; }
-    .alert-danger { background: #f8d7da; color: #721c24; }
-    @@media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } .orders-table { font-size: 12px; } }
-</style>

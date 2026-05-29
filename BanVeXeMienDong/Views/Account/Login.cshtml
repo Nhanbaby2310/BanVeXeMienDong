@@ -1,141 +1,82 @@
-﻿@{
+@{
     ViewData["Title"] = "Đăng nhập";
 }
 
-<div class="auth-container">
-    <div class="auth-box">
-        <h2>Đăng nhập</h2>
-
-        @if (!string.IsNullOrEmpty(ViewBag.Error))
-        {
-            <div class="alert alert-danger">
-                @ViewBag.Error
-            </div>
-        }
-
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <div class="form-group">
-                <label for="username">Tài khoản:</label>
-                <input type="text" id="username" name="Username" class="form-control" placeholder="Nhập tài khoản" required />
+<div class="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-md">
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <!-- Header -->
+            <div class="gradient-primary px-8 py-8 text-center">
+                <div class="w-16 h-16 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
+                    <i class="bi bi-person-circle text-3xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Đăng Nhập</h1>
+                <p class="text-blue-100 text-sm mt-1">Chào mừng bạn trở lại!</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Mật khẩu:</label>
-                <input type="password" id="password" name="Password" class="form-control" placeholder="Nhập mật khẩu" required />
+            <!-- Form -->
+            <div class="p-8">
+                @if (!string.IsNullOrEmpty(ViewBag.Error))
+                {
+                    <div data-toast-error="@ViewBag.Error" class="hidden"></div>
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-4 flex items-center gap-2">
+                        <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div data-toast-success="@TempData["Success"]" class="hidden"></div>
+                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm mb-4 flex items-center gap-2">
+                        <i class="bi bi-check-circle"></i> @TempData["Success"]
+                    </div>
+                }
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-5">
+                        <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Tài khoản</label>
+                        <div class="relative">
+                            <i class="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="username" name="Username"
+                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                placeholder="Nhập tên đăng nhập" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Mật khẩu</label>
+                        <div class="relative">
+                            <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="password" id="password" name="Password"
+                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                placeholder="Nhập mật khẩu" required />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">Ghi nhớ đăng nhập</span>
+                        </label>
+                        <a href="/Account/ForgotPassword" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng Nhập
+                    </button>
+                </form>
             </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
-        </form>
-
-        <div class="auth-link">
-            <p>Chưa có tài khoản? <a href="/Account/Register">Đăng ký ngay</a></p>
-            <p style="margin-top: 10px;"><a href="/Account/ForgotPassword">Quên mật khẩu?</a></p>
+        <!-- Register Link -->
+        <div class="text-center mt-6">
+            <p class="text-gray-600 text-sm">
+                Chưa có tài khoản?
+                <a href="/Account/Register" class="text-blue-600 hover:text-blue-800 font-semibold ml-1">Đăng ký ngay</a>
+            </p>
         </div>
     </div>
 </div>
-
-<style>
-    .auth-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .auth-box {
-        background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .auth-box h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #555;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 14px;
-        transition: border-color 0.3s;
-        box-sizing: border-box;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .btn-block {
-        width: 100%;
-        padding: 12px;
-        background-color: #667eea;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-top: 10px;
-    }
-
-    .btn-block:hover {
-        background-color: #5568d3;
-    }
-
-    .alert {
-        padding: 12px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
-
-    .auth-link {
-        text-align: center;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-    }
-
-    .auth-link p {
-        margin: 0;
-        color: #666;
-    }
-
-    .auth-link a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .auth-link a:hover {
-        text-decoration: underline;
-    }
-</style>

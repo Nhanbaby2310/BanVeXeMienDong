@@ -1,405 +1,353 @@
-﻿@{
-    ViewData["Title"] = "Trang chủ - Bán Vé Xe Miền Đông";
+@{
+    ViewData["Title"] = "Trang chủ - Đặt Vé Xe Khách Online";
 }
 
-<link rel="stylesheet" href="~/css/home-modern.css" asp-append-version="true" />
-
-<!-- Header Promo Banner -->
-<div class="promo-banner">
-    <div class="promo-container">
-        <span class="promo-text">🌟 Cam kết hoàn tiền nếu nhà xe không cung cấp dịch vụ vận chuyển ✈️ | 💎 Đón hàng của tôi</span>
-    </div>
-</div>
-
 <!-- Hero Section -->
-<div class="hero-section">
-    <div class="hero-overlay"></div>
-
-    <div class="hero-content">
-        <!-- Flash Sale Banner -->
-        <div class="flash-sale-banner">
-            <div class="sale-text">
-                <span class="sale-label">FLASH SALE</span>
-                <span class="sale-label sale-label-secondary">Mừng Đại Lễ</span>
-                <span class="sale-discount">Giảm đến 50%</span>
-            </div>
+<div class="-mx-4 sm:-mx-6 lg:-mx-8">
+    <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
         </div>
 
-        <!-- Search Form -->
-        <div class="search-box">
-            <!-- Service Tabs -->
-            <div class="service-tabs">
-                <button class="tab-btn active" data-service="bus">
-                    <i class="bi bi-bus-front"></i> Xe khách
-                    <span class="tab-badge">-30k</span>
-                </button>
-            </div>
-
-            <!-- Search Inputs -->
-            <form class="search-form" method="GET" action="/Ticket/SelectRoute">
-                <div class="search-row">
-                    <div class="search-group autocomplete-group">
-                        <label class="search-label">
-                            <i class="bi bi-dot"></i> Nơi xuất phát
-                        </label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" name="diemDi" id="searchFrom" placeholder="Chọn nơi xuất phát" class="search-input autocomplete-input" required autocomplete="off">
-                            <div id="fromSuggestions" class="autocomplete-suggestions"></div>
-                        </div>
-                    </div>
-
-                    <button type="button" class="swap-btn" title="Đổi chiều">
-                        <i class="bi bi-arrow-left-right"></i>
-                    </button>
-
-                    <div class="search-group autocomplete-group">
-                        <label class="search-label">
-                            <i class="bi bi-geo-fill"></i> Nơi đến
-                        </label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" name="diemDen" id="searchTo" placeholder="Chọn nơi đến" class="search-input autocomplete-input" required autocomplete="off">
-                            <div id="toSuggestions" class="autocomplete-suggestions"></div>
-                        </div>
-                    </div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <!-- Flash Sale Banner -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
+                    <span class="animate-pulse text-yellow-400 text-lg">⚡</span>
+                    <span class="text-white font-semibold">FLASH SALE</span>
+                    <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">Giảm đến 50%</span>
                 </div>
+            </div>
 
-                <div class="search-row">
-                    <div class="search-group">
-                        <label class="search-label">
-                            <i class="bi bi-calendar-event"></i> Ngày đi
-                        </label>
-                        <input type="date" name="ngayDi" id="searchDate" class="search-input" required>
-                    </div>
+            <!-- Main Heading -->
+            <h1 class="text-center text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+                Đặt Vé Xe Khách <span class="text-yellow-400">Online</span>
+            </h1>
+            <p class="text-center text-blue-100 text-lg mb-10 max-w-2xl mx-auto">
+                Hơn 2000 tuyến đường, 500+ nhà xe uy tín. Đặt vé nhanh chóng, an toàn, giá tốt nhất.
+            </p>
 
-                    <div class="search-group">
-                        <label class="search-label">
-                            <i class="bi bi-plus-lg"></i> Thêm ngày về
-                        </label>
-                        <input type="date" id="returnDate" class="search-input">
-                    </div>
+            <!-- Search Box -->
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-2xl p-6 lg:p-8">
+                    <form method="GET" action="/Ticket/SelectRoute" id="searchForm">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                            <!-- Điểm đi -->
+                            <div class="md:col-span-3 relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="bi bi-geo-alt text-blue-600"></i> Nơi xuất phát
+                                </label>
+                                <input type="text" name="diemDi" id="searchFrom" 
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                    placeholder="VD: Sài Gòn" required autocomplete="off">
+                                <div id="fromSuggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-xl mt-1 shadow-lg z-50 hidden max-h-48 overflow-y-auto"></div>
+                            </div>
 
-                    <button type="submit" class="search-btn">
-                        <i class="bi bi-search"></i> Tìm kiếm
-                    </button>
+                            <!-- Swap Button -->
+                            <div class="md:col-span-1 flex justify-center">
+                                <button type="button" id="swapBtn" class="w-10 h-10 rounded-full bg-blue-100 hover:bg-blue-200 flex items-center justify-center text-blue-600 transition-all hover:rotate-180 duration-300">
+                                    <i class="bi bi-arrow-left-right"></i>
+                                </button>
+                            </div>
+
+                            <!-- Điểm đến -->
+                            <div class="md:col-span-3 relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="bi bi-geo-alt-fill text-red-500"></i> Nơi đến
+                                </label>
+                                <input type="text" name="diemDen" id="searchTo"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                    placeholder="VD: Đà Nẵng" required autocomplete="off">
+                                <div id="toSuggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-xl mt-1 shadow-lg z-50 hidden max-h-48 overflow-y-auto"></div>
+                            </div>
+
+                            <!-- Ngày đi -->
+                            <div class="md:col-span-3">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="bi bi-calendar-event text-green-600"></i> Ngày đi
+                                </label>
+                                <input type="date" name="ngayDi" id="searchDate"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                    required>
+                            </div>
+
+                            <!-- Search Button -->
+                            <div class="md:col-span-2">
+                                <button type="submit" class="w-full py-3 px-6 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-yellow-900 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                                    <i class="bi bi-search me-1"></i> Tìm vé
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+
+            <!-- Benefits -->
+            <div class="max-w-4xl mx-auto mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flex items-center gap-2 text-white/90 text-sm">
+                    <i class="bi bi-check-circle-fill text-green-400"></i>
+                    <span>Chắc chắn có chỗ</span>
+                </div>
+                <div class="flex items-center gap-2 text-white/90 text-sm">
+                    <i class="bi bi-headphones text-blue-300"></i>
+                    <span>Hỗ trợ 24/7</span>
+                </div>
+                <div class="flex items-center gap-2 text-white/90 text-sm">
+                    <i class="bi bi-star-fill text-yellow-400"></i>
+                    <span>Nhiều ưu đãi</span>
+                </div>
+                <div class="flex items-center gap-2 text-white/90 text-sm">
+                    <i class="bi bi-shield-check text-green-400"></i>
+                    <span>Thanh toán an toàn</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Routes -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-10">
+        <h2 class="text-3xl font-bold text-gray-900">Tuyến Đường Phổ Biến</h2>
+        <p class="text-gray-500 mt-2">Đặt vé ngay với giá tốt nhất</p>
+    </div>
+
+    @{
+        string today = DateTime.Now.ToString("yyyy-MM-dd");
+    }
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Route 1 -->
+        <a href="/Ticket/SelectRoute?diemDi=HCM&diemDen=Cần Thơ&ngayDi=@today" class="group hover-lift bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div class="h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center relative overflow-hidden">
+                <i class="bi bi-bus-front text-6xl text-white/30 absolute -bottom-4 -right-4"></i>
+                <div class="text-center text-white z-10">
+                    <div class="text-2xl font-bold">HCM</div>
+                    <i class="bi bi-arrow-right text-xl my-1"></i>
+                    <div class="text-2xl font-bold">Cần Thơ</div>
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Sài Gòn → Cần Thơ</h3>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-red-600 font-bold">Từ 150.000đ</span>
+                    <span class="text-xs text-gray-400">~3h30</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Route 2 -->
+        <a href="/Ticket/SelectRoute?diemDi=Hà Nội&diemDen=Hải Phòng&ngayDi=@today" class="group hover-lift bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div class="h-40 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center relative overflow-hidden">
+                <i class="bi bi-bus-front text-6xl text-white/30 absolute -bottom-4 -right-4"></i>
+                <div class="text-center text-white z-10">
+                    <div class="text-2xl font-bold">Hà Nội</div>
+                    <i class="bi bi-arrow-right text-xl my-1"></i>
+                    <div class="text-2xl font-bold">Hải Phòng</div>
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Hà Nội → Hải Phòng</h3>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-red-600 font-bold">Từ 100.000đ</span>
+                    <span class="text-xs text-gray-400">~2h00</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Route 3 -->
+        <a href="/Ticket/SelectRoute?diemDi=Đà Nẵng&diemDen=HCM&ngayDi=@today" class="group hover-lift bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div class="h-40 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center relative overflow-hidden">
+                <i class="bi bi-bus-front text-6xl text-white/30 absolute -bottom-4 -right-4"></i>
+                <div class="text-center text-white z-10">
+                    <div class="text-2xl font-bold">Đà Nẵng</div>
+                    <i class="bi bi-arrow-right text-xl my-1"></i>
+                    <div class="text-2xl font-bold">HCM</div>
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Đà Nẵng → TP.HCM</h3>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-red-600 font-bold">Từ 450.000đ</span>
+                    <span class="text-xs text-gray-400">~18h</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Route 4 -->
+        <a href="/Ticket/SelectRoute?diemDi=Hà Nội&diemDen=Đà Nẵng&ngayDi=@today" class="group hover-lift bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div class="h-40 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center relative overflow-hidden">
+                <i class="bi bi-bus-front text-6xl text-white/30 absolute -bottom-4 -right-4"></i>
+                <div class="text-center text-white z-10">
+                    <div class="text-2xl font-bold">Hà Nội</div>
+                    <i class="bi bi-arrow-right text-xl my-1"></i>
+                    <div class="text-2xl font-bold">Đà Nẵng</div>
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Hà Nội → Đà Nẵng</h3>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-red-600 font-bold">Từ 350.000đ</span>
+                    <span class="text-xs text-gray-400">~16h</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Why Choose Us -->
+<div class="bg-gray-100 -mx-4 sm:-mx-6 lg:-mx-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-gray-900">Tại Sao Chọn Chúng Tôi?</h2>
+            <p class="text-gray-500 mt-2">Cam kết mang đến trải nghiệm tốt nhất</p>
         </div>
 
-        <!-- Benefits Section -->
-        <div class="benefits-section">
-            <div class="benefit-item">
-                <i class="bi bi-check-circle-fill"></i>
-                <span>Chắc chắn có chỗ</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover-lift text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-100 flex items-center justify-center">
+                    <i class="bi bi-shield-check text-3xl text-blue-600"></i>
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">An Toàn 100%</h3>
+                <p class="text-sm text-gray-500">Tất cả nhà xe đều được kiểm duyệt chất lượng nghiêm ngặt</p>
             </div>
-            <div class="benefit-item">
-                <i class="bi bi-headphones"></i>
-                <span>Hỗ trợ 24/7</span>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover-lift text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-green-100 flex items-center justify-center">
+                    <i class="bi bi-clock-history text-3xl text-green-600"></i>
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Đúng Giờ</h3>
+                <p class="text-sm text-gray-500">Xuất phát đúng thời gian với đội ngũ tài xế chuyên nghiệp</p>
             </div>
-            <div class="benefit-item">
-                <i class="bi bi-star-fill"></i>
-                <span>Nhiều ưu đãi</span>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover-lift text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-yellow-100 flex items-center justify-center">
+                    <i class="bi bi-cash-coin text-3xl text-yellow-600"></i>
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Giá Tốt Nhất</h3>
+                <p class="text-sm text-gray-500">Cam kết giá cạnh tranh và nhiều chương trình khuyến mãi</p>
             </div>
-            <div class="benefit-item">
-                <i class="bi bi-check2-all"></i>
-                <span>Thanh toán đa dạng</span>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover-lift text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-100 flex items-center justify-center">
+                    <i class="bi bi-telephone text-3xl text-red-600"></i>
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Hỗ Trợ 24/7</h3>
+                <p class="text-sm text-gray-500">Đội ngũ hỗ trợ luôn sẵn sàng giải đáp mọi thắc mắc</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover-lift text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-purple-100 flex items-center justify-center">
+                    <i class="bi bi-credit-card text-3xl text-purple-600"></i>
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Thanh Toán Đa Dạng</h3>
+                <p class="text-sm text-gray-500">Hỗ trợ tiền mặt, thẻ, chuyển khoản, ví điện tử</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover-lift text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                    <i class="bi bi-qr-code text-3xl text-indigo-600"></i>
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Vé Điện Tử</h3>
+                <p class="text-sm text-gray-500">Nhận vé QR code ngay sau khi thanh toán, tiện lợi tối đa</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Popular Routes Section -->
-<div class="popular-routes-section">
-    <h2 class="section-title">Tuyến Đường Phổ Biến</h2>
-
-    <div class="routes-grid">
-        @{
-            string today = DateTime.Now.ToString("yyyy-MM-dd");
-        }
-
-        <a href="/Ticket/Index?diemDi=HCM&diemDen=Cần Thơ&ngayDi=@today" class="route-card route-link">
-            <div class="route-image">
-                <img src="/images/routes/sai-gon-can-tho.svg" alt="Sài Gòn - Cần Thơ" loading="lazy">
-            </div>
-            <div class="route-content">
-                <h3>Sài Gòn → Cần Thơ</h3>
-                <p class="route-price">Từ 150.000đ</p>
-            </div>
-        </a>
-
-        <a href="/Ticket/Index?diemDi=Hà Nội&diemDen=Hải Phòng&ngayDi=@today" class="route-card route-link">
-            <div class="route-image">
-                <img src="/images/routes/ha-noi-hai-phong.svg" alt="Hà Nội - Hải Phòng" loading="lazy">
-            </div>
-            <div class="route-content">
-                <h3>Hà Nội → Hải Phòng</h3>
-                <p class="route-price">Từ 100.000đ</p>
-            </div>
-        </a>
-
-        <a href="/Ticket/Index?diemDi=Đà Nẵng&diemDen=HCM&ngayDi=@today" class="route-card route-link">
-            <div class="route-image">
-                <img src="/images/routes/da-nang-hcm.svg" alt="Đà Nẵng - TP.HCM" loading="lazy">
-            </div>
-            <div class="route-content">
-                <h3>Đà Nẵng → TP.HCM</h3>
-                <p class="route-price">Từ 450.000đ</p>
-            </div>
-        </a>
-
-        <a href="/Ticket/Index?diemDi=Hà Nội&diemDen=Đà Nẵng&ngayDi=@today" class="route-card route-link">
-            <div class="route-image">
-                <img src="/images/routes/hue-sai-gon.svg" alt="Huế - Sài Gòn" loading="lazy">
-            </div>
-            <div class="route-content">
-                <h3>Hà Nội → Đà Nẵng</h3>
-                <p class="route-price">Từ 350.000đ</p>
-            </div>
-        </a>
-    </div>
-</div>
-
-<!-- Features Section -->
-<div class="features-section">
-    <h2 class="section-title">Tại Sao Chọn Chúng Tôi?</h2>
-
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-shield-check"></i>
-            </div>
-            <h3>100% An Toàn</h3>
-            <p>Đảm bảo an toàn hành khách với các tiêu chí chất lượng cao</p>
+<!-- Stats -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+        <div class="p-6">
+            <div class="text-4xl font-black text-blue-600">2000+</div>
+            <div class="text-sm text-gray-500 mt-1">Tuyến đường</div>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-clock-history"></i>
-            </div>
-            <h3>Đúng Giờ</h3>
-            <p>Xuất phát đúng thời gian với tài xế chuyên nghiệp</p>
+        <div class="p-6">
+            <div class="text-4xl font-black text-blue-600">500+</div>
+            <div class="text-sm text-gray-500 mt-1">Nhà xe đối tác</div>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-telephone"></i>
-            </div>
-            <h3>Hỗ Trợ 24/7</h3>
-            <p>Đội ngũ hỗ trợ khách hàng sẵn sàng giúp đỡ bất cứ lúc nào</p>
+        <div class="p-6">
+            <div class="text-4xl font-black text-blue-600">1M+</div>
+            <div class="text-sm text-gray-500 mt-1">Khách hàng</div>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-cash-coin"></i>
-            </div>
-            <h3>Giá Tốt Nhất</h3>
-            <p>Cạnh tranh giá và các chương trình khuyến mãi hấp dẫn</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-airplane"></i>
-            </div>
-            <h3>Nhiều Chuyến</h3>
-            <p>Hàng ngàn chuyến xe mỗi ngày đến khắp nơi</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-star-fill"></i>
-            </div>
-            <h3>4.8/5 Sao</h3>
-            <p>Được tin tưởng bởi hàng triệu hành khách Việt Nam</p>
+        <div class="p-6">
+            <div class="text-4xl font-black text-blue-600">4.8⭐</div>
+            <div class="text-sm text-gray-500 mt-1">Đánh giá trung bình</div>
         </div>
     </div>
 </div>
 
-<!-- Download App Section -->
-<div class="download-app-section">
-    <div class="download-content">
-        <h2>Tải Ứng Dụng Ngay</h2>
-        <p>Mua vé xe dễ dàng hơn với ứng dụng di động</p>
-        <div class="download-buttons">
-            <a href="#" class="download-btn">
-                <i class="bi bi-apple"></i> App Store
+<!-- CTA Section -->
+<div class="-mx-4 sm:-mx-6 lg:-mx-8">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 py-12">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-2xl lg:text-3xl font-bold text-white mb-4">Sẵn sàng cho chuyến đi tiếp theo?</h2>
+            <p class="text-blue-100 mb-6">Đặt vé ngay hôm nay và nhận ưu đãi đặc biệt</p>
+            <a href="/Ticket/SelectRoute" class="inline-flex items-center gap-2 px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+                <i class="bi bi-ticket-perforated text-xl"></i>
+                Đặt Vé Ngay
             </a>
-            <a href="#" class="download-btn">
-                <i class="bi bi-google-play"></i> Google Play
-            </a>
-        </div>
-    </div>
-    <div class="download-image">
-        <img src="/images/app-mockup.png" alt="App Mockup" onerror="this.src='https://via.placeholder.com/250x400?text=App'">
-    </div>
-</div>
-
-<!-- Quick Access Section -->
-<div class="quick-access-section">
-    <h2 class="section-title">Truy Cập Nhanh</h2>
-
-    <div class="quick-access-grid">
-        <a href="/Ticket/Index" class="quick-access-card">
-            <div class="quick-icon">
-                <i class="bi bi-list-check"></i>
-            </div>
-            <h3>Danh Sách Vé</h3>
-            <p>Xem tất cả vé đã bán</p>
-            <span class="arrow"><i class="bi bi-arrow-right"></i></span>
-        </a>
-
-        <a href="/Ticket/SelectDateTime" class="quick-access-card">
-            <div class="quick-icon">
-                <i class="bi bi-plus-circle-fill"></i>
-            </div>
-            <h3>Mua Vé Mới</h3>
-            <p>Mua vé mới cho khách hàng</p>
-            <span class="arrow"><i class="bi bi-arrow-right"></i></span>
-        </a>
-    </div>
-</div>
-
-<!-- Stats Section -->
-<div class="stats-section">
-    <h2 class="section-title">Hệ Thống Bán Vé</h2>
-
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-value">40</div>
-            <div class="stat-label">Ghế Xe</div>
-            <div class="stat-description">Sức chứa tối đa trên mỗi chuyến</div>
-        </div>
-
-        <div class="stat-item">
-            <div class="stat-value">∞</div>
-            <div class="stat-label">Tuyến Đi</div>
-            <div class="stat-description">Hỗ trợ vô hạn lộ trình</div>
-        </div>
-
-        <div class="stat-item">
-            <div class="stat-value">📱</div>
-            <div class="stat-label">Responsive</div>
-            <div class="stat-description">Tương thích tất cả thiết bị</div>
         </div>
     </div>
 </div>
 
+@section Scripts {
 <script>
-document.addEventListener('DOMContentLoaded', function () {
     let allCities = [];
 
-    // Fetch available cities when page loads
+    // Fetch cities
     fetch('/Ticket/GetAvailableCities')
-        .then(response => response.json())
-        .then(data => {
-            allCities = data;
-        })
-        .catch(error => console.error('Error fetching cities:', error));
+        .then(r => r.json())
+        .then(data => { allCities = data; })
+        .catch(e => console.error(e));
 
-    // Autocomplete function
+    // Set default date
+    document.getElementById('searchDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('searchDate').min = new Date().toISOString().split('T')[0];
+
+    // Autocomplete
     function setupAutocomplete(inputId, suggestionsId) {
         const input = document.getElementById(inputId);
-        const suggestionsDiv = document.getElementById(suggestionsId);
+        const suggestions = document.getElementById(suggestionsId);
+        if (!input || !suggestions) return;
 
-        if (!input) return;
-
-        input.addEventListener('input', function () {
-            const value = this.value.trim().toLowerCase();
-
-            if (value.length === 0) {
-                suggestionsDiv.innerHTML = '';
-                return;
-            }
-
-            const filtered = allCities.filter(city =>
-                city.toLowerCase().includes(value)
-            );
-
-            if (filtered.length === 0) {
-                suggestionsDiv.innerHTML = '<div class="suggestion-item no-results">Không tìm thấy kết quả</div>';
-                return;
-            }
-
-            suggestionsDiv.innerHTML = filtered.map(city =>
-                `<div class="suggestion-item" data-value="${city}">${city}</div>`
-            ).join('');
-
-            // Add click handlers to suggestions
-            document.querySelectorAll(`#${suggestionsId} .suggestion-item`).forEach(item => {
-                item.addEventListener('click', function () {
-                    input.value = this.getAttribute('data-value');
-                    suggestionsDiv.innerHTML = '';
-                });
+        input.addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            if (!val) { suggestions.classList.add('hidden'); return; }
+            const filtered = allCities.filter(c => c.toLowerCase().includes(val));
+            if (filtered.length === 0) { suggestions.classList.add('hidden'); return; }
+            suggestions.innerHTML = filtered.map(c => `<div class="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm" data-value="${c}">${c}</div>`).join('');
+            suggestions.classList.remove('hidden');
+            suggestions.querySelectorAll('[data-value]').forEach(item => {
+                item.addEventListener('click', () => { input.value = item.dataset.value; suggestions.classList.add('hidden'); });
             });
         });
 
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-                suggestionsDiv.innerHTML = '';
-            }
-        });
-
-        // Show all cities when input is focused
-        input.addEventListener('focus', function () {
-            if (this.value.trim().length === 0 && allCities.length > 0) {
-                suggestionsDiv.innerHTML = allCities.map(city =>
-                    `<div class="suggestion-item" data-value="${city}">${city}</div>`
-                ).join('');
-
-                document.querySelectorAll(`#${suggestionsId} .suggestion-item`).forEach(item => {
-                    item.addEventListener('click', function () {
-                        input.value = this.getAttribute('data-value');
-                        suggestionsDiv.innerHTML = '';
-                    });
+        input.addEventListener('focus', function() {
+            if (!this.value && allCities.length > 0) {
+                suggestions.innerHTML = allCities.slice(0, 10).map(c => `<div class="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm" data-value="${c}">${c}</div>`).join('');
+                suggestions.classList.remove('hidden');
+                suggestions.querySelectorAll('[data-value]').forEach(item => {
+                    item.addEventListener('click', () => { input.value = item.dataset.value; suggestions.classList.add('hidden'); });
                 });
             }
         });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !suggestions.contains(e.target)) suggestions.classList.add('hidden');
+        });
     }
 
-    // Setup autocomplete for both inputs
     setupAutocomplete('searchFrom', 'fromSuggestions');
     setupAutocomplete('searchTo', 'toSuggestions');
 
-    // Swap button functionality
-    const swapBtn = document.querySelector('.swap-btn');
-    if (swapBtn) {
-        swapBtn.addEventListener('click', function () {
-            const from = document.getElementById('searchFrom');
-            const to = document.getElementById('searchTo');
-            const temp = from.value;
-            from.value = to.value;
-            to.value = temp;
-        });
-    }
-
-    // Set default date to today
-    const dateInput = document.getElementById('searchDate');
-    if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.value = today;
-        dateInput.min = today;
-    }
-
-    // Set return date constraints
-    const returnDateInput = document.getElementById('returnDate');
-    if (returnDateInput && dateInput) {
-        dateInput.addEventListener('change', function () {
-            returnDateInput.min = this.value;
-        });
-    }
-
-    // Search form submission
-    const searchForm = document.querySelector('.search-form');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function (e) {
-            const from = document.getElementById('searchFrom').value;
-            const to = document.getElementById('searchTo').value;
-            const date = document.getElementById('searchDate').value;
-
-            if (!from || !to || !date) {
-                e.preventDefault();
-                alert('Vui lòng điền đầy đủ thông tin tìm kiếm!');
-            }
-        });
-    }
-});
+    // Swap
+    document.getElementById('swapBtn')?.addEventListener('click', function() {
+        const from = document.getElementById('searchFrom');
+        const to = document.getElementById('searchTo');
+        [from.value, to.value] = [to.value, from.value];
+    });
 </script>
+}

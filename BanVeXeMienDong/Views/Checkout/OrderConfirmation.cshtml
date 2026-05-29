@@ -1,275 +1,84 @@
 @model BanVeXeMienDong.Models.Order
 
 @{
-    ViewData["Title"] = "Xác Nhận Đơn Hàng";
+    ViewData["Title"] = "Đặt Vé Thành Công";
 }
 
-<div class="confirmation-container">
-    <div class="success-box">
-        <div class="success-icon">
-            <i class="bi bi-check-circle"></i>
-        </div>
+<div class="max-w-2xl mx-auto px-4 py-12 text-center">
+    <!-- Success Icon -->
+    <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6">
+        <i class="bi bi-check-lg text-4xl text-green-600"></i>
+    </div>
 
-        <h1>✅ Thanh Toán Thành Công!</h1>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">Thanh Toán Thành Công!</h1>
+    <p class="text-gray-500 mb-8">Cảm ơn bạn đã đặt vé. Đơn hàng của bạn đã được xác nhận.</p>
 
-        <p class="message">
-            Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được xác nhận.
-        </p>
+    <!-- Order Details -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-left mb-6">
+        <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-receipt text-blue-600 me-2"></i>Chi Tiết Đơn Hàng</h3>
 
-        <div class="order-details">
-            <h3>📋 Chi Tiết Đơn Hàng</h3>
-
-            <div class="detail-row">
-                <span class="label">Mã Đơn Hàng:</span>
-                <span class="value">@Model.OrderCode</span>
+        <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-500">Mã đơn</span>
+                <span class="text-sm font-bold text-gray-900">@Model.OrderCode</span>
             </div>
-
-            <div class="detail-row">
-                <span class="label">Ngày Đặt:</span>
-                <span class="value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-500">Ngày đặt</span>
+                <span class="text-sm font-medium">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
             </div>
-
-            <div class="detail-row">
-                <span class="label">Phương Thức Thanh Toán:</span>
-                <span class="value">@Model.PaymentMethod</span>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-500">Thanh toán</span>
+                <span class="text-sm font-medium">@Model.PaymentMethod</span>
             </div>
-
-            <div class="detail-row">
-                <span class="label">Số Điện Thoại:</span>
-                <span class="value">@Model.PhoneNumber</span>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-500">SĐT</span>
+                <span class="text-sm font-medium">@Model.PhoneNumber</span>
             </div>
-
-            <div class="detail-row">
-                <span class="label">Email:</span>
-                <span class="value">@Model.Email</span>
+            <div class="flex justify-between py-2">
+                <span class="text-sm font-semibold text-gray-700">Tổng cộng</span>
+                <span class="text-lg font-black text-blue-600">@Model.TotalAmount.ToString("N0")đ</span>
             </div>
-
-            <div class="detail-row total">
-                <span class="label">Tổng Cộng:</span>
-                <span class="value">@Model.TotalAmount.ToString("N0") VND</span>
-            </div>
-        </div>
-
-        <div class="order-items">
-            <h3>🎫 Thông Tin Vé</h3>
-
-            @if (ViewBag.Items != null)
-            {
-                @foreach (var item in ViewBag.Items)
-                {
-                    <div class="item-card">
-                        <div class="item-route">
-                            <i class="bi bi-bus-front"></i>
-                            <strong>@item.Route</strong>
-                        </div>
-                        <div class="item-details">
-                            <p><span class="label">Ghế:</span> @item.Seats</p>
-                            <p><span class="label">Loại Xe:</span> @item.BusClass</p>
-                            <p><span class="label">Giờ Khởi Hành:</span> @item.DepartureTime</p>
-                            <p><span class="label">Giá:</span> @item.Price.ToString("N0") VND x @item.Quantity</p>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-
-        <div class="next-steps">
-            <h3>📝 Bước Tiếp Theo</h3>
-            <ul>
-                <li>✅ Vé của bạn sẽ được gửi qua email trong vòng 5 phút</li>
-                <li>✅ Quý khách vui lòng kiểm tra email để nhận vé</li>
-                <li>✅ Xuất trình vé khi lên xe hoặc tại quầy vé</li>
-                <li>✅ Lưu mã đơn hàng để theo dõi trạng thái</li>
-            </ul>
-        </div>
-
-        <div class="action-buttons">
-            <a href="/Checkout/ETicket/@Model.Id" class="btn btn-success">
-                <i class="bi bi-qr-code"></i> Xem Vé Điện Tử
-            </a>
-            <a href="/Checkout/MyOrders" class="btn btn-primary">
-                <i class="bi bi-list-check"></i> Xem Đơn Hàng của Tôi
-            </a>
-            <a href="/Ticket/Index" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Tiếp Tục Mua Vé
-            </a>
         </div>
     </div>
+
+    <!-- Tickets -->
+    @if (ViewBag.Items != null)
+    {
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-left mb-6">
+            <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-ticket-perforated text-blue-600 me-2"></i>Vé Đã Đặt</h3>
+            <div class="space-y-3">
+                @foreach (var item in ViewBag.Items)
+                {
+                    <div class="p-3 bg-gray-50 rounded-xl">
+                        <div class="font-semibold text-sm text-gray-800">@item.Route</div>
+                        <div class="text-xs text-gray-400 mt-1">Ghế: @item.Seats | @item.BusClass | @item.DepartureTime</div>
+                        <div class="text-sm font-bold text-blue-600 mt-1">@item.Price.ToString("N0")đ</div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Next Steps -->
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-left mb-8">
+        <h4 class="font-bold text-amber-800 text-sm mb-2"><i class="bi bi-info-circle me-1"></i> Bước tiếp theo</h4>
+        <ul class="text-sm text-amber-700 space-y-1">
+            <li>✅ Vé điện tử sẽ có sẵn ngay bây giờ</li>
+            <li>✅ Xuất trình QR code khi lên xe</li>
+            <li>✅ Có mặt trước giờ khởi hành 15 phút</li>
+        </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/Checkout/ETicket/@Model.Id" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-md transition-all">
+            <i class="bi bi-qr-code me-1"></i> Xem Vé Điện Tử
+        </a>
+        <a href="/Checkout/MyOrders" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all">
+            <i class="bi bi-list-check me-1"></i> Đơn hàng của tôi
+        </a>
+        <a href="/Ticket/SelectRoute" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all">
+            <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua
+        </a>
+    </div>
 </div>
-
-<style>
-    .confirmation-container {
-        padding: 30px 0;
-    }
-
-    .success-box {
-        max-width: 600px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 10px;
-        padding: 40px;
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .success-icon {
-        margin-bottom: 20px;
-    }
-
-    .success-icon i {
-        font-size: 80px;
-        color: #51cf66;
-    }
-
-    h1 {
-        font-size: 28px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-
-    .message {
-        font-size: 16px;
-        color: #666;
-        margin-bottom: 30px;
-    }
-
-    .order-details,
-    .order-items,
-    .next-steps {
-        margin-bottom: 30px;
-        text-align: left;
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-    }
-
-    h3 {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 15px;
-        color: #333;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-    }
-
-    .detail-row:last-child {
-        border-bottom: none;
-    }
-
-    .detail-row.total {
-        background: white;
-        padding: 15px;
-        border-radius: 6px;
-        font-weight: 700;
-        font-size: 16px;
-    }
-
-    .label {
-        color: #666;
-        font-weight: 600;
-    }
-
-    .value {
-        color: #333;
-        font-weight: 500;
-    }
-
-    .item-card {
-        background: white;
-        padding: 15px;
-        border-radius: 6px;
-        margin-bottom: 10px;
-        border-left: 4px solid #667eea;
-    }
-
-    .item-route {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .item-route i {
-        font-size: 20px;
-        color: #667eea;
-    }
-
-    .item-details p {
-        margin: 5px 0;
-        font-size: 14px;
-        color: #666;
-    }
-
-    .next-steps ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .next-steps li {
-        padding: 10px 0;
-        color: #333;
-        border-bottom: 1px solid #eee;
-    }
-
-    .next-steps li:last-child {
-        border-bottom: none;
-    }
-
-    .action-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 30px;
-    }
-
-    .btn {
-        padding: 14px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .btn-primary {
-        background: #667eea;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #5568d3;
-    }
-
-    .btn-secondary {
-        background: #868e96;
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        background: #748088;
-    }
-
-    @@media (max-width: 600px) {
-        .success-box {
-            padding: 20px;
-        }
-
-        .action-buttons {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>

@@ -2,1490 +2,420 @@
 @using BanVeXeMienDong.Models
 
 @{
-    ViewData["Title"] = "Danh sách vé xe - Bán Vé Xe Miền Đông";
+    ViewData["Title"] = "Tìm chuyến xe";
 }
 
-<link rel="stylesheet" href="~/css/search-results-vexere.css" asp-append-version="true" />
-
-<div class="page-container">
-    <!-- Header -->
-    <div class="vexere-header">
-        <div class="header-left">
-            <h1>🚌 Bán Vé Xe Miền Đông</h1>
-        </div>
-        <div class="header-right">
-            <a href="/" class="header-btn">← Quay Lại</a>
-        </div>
-    </div>
-
-    <!-- Search Form -->
-    <div class="search-section" style="max-width: 1400px; margin: 0 auto 20px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
-        <form method="get" action="/Ticket/SelectRoute" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: flex-end;">
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-weight: 600; color: #374151; font-size: 13px;">Điểm đi</label>
-                <select name="diemDi" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #1f2937;">
-                    <option value="">-- Chọn điểm đi --</option>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Search Bar -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+        <form method="get" action="/Ticket/SelectRoute" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div class="md:col-span-3">
+                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Điểm đi</label>
+                <select name="diemDi" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                    <option value="">-- Chọn --</option>
                     @if (ViewBag.Routes != null)
                     {
-                        var routesList = (IEnumerable<dynamic>)ViewBag.Routes;
-                        var fromPoints = routesList.Cast<dynamic>().Select(r => (string)r.DiemDi).Distinct().ToList();
-                        foreach (var point in fromPoints)
+                        var fromPoints = ((IEnumerable<dynamic>)ViewBag.Routes).Select(r => (string)r.DiemDi).Distinct();
+                        foreach (var p in fromPoints)
                         {
-                            if (ViewBag.DiemDi == point)
-                            {
-                                <option value="@point" selected>@point</option>
-                            }
-                            else
-                            {
-                                <option value="@point">@point</option>
-                            }
+                            <option value="@p" selected="@(ViewBag.DiemDi == p)">@p</option>
                         }
                     }
                 </select>
             </div>
-
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-weight: 600; color: #374151; font-size: 13px;">Điểm đến</label>
-                <select name="diemDen" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #1f2937;">
-                    <option value="">-- Chọn điểm đến --</option>
+            <div class="md:col-span-3">
+                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Điểm đến</label>
+                <select name="diemDen" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                    <option value="">-- Chọn --</option>
                     @if (ViewBag.Routes != null)
                     {
-                        var routesList = (IEnumerable<dynamic>)ViewBag.Routes;
-                        var toPoints = routesList.Cast<dynamic>().Select(r => (string)r.DiemDen).Distinct().ToList();
-                        foreach (var point in toPoints)
+                        var toPoints = ((IEnumerable<dynamic>)ViewBag.Routes).Select(r => (string)r.DiemDen).Distinct();
+                        foreach (var p in toPoints)
                         {
-                            if (ViewBag.DiemDen == point)
-                            {
-                                <option value="@point" selected>@point</option>
-                            }
-                            else
-                            {
-                                <option value="@point">@point</option>
-                            }
+                            <option value="@p" selected="@(ViewBag.DiemDen == p)">@p</option>
                         }
                     }
                 </select>
             </div>
-
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-weight: 600; color: #374151; font-size: 13px;">Ngày đi</label>
-                <input type="date" name="ngayDi" value="@ViewBag.NgayDi" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #1f2937;">
+            <div class="md:col-span-3">
+                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Ngày đi</label>
+                <input type="date" name="ngayDi" value="@ViewBag.NgayDi" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
             </div>
-
-            <div style="display: flex; gap: 8px;">
-                <button type="submit" class="search-btn" style="flex: 1; background: #fbbf24; color: #78350f; padding: 10px 16px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 14px;">
-                    <i class="bi bi-search"></i> Tìm Kiếm
+            <div class="md:col-span-3 flex gap-2">
+                <button type="submit" class="flex-1 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-xl text-sm transition-all">
+                    <i class="bi bi-search"></i> Tìm
                 </button>
-                <a href="/Ticket/SelectRoute" style="flex: 1; background: #6b7280; color: white; padding: 10px 16px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 14px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    <i class="bi bi-arrow-clockwise"></i> Xóa Lọc
+                <a href="/Ticket/SelectRoute" class="py-2.5 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl text-sm transition-all">
+                    <i class="bi bi-x-lg"></i>
                 </a>
             </div>
         </form>
     </div>
 
-    <div class="search-results-container">
-        <!-- Sidebar Filter -->
-        <aside class="sidebar-filter">
-            <div class="filter-section">
-                <div class="filter-title expandable" onclick="toggleFilter(this)">
-                    Giá Vé
-                    <span class="expand-icon expanded">▼</span>
-                </div>
-                <div class="range-slider-container">
-                    <div class="price-inputs">
-                        <input type="number" id="minPrice" placeholder="Min" value="0">
-                        <input type="number" id="maxPrice" placeholder="Max" value="5000000">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Sidebar Filters -->
+        <aside class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sticky top-20 space-y-5">
+                <h3 class="font-bold text-gray-900 text-sm uppercase tracking-wide">Bộ Lọc</h3>
+
+                <!-- Price -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Giá Vé</h4>
+                    <div class="flex gap-2">
+                        <input type="number" id="minPrice" placeholder="Min" value="0" class="w-1/2 px-2 py-1.5 border border-gray-200 rounded-lg text-xs">
+                        <input type="number" id="maxPrice" placeholder="Max" value="5000000" class="w-1/2 px-2 py-1.5 border border-gray-200 rounded-lg text-xs">
                     </div>
-                    <input type="range" class="range-slider" id="priceRange" min="0" max="5000000" value="5000000">
+                    <input type="range" id="priceRange" min="0" max="5000000" value="5000000" step="50000" class="w-full mt-2 accent-blue-600">
+                    <div class="text-xs text-gray-400 mt-1">Tối đa: <span id="priceDisplay">5.000.000</span>đ</div>
                 </div>
-            </div>
 
-            <div class="filter-section">
-                <div class="filter-title expandable" onclick="toggleFilter(this)">
-                    Loại Xe
-                    <span class="expand-icon expanded">▼</span>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" value="limousine">
-                        <span>Limousine</span>
-                        <span class="count">12</span>
+                <!-- Bus Type -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Loại Xe</h4>
+                    <label class="flex items-center gap-2 mb-1.5 cursor-pointer">
+                        <input type="checkbox" value="standard" class="filter-bustype w-4 h-4 rounded border-gray-300 text-blue-600">
+                        <span class="text-sm text-gray-600">Xe Thường</span>
                     </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="giuong">
-                        <span>Giường nằm</span>
-                        <span class="count">8</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="thuong">
-                        <span>Xe thường</span>
-                        <span class="count">15</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" value="vip" class="filter-bustype w-4 h-4 rounded border-gray-300 text-blue-600">
+                        <span class="text-sm text-gray-600">Xe VIP / Cao Cấp</span>
                     </label>
                 </div>
-            </div>
 
-            <div class="filter-section">
-                <div class="filter-title expandable" onclick="toggleFilter(this)">
-                    Tiện Ích
-                    <span class="expand-icon expanded">▼</span>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" value="wifi">
-                        <span>WiFi</span>
-                        <span class="count">18</span>
+                <!-- Rating -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Đánh Giá</h4>
+                    <label class="flex items-center gap-2 mb-1.5 cursor-pointer">
+                        <input type="checkbox" value="4.5" class="filter-rating w-4 h-4 rounded border-gray-300 text-blue-600">
+                        <span class="text-sm text-gray-600">⭐ 4.5+</span>
                     </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="toilet">
-                        <span>Toilet</span>
-                        <span class="count">14</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="water">
-                        <span>Nước uống</span>
-                        <span class="count">10</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="food">
-                        <span>Đồ ăn</span>
-                        <span class="count">7</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" value="4.0" class="filter-rating w-4 h-4 rounded border-gray-300 text-blue-600">
+                        <span class="text-sm text-gray-600">⭐ 4.0+</span>
                     </label>
                 </div>
-            </div>
 
-            <div class="filter-section">
-                <div class="filter-title expandable" onclick="toggleFilter(this)">
-                    Điểm Đón
-                    <span class="expand-icon expanded">▼</span>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" value="center">
-                        <span>Trung tâm thành phố</span>
-                        <span class="count">20</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="airport">
-                        <span>Sân bay</span>
-                        <span class="count">5</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="station">
-                        <span>Bến xe</span>
-                        <span class="count">12</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="filter-section">
-                <div class="filter-title expandable" onclick="toggleFilter(this)">
-                    Đánh Giá
-                    <span class="expand-icon expanded">▼</span>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" value="5star">
-                        <span>★★★★★ 4.5+</span>
-                        <span class="count">8</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="4star">
-                        <span>★★★★☆ 4.0-4.5</span>
-                        <span class="count">12</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" value="3star">
-                        <span>★★★☆☆ 3.5-4.0</span>
-                        <span class="count">7</span>
-                    </label>
-                </div>
+                <button onclick="applyFilters()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all">
+                    Áp Dụng Lọc
+                </button>
             </div>
         </aside>
 
-        <!-- Results Section -->
-        <section class="results-section">
-            <!-- Promotion Banner -->
-            <div class="promotion-banner">
-                <span class="promo-icon">⚡</span>
-                <span class="promo-text">FLASH SALE: Giảm đến 50% các chuyến xe trong 24 giờ tới</span>
-            </div>
-
+        <!-- Results -->
+        <section class="lg:col-span-3">
             <!-- Toolbar -->
-            <div class="results-toolbar">
-                <span class="results-count" id="resultsCount">Kết quả: ... chuyến xe</span>
-                <div class="sort-options">
-                    <button type="button" class="sort-btn active" onclick="sortResults('default')">Mặc định</button>
-                    <button type="button" class="sort-btn" onclick="sortResults('price-asc')">Giá thấp</button>
-                    <button type="button" class="sort-btn" onclick="sortResults('price-desc')">Giá cao</button>
-                    <button type="button" class="sort-btn" onclick="sortResults('time-asc')">Sớm nhất</button>
+            <div class="flex items-center justify-between mb-4">
+                <span id="resultsCount" class="text-sm text-gray-500 font-medium"></span>
+                <div class="flex gap-1">
+                    <button onclick="sortResults('default')" class="sort-btn px-3 py-1.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-lg">Mặc định</button>
+                    <button onclick="sortResults('price-asc')" class="sort-btn px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-100 hover:text-blue-700">Giá thấp</button>
+                    <button onclick="sortResults('price-desc')" class="sort-btn px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-100 hover:text-blue-700">Giá cao</button>
+                    <button onclick="sortResults('time-asc')" class="sort-btn px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-100 hover:text-blue-700">Sớm nhất</button>
                 </div>
             </div>
 
             <!-- Result Cards -->
-            <div id="resultsContainer">
+            <div id="resultsContainer" class="space-y-4">
                 @if (Model != null && Model.Count > 0)
                 {
-                    var tickets = Model;
-                    <script>
-                        document.getElementById('resultsCount').textContent = `Kết quả: ${@tickets.Count} chuyến xe`;
-                    </script>
-
-                    @foreach (var ticket in tickets)
+                    foreach (var ticket in Model)
                     {
-                        var rating = 4.5 + (Random.Shared.NextDouble() * 0.5);
-                        var bookedCount = tickets.Count(t => t.DiemDi == ticket.DiemDi && t.DiemDen == ticket.DiemDen && t.NgayDi.Date == ticket.NgayDi.Date && t.NgayDi.TimeOfDay == ticket.NgayDi.TimeOfDay);
-                        var tripKey = $"{ticket.DiemDi}-{ticket.DiemDen}-{ticket.NgayDi:yyyy-MM-dd HH:mm}";
+                        var rating = (4.2 + (ticket.Id % 8) * 0.1).ToString("F1");
+                        var busTypeStr = ticket.HangXe == BusClass.Premium ? "vip" : "standard";
+                        var busTypeName = ticket.HangXe == BusClass.Premium ? "Xe Cao Cấp VIP" : "Xe Tiêu Chuẩn";
 
-                        <div class="result-card" data-price="@ticket.GiaVe" data-bustype="@(ticket.HangXe == BusClass.Premium ? "vip" : "standard")" data-rating="@rating.ToString("F1")" data-departure="@ticket.NgayDi.ToString("yyyy-MM-ddTHH:mm")">
-                            <!-- Image -->
-                            <div class="card-image">
-                                <div class="card-image-placeholder">🚌</div>
-                            </div>
-
-                            <!-- Info -->
-                            <div class="card-info">
-                                <!-- Header: Company & Rating -->
-                                <div class="card-header">
-                                    <div class="bus-company">
-                                        <span class="company-logo">VX</span>
-                                        <span class="company-name">Vé Xe Miền Đông</span>
-                                    </div>
-                                    <div class="rating">
-                                        <span class="rating-stars">★ @rating.ToString("F1")</span>
-                                        <span class="rating-count">(@ticket.HangXe.ToString())</span>
-                                    </div>
-                                </div>
-
-                                <!-- Bus Type -->
-                                <div class="bus-type">@(ticket.HangXe == BusClass.Premium ? "Xe Cao Cấp VIP" : "Xe Tiêu Chuẩn") 40 Chỗ</div>
-
-                                <!-- Trip Details -->
-                                <div class="trip-details">
-                                    <div class="trip-time">
-                                        <div class="time-badge">
-                                            <div class="time">@ticket.NgayDi.ToString("HH:mm")</div>
-                                            <div class="location-point">@ticket.DiemDi</div>
+                        <div class="result-card bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                             data-price="@ticket.GiaVe" data-bustype="@busTypeStr" data-rating="@rating" data-departure="@ticket.NgayDi.ToString("yyyy-MM-ddTHH:mm")">
+                            <div class="flex flex-col sm:flex-row">
+                                <!-- Left: Info -->
+                                <div class="flex-1 p-5">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                                            <i class="bi bi-bus-front text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-gray-900 text-sm">Bến Xe Miền Đông</div>
+                                            <div class="text-xs text-gray-400">@busTypeName</div>
+                                        </div>
+                                        <div class="ml-auto flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg">
+                                            <span class="text-xs font-bold text-green-700">⭐ @rating</span>
                                         </div>
                                     </div>
-                                    <div class="trip-time">
-                                        <div class="time-badge">
-                                            <div class="time">@ticket.NgayDi.AddHours(5).ToString("HH:mm")</div>
-                                            <div class="location-point">@ticket.DiemDen</div>
+
+                                    <!-- Route & Time -->
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="text-center">
+                                            <div class="text-lg font-bold text-gray-900">@ticket.NgayDi.ToString("HH:mm")</div>
+                                            <div class="text-xs text-gray-400">@ticket.DiemDi</div>
                                         </div>
+                                        <div class="flex-1 flex items-center gap-2">
+                                            <div class="h-px bg-gray-300 flex-1"></div>
+                                            <span class="text-xs text-gray-400 whitespace-nowrap">~5h30</span>
+                                            <div class="h-px bg-gray-300 flex-1"></div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-lg font-bold text-gray-900">@ticket.NgayDi.AddHours(5).ToString("HH:mm")</div>
+                                            <div class="text-xs text-gray-400">@ticket.DiemDen</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tags -->
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">WiFi</span>
+                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">Nước uống</span>
+                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">@ticket.NgayDi.ToString("dd/MM/yyyy")</span>
+                                        @if (ticket.HangXe == BusClass.Premium)
+                                        {
+                                            <span class="px-2 py-0.5 bg-yellow-50 text-yellow-700 rounded text-xs font-medium">VIP</span>
+                                        }
                                     </div>
                                 </div>
 
-                                <div class="duration" style="text-align: center;">⏱ 5h 30m</div>
-
-                                <!-- Amenities -->
-                                <div class="amenities">
-                                    <span class="amenity-tag">📶 WiFi</span>
-                                    <span class="amenity-tag">🚽 Toilet</span>
-                                    <span class="amenity-tag highlight">💧 Nước</span>
+                                <!-- Right: Price & Action -->
+                                <div class="sm:w-48 p-5 bg-gray-50 sm:border-l border-t sm:border-t-0 border-gray-100 flex flex-col items-center justify-center gap-2">
+                                    <div class="text-xs text-gray-400">Giá từ</div>
+                                    <div class="text-2xl font-black text-blue-600">@ticket.GiaVe.ToString("N0")đ</div>
+                                    <div class="text-xs text-gray-400">Còn 39 chỗ</div>
+                                    <button type="button" onclick="showSeatSelector('@ticket.DiemDi', '@ticket.DiemDen', '@ticket.NgayDi.ToString("yyyy-MM-dd HH:mm:ss")', '@ticket.GiaVe')"
+                                        class="w-full mt-2 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-bold rounded-xl shadow-sm hover:shadow-md transition-all">
+                                        Chọn Chuyến
+                                    </button>
                                 </div>
-                            </div>
-
-                            <!-- Action -->
-                            <div class="card-action">
-                                <div class="price">
-                                    <div class="price-label">Từ</div>
-                                    <div class="price-value">@ticket.GiaVe.ToString("N0")đ</div>
-                                </div>
-                                <div class="seats-remaining">
-                                    Còn <span class="seats-count">39</span> chỗ
-                                </div>
-                                <button type="button" class="choose-btn" onclick="showSeatSelector(this, '@ticket.DiemDi', '@ticket.DiemDen', '@ticket.NgayDi.ToString("yyyy-MM-dd HH:mm:ss")', '@ticket.GiaVe')">Chọn Chuyến</button>
                             </div>
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="empty-state">
-                        <div class="empty-icon">🔍</div>
-                        <div class="empty-title">Không tìm thấy chuyến xe</div>
-                        <div class="empty-text">Vui lòng thử thay đổi ngày, nơi xuất phát hoặc nơi đến.</div>
+                    <div class="text-center py-20">
+                        <i class="bi bi-search text-5xl text-gray-300"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mt-4">Không tìm thấy chuyến xe</h3>
+                        <p class="text-sm text-gray-400 mt-1">Vui lòng thử thay đổi điểm đi, điểm đến hoặc ngày.</p>
                     </div>
                 }
-            </div>
-
-            <!-- Inline Seat Selector Section -->
-            <div id="seatSelectorContainer" class="seat-selector-container" style="display: none;">
-                <div class="seat-selector-header">
-                    <h2>Chọn Ghế - <span id="seatTripInfo"></span></h2>
-                    <button type="button" class="close-seat-selector" onclick="closeSeatSelector()">✕</button>
-                </div>
-
-                <div class="seat-selector-content">
-                    <!-- Trip Info Summary -->
-                    <div class="trip-summary">
-                        <div class="trip-info-item">
-                            <span class="trip-label">Tuyến đường:</span>
-                            <span class="trip-value" id="seatTripRoute"></span>
-                        </div>
-                        <div class="trip-info-item">
-                            <span class="trip-label">Ngày giờ:</span>
-                            <span class="trip-value" id="seatTripDateTime"></span>
-                        </div>
-                        <div class="trip-info-item">
-                            <span class="trip-label">Giá vé:</span>
-                            <span class="trip-value" id="seatTripPrice"></span>
-                        </div>
-                    </div>
-
-                    <!-- Seat Map -->
-                    <div class="seat-map-wrapper">
-                        <div class="seat-legend">
-                            <div class="legend-item">
-                                <span class="legend-color available"></span>
-                                <span>Ghế trống</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color selected"></span>
-                                <span>Ghế đã chọn</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color booked"></span>
-                                <span>Ghế đã bán</span>
-                            </div>
-                        </div>
-
-                        <div class="seat-map">
-                            <!-- Bus driver -->
-                            <div class="driver-seat">🚘</div>
-
-                            <!-- Seats Grid -->
-                            <div class="seats-grid" id="seatsGrid">
-                                <!-- Generated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Selected Seats Info -->
-                    <div class="selected-seats-info">
-                        <div class="selected-seats-count">
-                            Đã chọn: <span id="selectedSeatsCount">0</span> ghế
-                        </div>
-                        <div class="selected-seats-list" id="selectedSeatsList"></div>
-                    </div>
-
-                    <!-- Purchase Summary Section -->
-                    <div class="purchase-summary">
-                        <div class="summary-item">
-                            <span class="summary-label">Số lượng ghế:</span>
-                            <span class="summary-value" id="summarySeats">0</span>
-                        </div>
-                        <div class="summary-divider"></div>
-                        <div class="summary-item total">
-                            <span class="summary-label">Tổng cộng:</span>
-                            <span class="summary-value total-price" id="totalPrice">0đ</span>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons Wrapper -->
-                    <div style="display: flex; gap: 12px; align-items: center; width: 100%; box-sizing: border-box; padding: 16px 24px; background: #f9fafb; border-top: 1px solid #e5e7eb; border-radius: 0 0 10px 10px;">
-                        <!-- Continue Button Form -->
-                        <form method="post" action="/Ticket/SelectBusClass" id="continueForm" style="flex: 1;">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="diemDi" id="formDiemDi">
-                            <input type="hidden" name="diemDen" id="formDiemDen">
-                            <input type="hidden" name="ngayGio" id="formNgayGio">
-                            <input type="hidden" name="selectedSeats" id="formSelectedSeats">
-                            <input type="hidden" name="submitType" value="selectBusClass">
-                            <button type="submit" id="continueButton" disabled style="flex: 1; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; opacity: 0.6; width: 100%;">
-                                <span>➜</span>
-                                <span>Tiếp Tục</span>
-                            </button>
-                        </form>
-
-                        <!-- Checkout Button (will add to cart then redirect) -->
-                        <button type="button" id="checkoutButton" disabled style="flex: 1; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; opacity: 0.6; width: 100%;" onclick="handleCheckout()">
-                            <span>💳</span>
-                            <span>Thanh Toán</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </section>
     </div>
 </div>
 
+<!-- Seat Selector Modal -->
+<div id="seatModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSeatSelector()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <!-- Header -->
+        <div class="gradient-primary p-5 text-white sticky top-0 z-10">
+            <div class="flex items-center justify-between">
+                <h2 class="font-bold text-lg" id="seatModalTitle">Chọn Ghế</h2>
+                <button onclick="closeSeatSelector()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all">&times;</button>
+            </div>
+            <div class="text-sm text-blue-100 mt-1" id="seatModalRoute"></div>
+        </div>
+
+        <div class="p-5">
+            <!-- Trip Info -->
+            <div class="grid grid-cols-3 gap-3 mb-5">
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
+                    <div class="text-xs text-gray-400">Tuyến</div>
+                    <div class="font-semibold text-sm mt-0.5" id="seatInfoRoute">-</div>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
+                    <div class="text-xs text-gray-400">Ngày giờ</div>
+                    <div class="font-semibold text-sm mt-0.5" id="seatInfoDate">-</div>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
+                    <div class="text-xs text-gray-400">Giá/ghế</div>
+                    <div class="font-semibold text-sm mt-0.5 text-blue-600" id="seatInfoPrice">-</div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex justify-center gap-4 mb-4">
+                <div class="flex items-center gap-1.5"><div class="w-6 h-6 rounded-lg bg-gray-100 border-2 border-gray-200"></div><span class="text-xs text-gray-500">Trống</span></div>
+                <div class="flex items-center gap-1.5"><div class="w-6 h-6 rounded-lg bg-blue-600 border-2 border-blue-600"></div><span class="text-xs text-gray-500">Đã chọn</span></div>
+                <div class="flex items-center gap-1.5"><div class="w-6 h-6 rounded-lg bg-gray-400 border-2 border-gray-400"></div><span class="text-xs text-gray-500">Đã bán</span></div>
+            </div>
+
+            <!-- Seat Map -->
+            <div class="bg-gray-50 rounded-xl p-4">
+                <div class="text-center text-gray-400 text-xs mb-3">🚘 Tài xế</div>
+                <div id="seatGrid" class="grid grid-cols-5 gap-2 max-w-[250px] mx-auto"></div>
+            </div>
+
+            <!-- Summary -->
+            <div class="mt-5 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-sm text-gray-600">Đã chọn: <strong id="seatCount">0</strong> ghế</span>
+                        <div class="text-xs text-gray-400 mt-0.5" id="seatList">-</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400">Tổng cộng</div>
+                        <div class="text-xl font-black text-blue-600" id="seatTotal">0đ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <form method="post" action="/Ticket/SelectBusClass" id="seatForm" class="mt-5 grid grid-cols-2 gap-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="diemDi" id="formDiemDi">
+                <input type="hidden" name="diemDen" id="formDiemDen">
+                <input type="hidden" name="ngayGio" id="formNgayGio">
+                <input type="hidden" name="selectedSeats" id="formSelectedSeats">
+                <input type="hidden" name="submitType" id="formSubmitType" value="selectBusClass">
+
+                <button type="submit" id="btnContinue" disabled class="py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all text-sm">
+                    <i class="bi bi-arrow-right"></i> Tiếp tục
+                </button>
+                <button type="button" id="btnCheckout" disabled onclick="handleCheckout()" class="py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all text-sm">
+                    <i class="bi bi-credit-card"></i> Thanh toán
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
 <script>
-    // Track selected seats
+    // === DATA ===
     let selectedSeats = [];
     let currentTrip = null;
+    const bookedSample = [3, 7, 12, 15, 22, 28, 35, 38];
 
-    function toggleFilter(element) {
-        const icon = element.querySelector('.expand-icon');
-        const options = element.nextElementSibling;
+    // === SEAT SELECTOR ===
+    function showSeatSelector(diemDi, diemDen, ngayGio, giaVe) {
+        selectedSeats = [];
+        currentTrip = { diemDi, diemDen, ngayGio, giaVe: parseInt(giaVe) };
 
-        if (icon.classList.contains('expanded')) {
-            icon.classList.remove('expanded');
-            options.style.display = 'none';
-        } else {
-            icon.classList.add('expanded');
-            options.style.display = 'flex';
+        document.getElementById('formDiemDi').value = diemDi;
+        document.getElementById('formDiemDen').value = diemDen;
+        document.getElementById('formNgayGio').value = ngayGio;
+
+        const route = `${diemDi} → ${diemDen}`;
+        document.getElementById('seatModalTitle').textContent = `Chọn Ghế - ${route}`;
+        document.getElementById('seatModalRoute').textContent = new Date(ngayGio).toLocaleDateString('vi-VN');
+        document.getElementById('seatInfoRoute').textContent = route;
+        document.getElementById('seatInfoDate').textContent = new Date(ngayGio).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        document.getElementById('seatInfoPrice').textContent = parseInt(giaVe).toLocaleString('vi-VN') + 'đ';
+
+        generateSeats();
+        updateSeatSummary();
+        document.getElementById('seatModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSeatSelector() {
+        document.getElementById('seatModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function generateSeats() {
+        const grid = document.getElementById('seatGrid');
+        grid.innerHTML = '';
+        for (let i = 1; i <= 40; i++) {
+            const isBooked = bookedSample.includes(i);
+            const seat = document.createElement('button');
+            seat.type = 'button';
+            seat.textContent = i;
+            seat.className = isBooked
+                ? 'w-full aspect-square rounded-lg bg-gray-400 text-white text-xs font-bold cursor-not-allowed'
+                : 'w-full aspect-square rounded-lg bg-gray-100 border-2 border-gray-200 text-xs font-bold text-gray-600 hover:border-blue-400 hover:bg-blue-50 transition-all seat-available';
+            if (!isBooked) {
+                seat.addEventListener('click', () => toggleSeat(seat, i));
+            }
+            grid.appendChild(seat);
         }
+    }
+
+    function toggleSeat(el, num) {
+        if (el.classList.contains('seat-selected')) {
+            el.classList.remove('seat-selected', 'bg-blue-600', 'border-blue-600', 'text-white');
+            el.classList.add('bg-gray-100', 'border-gray-200', 'text-gray-600');
+            selectedSeats = selectedSeats.filter(s => s !== num);
+        } else {
+            el.classList.add('seat-selected', 'bg-blue-600', 'border-blue-600', 'text-white');
+            el.classList.remove('bg-gray-100', 'border-gray-200', 'text-gray-600');
+            selectedSeats.push(num);
+        }
+        updateSeatSummary();
+    }
+
+    function updateSeatSummary() {
+        const count = selectedSeats.length;
+        document.getElementById('seatCount').textContent = count;
+        document.getElementById('seatList').textContent = count > 0 ? 'Ghế: ' + selectedSeats.sort((a,b)=>a-b).join(', ') : '-';
+        document.getElementById('seatTotal').textContent = (count * (currentTrip?.giaVe || 0)).toLocaleString('vi-VN') + 'đ';
+        document.getElementById('formSelectedSeats').value = selectedSeats.join(',');
+
+        const enabled = count > 0;
+        document.getElementById('btnContinue').disabled = !enabled;
+        document.getElementById('btnCheckout').disabled = !enabled;
+    }
+
+    function handleCheckout() {
+        document.getElementById('formSubmitType').value = 'checkout';
+        document.getElementById('seatForm').submit();
+    }
+
+    // === FILTERS ===
+    function applyFilters() {
+        const cards = document.querySelectorAll('.result-card');
+        const maxPrice = parseInt(document.getElementById('maxPrice').value) || 99999999;
+        const minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+
+        const busTypes = [];
+        document.querySelectorAll('.filter-bustype:checked').forEach(cb => busTypes.push(cb.value));
+
+        const ratings = [];
+        document.querySelectorAll('.filter-rating:checked').forEach(cb => ratings.push(parseFloat(cb.value)));
+
+        let visible = 0;
+        cards.forEach(card => {
+            const price = parseFloat(card.dataset.price);
+            const type = card.dataset.bustype;
+            const rating = parseFloat(card.dataset.rating);
+
+            let show = true;
+            if (price < minPrice || price > maxPrice) show = false;
+            if (busTypes.length > 0 && !busTypes.includes(type)) show = false;
+            if (ratings.length > 0 && !ratings.some(r => rating >= r)) show = false;
+
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        document.getElementById('resultsCount').textContent = `${visible} chuyến xe`;
     }
 
     function sortResults(type) {
         const container = document.getElementById('resultsContainer');
         const cards = Array.from(container.querySelectorAll('.result-card'));
-
         cards.sort((a, b) => {
-            const priceA = parseFloat(a.dataset.price);
-            const priceB = parseFloat(b.dataset.price);
-            const depA = new Date(a.dataset.departure);
-            const depB = new Date(b.dataset.departure);
-
-            switch (type) {
-                case 'price-asc': return priceA - priceB;
-                case 'price-desc': return priceB - priceA;
-                case 'time-asc': return depA - depB;
-                default: return 0;
-            }
+            if (type === 'price-asc') return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            if (type === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            if (type === 'time-asc') return new Date(a.dataset.departure) - new Date(b.dataset.departure);
+            return 0;
         });
+        cards.forEach(c => container.appendChild(c));
 
-        // Re-append sorted cards
-        cards.forEach(card => container.appendChild(card));
-
-        // Update active button
-        document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        document.querySelectorAll('.sort-btn').forEach(b => { b.className = 'sort-btn px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-100 hover:text-blue-700'; });
+        event.target.className = 'sort-btn px-3 py-1.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-lg';
     }
 
-    // ===== SIDEBAR FILTER SYSTEM =====
-    function applyFilters() {
-        const cards = document.querySelectorAll('.result-card');
-        let visibleCount = 0;
+    // === PRICE RANGE ===
+    const priceRange = document.getElementById('priceRange');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const priceDisplay = document.getElementById('priceDisplay');
 
-        // 1. Get price range
-        const maxPrice = parseInt(document.getElementById('maxPrice')?.value || '99999999');
-        const minPrice = parseInt(document.getElementById('minPrice')?.value || '0');
-
-        // 2. Get selected bus types
-        const busTypeChecks = document.querySelectorAll('.filter-section input[value="limousine"], .filter-section input[value="giuong"], .filter-section input[value="thuong"]');
-        const selectedBusTypes = [];
-        busTypeChecks.forEach(cb => {
-            if (cb.checked) selectedBusTypes.push(cb.value);
-        });
-
-        // Map filter values to data attributes
-        const busTypeMap = {
-            'limousine': 'vip',
-            'giuong': 'vip',
-            'thuong': 'standard'
-        };
-
-        // 3. Get selected amenities
-        const amenityChecks = document.querySelectorAll('.filter-section input[value="wifi"], .filter-section input[value="toilet"], .filter-section input[value="water"], .filter-section input[value="food"]');
-        const selectedAmenities = [];
-        amenityChecks.forEach(cb => {
-            if (cb.checked) selectedAmenities.push(cb.value);
-        });
-
-        // 4. Get rating filter
-        const ratingChecks = document.querySelectorAll('.filter-section input[value="5star"], .filter-section input[value="4star"], .filter-section input[value="3star"]');
-        const selectedRatings = [];
-        ratingChecks.forEach(cb => {
-            if (cb.checked) selectedRatings.push(cb.value);
-        });
-
-        // Apply filters to each card
-        cards.forEach(card => {
-            let visible = true;
-            const cardPrice = parseFloat(card.dataset.price);
-            const cardBusType = card.dataset.bustype;
-            const cardRating = parseFloat(card.dataset.rating);
-
-            // Price filter
-            if (cardPrice < minPrice || cardPrice > maxPrice) {
-                visible = false;
-            }
-
-            // Bus type filter (only apply if at least one is checked)
-            if (selectedBusTypes.length > 0) {
-                const matchedTypes = selectedBusTypes.map(t => busTypeMap[t] || t);
-                if (!matchedTypes.includes(cardBusType)) {
-                    visible = false;
-                }
-            }
-
-            // Rating filter
-            if (selectedRatings.length > 0) {
-                let ratingMatch = false;
-                selectedRatings.forEach(r => {
-                    if (r === '5star' && cardRating >= 4.5) ratingMatch = true;
-                    if (r === '4star' && cardRating >= 4.0 && cardRating < 4.5) ratingMatch = true;
-                    if (r === '3star' && cardRating >= 3.5 && cardRating < 4.0) ratingMatch = true;
-                });
-                if (!ratingMatch) visible = false;
-            }
-
-            // Amenity filter - all cards have WiFi, Toilet, Water by default
-            // Only "food" is not available, so if food is checked → hide cards
-            if (selectedAmenities.includes('food')) {
-                visible = false; // No cards have food amenity
-            }
-
-            // Show/hide
-            card.style.display = visible ? '' : 'none';
-            if (visible) visibleCount++;
-        });
-
-        // Update results count
-        document.getElementById('resultsCount').textContent = `Kết quả: ${visibleCount} chuyến xe`;
-    }
-
-    // Attach filter listeners to all checkboxes and inputs
-    document.addEventListener('DOMContentLoaded', function() {
-        // Price range slider
-        const priceRange = document.getElementById('priceRange');
-        const maxPriceInput = document.getElementById('maxPrice');
-        const minPriceInput = document.getElementById('minPrice');
-
-        if (priceRange) {
-            priceRange.addEventListener('input', function() {
-                maxPriceInput.value = this.value;
-                applyFilters();
-            });
-        }
-        if (maxPriceInput) {
-            maxPriceInput.addEventListener('change', function() {
-                if (priceRange) priceRange.value = this.value;
-                applyFilters();
-            });
-        }
-        if (minPriceInput) {
-            minPriceInput.addEventListener('change', applyFilters);
-        }
-
-        // All filter checkboxes
-        document.querySelectorAll('.filter-options input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', applyFilters);
-        });
+    priceRange?.addEventListener('input', function() {
+        maxPriceInput.value = this.value;
+        priceDisplay.textContent = parseInt(this.value).toLocaleString('vi-VN');
     });
 
-    // Seat Selector Functions
-    function showSeatSelector(button, diemDi, diemDen, ngayGio, giaVe) {
-        selectedSeats = [];
-        currentTrip = { diemDi, diemDen, ngayGio, giaVe };
-
-        // Update form hidden fields
-        document.getElementById('formDiemDi').value = diemDi;
-        document.getElementById('formDiemDen').value = diemDen;
-        document.getElementById('formNgayGio').value = ngayGio;
-
-        // Update trip info display
-        const date = new Date(ngayGio);
-        document.getElementById('seatTripInfo').textContent = `${diemDi} → ${diemDen}`;
-        document.getElementById('seatTripRoute').textContent = `${diemDi} → ${diemDen}`;
-        document.getElementById('seatTripDateTime').textContent = date.toLocaleString('vi-VN');
-        document.getElementById('seatTripPrice').textContent = `${parseInt(giaVe).toLocaleString('vi-VN')}đ`;
-
-        // Generate seat map
-        generateSeatMap();
-
-        // Show container and scroll to it
-        const container = document.getElementById('seatSelectorContainer');
-        container.style.display = 'block';
-
-        // Animate slide down
-        container.classList.remove('hidden');
-        container.classList.add('visible');
-
-        // Scroll to seat selector
-        setTimeout(() => {
-            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-
-        console.log('✅ Seat selector opened for:', diemDi, diemDen);
-    }
-
-    function closeSeatSelector() {
-        const container = document.getElementById('seatSelectorContainer');
-        container.classList.remove('visible');
-        container.classList.add('hidden');
-
-        setTimeout(() => {
-            container.style.display = 'none';
-            selectedSeats = [];
-            document.getElementById('selectedSeatsCount').textContent = '0';
-            document.getElementById('selectedSeatsList').innerHTML = '';
-        }, 300);
-    }
-
-    function setSubmitType(type) {
-        document.getElementById('submitTypeInput').value = type;
-
-        // If checkout is selected and user not logged in, redirect to login
-        if (type === 'checkout') {
-            const userId = getSessionUserId();
-            if (!userId) {
-                event.preventDefault();
-                // Store the form data to restore after login
-                const formData = {
-                    diemDi: document.getElementById('formDiemDi').value,
-                    diemDen: document.getElementById('formDiemDen').value,
-                    ngayGio: document.getElementById('formNgayGio').value,
-                    selectedSeats: document.getElementById('formSelectedSeats').value
-                };
-                sessionStorage.setItem('checkoutFormData', JSON.stringify(formData));
-                window.location.href = '/Account/Login';
-                return false;
-            }
-        }
-    }
-
-    function getSessionUserId() {
-        // Check if user is logged in by looking for a data attribute in the page
-        // This should be set by the server in the layout
-        const userElement = document.querySelector('[data-user-id]');
-        return userElement ? userElement.getAttribute('data-user-id') : null;
-    }
-
-    function generateSeatMap() {
-        const seatsGrid = document.getElementById('seatsGrid');
-        seatsGrid.innerHTML = '';
-        selectedSeats = [];
-
-        // Generate 40 seats (8 rows x 5 columns - typical bus layout)
-        const rows = 8;
-        const cols = 5;
-        const bookedSeats = [3, 7, 12, 15, 22, 28, 35, 38]; // Sample booked seats
-
-        for (let i = 1; i <= rows * cols; i++) {
-            const seatDiv = document.createElement('div');
-            seatDiv.className = 'seat';
-            seatDiv.textContent = i;
-
-            // Check if seat is booked
-            if (bookedSeats.includes(i)) {
-                seatDiv.classList.add('booked');
-                seatDiv.style.pointerEvents = 'none';
-            } else {
-                seatDiv.addEventListener('click', function () {
-                    toggleSeatSelection(this, i);
-                });
-                seatDiv.style.cursor = 'pointer';
-            }
-
-            seatsGrid.appendChild(seatDiv);
-        }
-    }
-
-    function toggleSeatSelection(seatElement, seatNumber) {
-        if (seatElement.classList.contains('booked')) return;
-
-        if (seatElement.classList.contains('selected')) {
-            seatElement.classList.remove('selected');
-            selectedSeats = selectedSeats.filter(s => s !== seatNumber);
-        } else {
-            seatElement.classList.add('selected');
-            selectedSeats.push(seatNumber);
-        }
-
-        updateSelectedSeatsDisplay();
-    }
-
-    function updateSelectedSeatsDisplay() {
-        document.getElementById('selectedSeatsCount').textContent = selectedSeats.length;
-        document.getElementById('summarySeats').textContent = selectedSeats.length;
-
-        const selectedList = document.getElementById('selectedSeatsList');
-        const continueButton = document.getElementById('continueButton');
-        const checkoutButton = document.getElementById('checkoutButton');
-
-        // Calculate and display total price
-        if (selectedSeats.length > 0) {
-            selectedList.innerHTML = '<strong>Ghế:</strong> ' + selectedSeats.sort((a, b) => a - b).join(', ');
-
-            // Update continue form fields
-            document.getElementById('formSelectedSeats').value = selectedSeats.join(',');
-
-            // Calculate total price
-            const ticketPrice = parseInt(currentTrip.giaVe);
-            const totalPrice = selectedSeats.length * ticketPrice;
-            document.getElementById('totalPrice').textContent = totalPrice.toLocaleString('vi-VN') + 'đ';
-
-            // Enable continue buttons
-            continueButton.disabled = false;
-            checkoutButton.disabled = false;
-
-            // Update button styles when enabled
-            continueButton.style.opacity = '1';
-            continueButton.style.cursor = 'pointer';
-            checkoutButton.style.opacity = '1';
-            checkoutButton.style.cursor = 'pointer';
-        } else {
-            selectedList.innerHTML = '';
-            document.getElementById('formSelectedSeats').value = '';
-
-            // Reset summary display
-            document.getElementById('totalPrice').textContent = '0đ';
-
-            // Disable continue buttons
-            continueButton.disabled = true;
-            checkoutButton.disabled = true;
-
-            // Reset button styles when disabled
-            continueButton.style.opacity = '0.6';
-            continueButton.style.cursor = 'not-allowed';
-            checkoutButton.style.opacity = '0.6';
-            checkoutButton.style.cursor = 'not-allowed';
-        }
-    }
-
-    // Update price filter display
-    document.getElementById('priceRange')?.addEventListener('input', function() {
-        document.getElementById('maxPrice').value = this.value;
+    // Init count
+    window.addEventListener('load', () => {
+        const count = document.querySelectorAll('.result-card').length;
+        document.getElementById('resultsCount').textContent = `${count} chuyến xe`;
     });
-
-    // Update results count
-    window.addEventListener('load', function() {
-        const cardCount = document.querySelectorAll('.result-card').length;
-        document.getElementById('resultsCount').textContent = `Kết quả: ${cardCount} chuyến xe`;
-    });
-
-    // Handle checkout - add to cart then redirect
-    function handleCheckout() {
-        if (!currentTrip) {
-            alert('Vui lòng chọn chuyến xe');
-            return;
-        }
-
-        if (selectedSeats.length === 0) {
-            alert('Vui lòng chọn ghế');
-            return;
-        }
-
-        const diemDi = document.getElementById('formDiemDi').value;
-        const diemDen = document.getElementById('formDiemDen').value;
-        const ngayGio = document.getElementById('formNgayGio').value;
-        const selectedSeatsList = selectedSeats.join(', ');
-        const ticketPrice = parseInt(currentTrip.giaVe);
-        const totalPrice = selectedSeats.length * ticketPrice;
-
-        // Create route string
-        const route = `${diemDi} → ${diemDen}`;
-
-        // Build the AddToCart URL with parameters
-        const params = new URLSearchParams({
-            ticketCode: `VE-${Date.now()}`,
-            route: route,
-            seats: selectedSeatsList,
-            price: ticketPrice,
-            busClass: 'Standard',
-            departureTime: ngayGio
-        });
-
-        // First, add to cart
-        fetch(`/Cart/AddToCart?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                // After successfully adding to cart, redirect to checkout
-                window.location.href = '/Checkout/Index';
-            } else {
-                alert('Lỗi khi thêm vào giỏ hàng');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Lỗi: ' + error.message);
-        });
-    }
 </script>
-
-<style>
-    .search-btn {
-        background: #fbbf24 !important;
-        color: #78350f !important;
-    }
-
-    .search-btn:hover {
-        background: #f59e0b !important;
-    }
-
-    /* Continue and Checkout Button Styles */
-    #continueButton:not(:disabled),
-    #checkoutButton:not(:disabled) {
-        opacity: 1 !important;
-        cursor: pointer !important;
-    }
-
-    #continueButton:not(:disabled):hover,
-    #checkoutButton:not(:disabled):hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    #continueButton:not(:disabled):active,
-    #checkoutButton:not(:disabled):active {
-        transform: translateY(0);
-    }
-
-    /* Seat Selector Styles */
-    .seat-selector-container {
-        background: white;
-        border-radius: 12px;
-        border: 2px solid #e5e7eb;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        margin: 20px auto;
-        max-width: 850px;
-        overflow: visible;
-        animation: slideDown 0.4s ease-out;
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 40px);
-        width: 95%;
-        min-height: auto;
-    }
-
-    .seat-selector-container.hidden {
-        animation: slideUp 0.3s ease-in forwards;
-    }
-
-    .seat-selector-container.visible {
-        animation: slideDown 0.4s ease-out forwards;
-    }
-
-    @@keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @@keyframes slideUp {
-        from {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        to {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-    }
-        }
-    }
-
-    .seat-selector-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 20px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #5568d3;
-        flex-shrink: 0;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    .seat-selector-header h2 {
-        margin: 0;
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .close-seat-selector {
-        background: rgba(255, 255, 255, 0.2);
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        color: white;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        font-size: 24px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .close-seat-selector:hover {
-        background: rgba(255, 255, 255, 0.3);
-        border-color: rgba(255, 255, 255, 0.6);
-        transform: scale(1.1);
-    }
-
-    .seat-selector-content {
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        flex: 1;
-        min-height: 0;
-    }
-
-    .trip-summary {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
-        padding: 14px 16px;
-        background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-        border-radius: 12px;
-        border-left: 4px solid #667eea;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
-        order: 1;
-    }
-
-    .trip-info-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .trip-label {
-        font-size: 10px;
-        color: #6b7280;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .trip-value {
-        font-size: 14px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-        font-size: 15px;
-        color: #1f2937;
-        font-weight: 700;
-    }
-
-    .seat-map-wrapper {
-        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-        border-radius: 12px;
-        padding: 16px;
-        border: 1px solid #e5e7eb;
-    }
-
-    .seat-legend {
-        display: flex;
-        gap: 16px;
-        padding: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
-        background: white;
-        border-radius: 10px;
-        margin-bottom: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #4b5563;
-        font-weight: 500;
-    }
-
-    .legend-color {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        border: 2px solid #d1d5db;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .legend-color.available {
-        background: #f3f4f6;
-        border-color: #d1d5db;
-    }
-
-    .legend-color.selected {
-        background: #667eea;
-        border-color: #5568d3;
-    }
-
-    .legend-color.booked {
-        background: #9ca3af;
-        border-color: #6b7280;
-    }
-
-    .seat-map {
-        background: white;
-        border-radius: 10px;
-        padding: 16px 12px;
-        position: relative;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        text-align: center;
-    }
-
-    .driver-seat {
-        text-align: center;
-        margin-bottom: 12px;
-        font-size: 20px;
-        color: #6b7280;
-    }
-
-    .seats-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
-        max-width: 280px;
-        margin: 0 auto;
-    }
-
-    .seat {
-        aspect-ratio: 1;
-        background: #f3f4f6;
-        border: 2px solid #d1d5db;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 600;
-        color: #4b5563;
-        transition: all 0.3s ease;
-        user-select: none;
-    }
-
-    .seat:not(.booked):hover {
-        background: #e5e7eb;
-        border-color: #9ca3af;
-        transform: scale(1.05);
-    }
-
-    .seat.selected {
-        background: #667eea;
-        border-color: #5568d3;
-        color: white;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .seat.booked {
-        background: #9ca3af;
-        border-color: #6b7280;
-        color: white;
-        opacity: 0.6;
-    }
-
-    .selected-seats-info {
-        background: linear-gradient(135deg, #f0f4ff 0%, #f5f7ff 100%);
-        border: 2px solid #c7d2fe;
-        border-left: 4px solid #667eea;
-        border-radius: 10px;
-        padding: 12px 14px;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
-    }
-
-    .selected-seats-count {
-        font-weight: 700;
-        color: #4f46e5;
-        margin-bottom: 6px;
-        font-size: 13px;
-    }
-
-    #selectedSeatsList {
-        font-size: 13px;
-        color: #4b5563;
-        font-weight: 500;
-    }
-
-    .purchase-summary {
-        background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
-        border: 2px solid #86efac;
-        border-radius: 12px;
-        padding: 16px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-        margin: 8px 0;
-    }
-
-    .summary-item {
-        flex: 1;
-        text-align: center;
-    }
-
-    .summary-item.total {
-        padding-left: 16px;
-        border-left: 3px solid #22c55e;
-    }
-    }
-
-    .summary-label {
-        display: block;
-        font-size: 12px;
-        color: #6b7280;
-        font-weight: 600;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .summary-value {
-        display: block;
-        font-size: 20px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .total-price {
-        color: #10b981;
-        font-size: 24px;
-        font-weight: 800;
-    }
-
-    .summary-divider {
-        width: 2px;
-        height: 60px;
-        background: linear-gradient(to bottom, transparent, #d1d5db, transparent);
-    }
-
-
-    .seat-selector-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 20px 24px;
-        border-top: 2px solid #e5e7eb;
-        background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
-        flex-shrink: 0;
-        position: relative;
-        z-index: 20;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-        flex-wrap: wrap;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .btn-cancel {
-        padding: 12px 32px;
-        border: 2px solid #d1d5db;
-        background: white;
-        color: #4b5563;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .btn-cancel:hover {
-        background: #f3f4f6;
-        border-color: #9ca3af;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-cancel:active {
-        transform: translateY(0);
-    }
-        background: #e5e7eb;
-        border-color: #9ca3af;
-        transform: translateY(-1px);
-    }
-
-    .btn-cancel:active {
-        transform: translateY(0);
-    }
-
-    .btn-buy {
-        padding: 16px 40px;
-        border: none;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        flex: 1;
-        min-width: 200px;
-        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-        color: white;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .btn-continue {
-        padding: 14px 40px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        flex: 1;
-        min-width: 150px;
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%);
-        color: white;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-        text-transform: uppercase;
-        letter-spacing: 0.7px;
-        white-space: nowrap;
-    }
-
-    .btn-continue::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-        transition: left 0.6s ease;
-    }
-
-    .btn-continue::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 12px;
-        padding: 2px;
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .btn-continue:hover:not(:disabled)::before {
-        left: 100%;
-    }
-
-    .btn-continue:hover:not(:disabled)::after {
-        opacity: 1;
-    }
-
-    .btn-continue:hover:not(:disabled) {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 14px 35px rgba(59, 130, 246, 0.6);
-        background: linear-gradient(135deg, #60a5fa 0%, #2563eb 50%, #1e3a8a 100%);
-    }
-
-    .btn-continue:active:not(:disabled) {
-        transform: translateY(-1px) scale(0.99);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
-
-    .btn-continue:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
-        transform: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-continue-icon {
-        font-size: 20px;
-        animation: continueBounce 2s ease-in-out infinite;
-    }
-
-    .btn-continue:disabled .btn-continue-icon {
-        animation: none;
-    }
-
-    @@keyframes continueBounce {
-        0%, 100% { transform: translateX(0); }
-        50% { transform: translateX(4px); }
-    }
-
-    .btn-continue-text {
-        font-weight: 800;
-        letter-spacing: 1px;
-    }
-
-    /* Responsive Design */
-    @@media (max-width: 768px) {
-        .seat-selector-header {
-            flex-direction: column;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .close-seat-selector {
-            align-self: flex-end;
-        }
-
-        .seat-selector-header h2 {
-            font-size: 18px;
-        }
-
-        .purchase-summary {
-            flex-direction: column;
-            gap: 16px;
-            align-items: stretch;
-        }
-
-        .summary-item {
-            text-align: center;
-        }
-
-        .summary-item.total {
-            padding-left: 0;
-            border-left: none;
-            border-top: 3px solid #22c55e;
-            padding-top: 16px;
-        }
-
-        .summary-divider {
-            display: none;
-        }
-
-        .trip-summary {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .seats-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .seat-legend {
-            gap: 12px;
-        }
-
-        .seat-selector-actions {
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        #seatSelectionForm {
-            width: 100%;
-            flex-direction: column !important;
-        }
-
-        .btn-cancel {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .btn-buy {
-            width: 100%;
-            justify-content: center;
-            min-width: auto;
-            padding: 14px 32px;
-            font-size: 15px;
-        }
-
-        .btn-continue {
-            width: 100%;
-            justify-content: center;
-            min-width: auto;
-            padding: 14px 32px;
-            font-size: 15px;
-        }
-    }
-
-    @@media (max-width: 480px) {
-        .seat-selector-content {
-            padding: 16px;
-        }
-
-        .trip-summary {
-            padding: 12px;
-        }
-
-        .seats-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .seat {
-            font-size: 12px;
-        }
-
-        .seat-map {
-            padding: 16px;
-        }
-
-        .legend-color {
-            width: 24px;
-            height: 24px;
-        }
-
-        .seat-selector-actions {
-            flex-direction: column;
-            gap: 10px;
-            padding-top: 16px;
-            margin-top: 16px;
-        }
-
-        .btn-buy {
-            padding: 12px 24px;
-            font-size: 14px;
-            gap: 8px;
-        }
-
-        .btn-buy-icon {
-            font-size: 18px;
-        }
-
-        .btn-continue {
-            padding: 12px 24px;
-            font-size: 14px;
-            gap: 8px;
-        }
-
-        .btn-continue-icon {
-            font-size: 18px;
-        }
-
-        .btn-cancel {
-            padding: 10px 20px;
-            font-size: 13px;
-        }
-
-        .purchase-summary {
-            padding: 16px 12px;
-            gap: 12px;
-        }
-
-        .summary-value {
-            font-size: 18px;
-        }
-
-        .total-price {
-            font-size: 22px;
-        }
-
-        .summary-label {
-            font-size: 11px;
-        }
-    }
-</style>
+}
