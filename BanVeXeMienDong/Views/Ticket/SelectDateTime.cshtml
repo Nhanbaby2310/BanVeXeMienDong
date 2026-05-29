@@ -201,6 +201,7 @@
         </div>
 
         <form id="datetimeForm" method="post" action="/Ticket/SelectBusClass" class="datetime-form">
+            @Html.AntiForgeryToken()
             @if (ViewBag.AvailableDateTimes != null && ViewBag.AvailableDateTimes.Count > 0)
             {
                 <div class="form-group">

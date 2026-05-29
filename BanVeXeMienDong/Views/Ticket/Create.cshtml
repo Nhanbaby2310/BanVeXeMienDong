@@ -316,9 +316,9 @@
             });
 
             // Cập nhật display
-            const seatsArray = Array.from(selectedSeats).sort();
-            document.getElementById('selectedSeat').value = seatsArray.join(',');
-            document.getElementById('seatCode').textContent = seatsArray.join(', ');
+            const sortedSeats = Array.from(selectedSeats).sort();
+            document.getElementById('selectedSeat').value = sortedSeats.join(',');
+            document.getElementById('seatCode').textContent = sortedSeats.join(', ');
             document.getElementById('seatDisplay').style.display = 'block';
             </text>
         }
@@ -328,9 +328,9 @@
 
     // Function to fetch booked seats based on date and route
     function fetchBookedSeats() {
-        const selectedDate = document.getElementById('NgayDi').value;
-        const diemDi = document.getElementById('DiemDi').value;
-        const diemDen = document.getElementById('DiemDen').value;
+        const selectedDate = document.getElementById('ngayGio').value;
+        const diemDi = document.getElementById('diemDi').value;
+        const diemDen = document.getElementById('diemDen').value;
 
         if (!selectedDate || !diemDi || !diemDen) return;
 
@@ -357,11 +357,11 @@
     }
 
     // When date changes, reload booked seats for that date and route
-    document.getElementById('NgayDi').addEventListener('change', fetchBookedSeats);
+    document.getElementById('ngayGio').addEventListener('change', fetchBookedSeats);
 
     // When route changes, reload booked seats for that route
-    document.getElementById('DiemDi').addEventListener('change', fetchBookedSeats);
-    document.getElementById('DiemDen').addEventListener('change', fetchBookedSeats);
+    document.getElementById('diemDi').addEventListener('change', fetchBookedSeats);
+    document.getElementById('diemDen').addEventListener('change', fetchBookedSeats);
 
     function updateSeatVisuals() {
         // Update all seat visuals based on booked seats for selected date
@@ -427,9 +427,9 @@
         }
 
         // Update hidden input and display
-        const seatsArray = Array.from(selectedSeats).sort();
-        document.getElementById('selectedSeat').value = seatsArray.join(',');
-        document.getElementById('seatCode').textContent = seatsArray.join(', ');
+        const sortedSeats2 = Array.from(selectedSeats).sort();
+        document.getElementById('selectedSeat').value = sortedSeats2.join(',');
+        document.getElementById('seatCode').textContent = sortedSeats2.join(', ');
         document.getElementById('seatDisplay').style.display = seatsArray.length > 0 ? 'block' : 'none';
     }
 
