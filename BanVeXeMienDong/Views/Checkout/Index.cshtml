@@ -41,7 +41,7 @@
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h3 class="font-bold text-gray-900 mb-5">Thông Tin Thanh Toán</h3>
 
-                <form method="post" action="/Checkout/ProcessPayment">
+                <form method="post" action="/Checkout/ProcessPayment" id="paymentForm">
                     @Html.AntiForgeryToken()
 
                     <!-- Payment Method -->
@@ -49,33 +49,198 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-3">Phương thức thanh toán</label>
                         <div class="grid grid-cols-2 gap-3">
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="Cash" checked class="peer sr-only">
+                                <input type="radio" name="paymentMethod" value="Cash" checked class="peer sr-only" onchange="togglePaymentSections()">
                                 <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
                                     <i class="bi bi-cash-coin text-2xl text-green-600"></i>
                                     <div class="text-xs font-medium mt-1">Tiền mặt</div>
                                 </div>
                             </label>
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="Card" class="peer sr-only">
+                                <input type="radio" name="paymentMethod" value="Card" class="peer sr-only" onchange="togglePaymentSections()">
                                 <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
                                     <i class="bi bi-credit-card text-2xl text-blue-600"></i>
                                     <div class="text-xs font-medium mt-1">Thẻ tín dụng</div>
                                 </div>
                             </label>
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="Bank" class="peer sr-only">
+                                <input type="radio" name="paymentMethod" value="Bank" class="peer sr-only" onchange="togglePaymentSections()">
                                 <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
                                     <i class="bi bi-bank text-2xl text-purple-600"></i>
                                     <div class="text-xs font-medium mt-1">Chuyển khoản</div>
                                 </div>
                             </label>
                             <label class="relative cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="Wallet" class="peer sr-only">
+                                <input type="radio" name="paymentMethod" value="Wallet" class="peer sr-only" onchange="togglePaymentSections()">
                                 <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
                                     <i class="bi bi-phone text-2xl text-pink-600"></i>
                                     <div class="text-xs font-medium mt-1">Ví điện tử</div>
                                 </div>
                             </label>
+                        </div>
+                    </div>
+
+                    <!-- Card Payment Section -->
+                    <div id="cardSection" class="hidden mb-6 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl">
+                        <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <i class="bi bi-credit-card-2-front text-blue-600"></i> Thông Tin Thẻ
+                        </h4>
+
+                        <!-- Card Preview -->
+                        <div class="relative w-full max-w-sm mx-auto mb-6 aspect-[1.6/1] rounded-2xl overflow-hidden shadow-xl" id="cardPreview">
+                            <div class="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 flex flex-col justify-between text-white">
+                                <div class="flex justify-between items-start">
+                                    <div class="text-xs opacity-70">CREDIT CARD</div>
+                                    <div class="flex gap-1">
+                                        <div class="w-6 h-6 rounded-full bg-red-500 opacity-80"></div>
+                                        <div class="w-6 h-6 rounded-full bg-yellow-500 opacity-80 -ml-2"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-lg font-mono tracking-widest mb-3" id="cardNumberDisplay">•••• •••• •••• ••••</div>
+                                    <div class="flex justify-between text-xs">
+                                        <div>
+                                            <div class="opacity-60 text-[10px]">CHỦ THẺ</div>
+                                            <div class="font-semibold tracking-wide" id="cardNameDisplay">NGUYEN VAN A</div>
+                                        </div>
+                                        <div>
+                                            <div class="opacity-60 text-[10px]">HẾT HẠN</div>
+                                            <div class="font-semibold" id="cardExpiryDisplay">MM/YY</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Form -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Số thẻ</label>
+                                <div class="relative">
+                                    <i class="bi bi-credit-card absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456"
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm font-mono tracking-wider focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                        oninput="formatCardNumber(this); updateCardPreview()">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Tên chủ thẻ</label>
+                                <div class="relative">
+                                    <i class="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="cardName" placeholder="NGUYEN VAN A"
+                                        class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm uppercase tracking-wide focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                        oninput="updateCardPreview()">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">Ngày hết hạn</label>
+                                    <div class="relative">
+                                        <i class="bi bi-calendar absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                        <input type="text" id="cardExpiry" maxlength="5" placeholder="MM/YY"
+                                            class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm font-mono focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
+                                            oninput="formatExpiry(this); updateCardPreview()">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase">CVV</label>
+                                    <div class="relative">
+                                        <i class="bi bi-shield-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                        <input type="password" id="cardCvv" maxlength="4" placeholder="•••"
+                                            class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm font-mono tracking-widest focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Note -->
+                        <div class="mt-4 flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-2 rounded-lg">
+                            <i class="bi bi-shield-check text-green-500"></i>
+                            <span>Thông tin thẻ được mã hóa SSL 256-bit. An toàn tuyệt đối.</span>
+                        </div>
+
+                        <!-- Accepted Cards -->
+                        <div class="mt-3 flex items-center gap-3">
+                            <span class="text-xs text-gray-400">Chấp nhận:</span>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold text-blue-800">VISA</span>
+                                <span class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold text-red-600">Master</span>
+                                <span class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold text-blue-600">JCB</span>
+                                <span class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold text-orange-600">Napas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bank Transfer Section -->
+                    <div id="bankSection" class="hidden mb-6 p-5 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-2xl">
+                        <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <i class="bi bi-bank text-purple-600"></i> Chuyển Khoản Ngân Hàng
+                        </h4>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-5">
+                            <!-- QR Code -->
+                            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@(Uri.EscapeDataString($"BANK:VCB|ACC:0123456789|AMT:{ViewBag.Total}|MSG:THANHTOAN{DateTime.Now:yyyyMMddHHmm}"))"
+                                     alt="QR Code" class="w-36 h-36 rounded">
+                            </div>
+
+                            <!-- Bank Info -->
+                            <div class="flex-1 space-y-2.5 text-sm">
+                                <div class="flex justify-between p-2.5 bg-white rounded-lg border border-gray-100">
+                                    <span class="text-gray-500">Ngân hàng</span>
+                                    <span class="font-bold text-gray-900">Vietcombank</span>
+                                </div>
+                                <div class="flex justify-between p-2.5 bg-white rounded-lg border border-gray-100">
+                                    <span class="text-gray-500">Số TK</span>
+                                    <span class="font-mono font-bold text-gray-900">0123 456 789</span>
+                                </div>
+                                <div class="flex justify-between p-2.5 bg-white rounded-lg border border-gray-100">
+                                    <span class="text-gray-500">Chủ TK</span>
+                                    <span class="font-bold text-gray-900">BEN XE MIEN DONG</span>
+                                </div>
+                                <div class="flex justify-between p-2.5 bg-white rounded-lg border border-blue-100">
+                                    <span class="text-gray-500">Số tiền</span>
+                                    <span class="font-black text-blue-600">@ViewBag.Total.ToString("N0")đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-500 mt-4 bg-white p-3 rounded-lg border border-gray-100">
+                            <i class="bi bi-info-circle text-blue-500"></i>
+                            Quét mã QR bằng app ngân hàng hoặc chuyển khoản thủ công. Đơn hàng sẽ được xác nhận sau khi nhận được tiền.
+                        </p>
+                    </div>
+
+                    <!-- Wallet Section -->
+                    <div id="walletSection" class="hidden mb-6 p-5 bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200 rounded-2xl">
+                        <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <i class="bi bi-phone text-pink-600"></i> Ví Điện Tử
+                        </h4>
+
+                        <div class="grid grid-cols-3 gap-3 mb-4">
+                            <button type="button" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-center hover:border-pink-400 hover:bg-pink-50 transition-all focus:border-pink-500 focus:bg-pink-50">
+                                <div class="text-2xl mb-1">💜</div>
+                                <div class="text-xs font-bold text-gray-700">Momo</div>
+                            </button>
+                            <button type="button" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-center hover:border-blue-400 hover:bg-blue-50 transition-all focus:border-blue-500 focus:bg-blue-50">
+                                <div class="text-2xl mb-1">🔵</div>
+                                <div class="text-xs font-bold text-gray-700">ZaloPay</div>
+                            </button>
+                            <button type="button" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-center hover:border-orange-400 hover:bg-orange-50 transition-all focus:border-orange-500 focus:bg-orange-50">
+                                <div class="text-2xl mb-1">🟠</div>
+                                <div class="text-xs font-bold text-gray-700">VNPay</div>
+                            </button>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg border border-gray-100 text-sm text-gray-600">
+                            <p class="font-semibold text-gray-800 mb-2"><i class="bi bi-list-ol"></i> Hướng dẫn:</p>
+                            <ol class="list-decimal list-inside space-y-1 text-xs">
+                                <li>Chọn ví điện tử phía trên</li>
+                                <li>Nhấn "Xác Nhận Thanh Toán" bên dưới</li>
+                                <li>Mở app ví điện tử và xác nhận giao dịch <strong class="text-blue-600">@ViewBag.Total.ToString("N0")đ</strong></li>
+                                <li>Vé sẽ được gửi ngay sau khi thanh toán thành công</li>
+                            </ol>
                         </div>
                     </div>
 
@@ -110,7 +275,7 @@
                         <a href="/Cart/Index" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all text-sm">
                             <i class="bi bi-arrow-left me-1"></i> Quay lại
                         </a>
-                        <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        <button type="submit" id="submitBtn" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all">
                             <i class="bi bi-check-circle me-1"></i> Xác Nhận Thanh Toán
                         </button>
                     </div>
@@ -119,3 +284,91 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    // Toggle payment sections
+    function togglePaymentSections() {
+        const selected = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+        document.getElementById('cardSection').classList.toggle('hidden', selected !== 'Card');
+        document.getElementById('bankSection').classList.toggle('hidden', selected !== 'Bank');
+        document.getElementById('walletSection').classList.toggle('hidden', selected !== 'Wallet');
+    }
+
+    // Format card number: 1234 5678 9012 3456
+    function formatCardNumber(input) {
+        let value = input.value.replace(/\D/g, '').substring(0, 16);
+        input.value = value.replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    // Format expiry: MM/YY
+    function formatExpiry(input) {
+        let value = input.value.replace(/\D/g, '').substring(0, 4);
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2);
+        }
+        input.value = value;
+    }
+
+    // Update card preview in real-time
+    function updateCardPreview() {
+        const number = document.getElementById('cardNumber').value || '•••• •••• •••• ••••';
+        const name = document.getElementById('cardName').value || 'NGUYEN VAN A';
+        const expiry = document.getElementById('cardExpiry').value || 'MM/YY';
+
+        document.getElementById('cardNumberDisplay').textContent = number || '•••• •••• •••• ••••';
+        document.getElementById('cardNameDisplay').textContent = name.toUpperCase();
+        document.getElementById('cardExpiryDisplay').textContent = expiry;
+
+        // Change card color based on card type
+        const cardPreview = document.getElementById('cardPreview').querySelector('div');
+        const num = number.replace(/\s/g, '');
+        if (num.startsWith('4')) {
+            cardPreview.className = 'absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-900 to-indigo-900 p-6 flex flex-col justify-between text-white transition-all duration-500';
+        } else if (num.startsWith('5')) {
+            cardPreview.className = 'absolute inset-0 bg-gradient-to-br from-red-800 via-red-900 to-orange-900 p-6 flex flex-col justify-between text-white transition-all duration-500';
+        } else if (num.startsWith('3')) {
+            cardPreview.className = 'absolute inset-0 bg-gradient-to-br from-green-800 via-green-900 to-teal-900 p-6 flex flex-col justify-between text-white transition-all duration-500';
+        } else {
+            cardPreview.className = 'absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 flex flex-col justify-between text-white transition-all duration-500';
+        }
+    }
+
+    // Form validation for card payment
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        const method = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+
+        if (method === 'Card') {
+            const cardNum = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const cardName = document.getElementById('cardName').value;
+            const cardExpiry = document.getElementById('cardExpiry').value;
+            const cardCvv = document.getElementById('cardCvv').value;
+
+            if (cardNum.length < 16) {
+                e.preventDefault();
+                alert('Vui lòng nhập đầy đủ số thẻ (16 số)');
+                document.getElementById('cardNumber').focus();
+                return;
+            }
+            if (!cardName.trim()) {
+                e.preventDefault();
+                alert('Vui lòng nhập tên chủ thẻ');
+                document.getElementById('cardName').focus();
+                return;
+            }
+            if (cardExpiry.length < 5) {
+                e.preventDefault();
+                alert('Vui lòng nhập ngày hết hạn (MM/YY)');
+                document.getElementById('cardExpiry').focus();
+                return;
+            }
+            if (cardCvv.length < 3) {
+                e.preventDefault();
+                alert('Vui lòng nhập mã CVV (3-4 số)');
+                document.getElementById('cardCvv').focus();
+                return;
+            }
+        }
+    });
+</script>
+}
