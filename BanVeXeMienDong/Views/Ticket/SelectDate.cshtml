@@ -1,0 +1,259 @@
+@{
+    ViewData["Title"] = "Chọn ngày đi";
+}
+
+<link rel="stylesheet" href="~/css/style-modern.css" asp-append-version="true" />
+
+<style>
+    .date-selection-container {
+        max-width: 1000px;
+        margin: 3rem auto;
+        padding: 2rem;
+    }
+
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ddd;
+        color: #666;
+        font-weight: bold;
+        margin: 0 auto 0.5rem;
+    }
+
+    .step.active .step-number {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+
+    .step.completed .step-number {
+        background: #27ae60;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .route-header {
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #ffe8e8 0%, #fff5f5 100%);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .route-text {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .date-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .date-card {
+        background: white;
+        border: 2px solid #ddd;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .date-card:hover {
+        border-color: #e74c3c;
+        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .date-card.selected {
+        background: linear-gradient(135deg, #ffe8e8 0%, #fff5f5 100%);
+        border-color: #e74c3c;
+        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+    }
+
+    .date-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .date-text {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .date-day {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: scale(1);
+    }
+
+    .btn-secondary {
+        background: #ddd;
+        color: #2c3e50;
+    }
+
+    .btn-secondary:hover {
+        background: #bbb;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .page-title i {
+        margin-right: 0.5rem;
+        color: #e74c3c;
+    }
+</style>
+
+<div class="date-selection-container">
+    <div class="page-title">
+        <i class="bi bi-calendar-event"></i> Chọn Ngày Đi
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step completed">
+            <div class="step-number">1</div>
+            <div class="step-label">Tuyến Đường</div>
+        </div>
+        <div class="step active">
+            <div class="step-number">2</div>
+            <div class="step-label">Ngày Đi</div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-label">Hạng Xe</div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-label">Chọn Ghế</div>
+        </div>
+    </div>
+
+    <!-- Route Header -->
+    <div class="route-header">
+        <div style="font-size: 0.9rem; color: #7f8c8d; text-transform: uppercase;">Tuyến Đường Đã Chọn</div>
+        <div class="route-text">
+            @ViewBag.DiemDi <span style="color: #e74c3c; margin: 0 0.5rem;">→</span> @ViewBag.DiemDen
+        </div>
+    </div>
+
+    @if (ViewBag.Dates != null && ViewBag.Dates.Count > 0)
+    {
+        <form id="dateForm" method="post" action="/Ticket/SelectBusClass">
+            <div class="date-grid">
+                @foreach (var date in ViewBag.Dates)
+                {
+                    var formattedDate = ((DateTime)date).ToString("dd/MM/yyyy");
+                    var dayName = ((DateTime)date).ToString("dddd");
+                    <div class="date-card" data-date="@date.ToString("O")" onclick="selectDate('@date.ToString("O")')">
+                        <div class="date-icon">📅</div>
+                        <div class="date-text">@formattedDate</div>
+                        <div class="date-day">@dayName</div>
+                    </div>
+                }
+            </div>
+
+            <input type="hidden" id="diemDi" name="diemDi" value="@ViewBag.DiemDi" />
+            <input type="hidden" id="diemDen" name="diemDen" value="@ViewBag.DiemDen" />
+            <input type="hidden" id="ngayDi" name="ngayDi" value="" />
+
+            <div class="action-buttons">
+                <a href="/Ticket/SelectRoute" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Quay Lại
+                </a>
+                <button type="submit" id="nextBtn" class="btn btn-primary" disabled>
+                    <i class="bi bi-arrow-right"></i> Tiếp Theo
+                </button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div style="text-align: center; padding: 2rem; background: #f0f0f0; border-radius: 8px;">
+            <p><i class="bi bi-exclamation-circle"></i> Không có ngày khác nhân nào</p>
+        </div>
+    }
+</div>
+
+<script>
+    function selectDate(dateString) {
+        // Unselect all cards
+        document.querySelectorAll('.date-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Select clicked card
+        event.currentTarget.classList.add('selected');
+
+        // Set form value
+        document.getElementById('ngayDi').value = dateString;
+
+        // Enable next button
+        document.getElementById('nextBtn').disabled = false;
+    }
+</script>

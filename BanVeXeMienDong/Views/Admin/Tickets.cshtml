@@ -1,0 +1,1400 @@
+@using BanVeXeMienDong.Models;
+@model List<BanVeXeMienDong.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Quản Lý Vé Xe";
+    var tickets = Model ?? new List<Ticket>();
+}
+
+<div class="tickets-admin-container">
+    <!-- Hero Banner Section -->
+    <div class="hero-banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <i class="bi bi-ticket2"></i> Quản Lý Vé Xe
+                </h1>
+                <p class="hero-subtitle">Hệ thống quản lý vé xe hiệu quả với các tính năng tối ưu</p>
+            </div>
+        </div>
+
+        <!-- Search & Filter Section -->
+        <div class="search-filter-section">
+            <div class="search-form">
+                <div class="search-input-group">
+                    <label style="font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 4px; display: block;">Điểm đi</label>
+                    <input type="text" id="searchFrom" placeholder="VD: HCM, Hà Nội, Đà Nẵng..." class="search-input">
+                </div>
+
+                <div class="search-input-group">
+                    <label style="font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 4px; display: block;">Điểm đến</label>
+                    <input type="text" id="searchTo" placeholder="VD: Hà Nội, Huế, Hải Phòng..." class="search-input">
+                </div>
+
+                <div class="search-input-group">
+                    <label style="font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 4px; display: block;">Ngày đi</label>
+                    <input type="date" id="searchDate" class="search-input">
+                </div>
+
+                <div class="search-input-group">
+                    <label style="font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 4px; display: block;">Khách hàng</label>
+                    <input type="text" id="searchCustomer" placeholder="Tên khách hàng" class="search-input">
+                </div>
+
+                <button class="search-btn" id="searchBtn">
+                    <i class="bi bi-search"></i> Tìm Kiếm
+                </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0;">
+                <!-- Sort Options -->
+                <div style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #1f2937;">📊 Sắp Xếp</label>
+                    <select id="sortOptions" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 13px;">
+                        <option value="default">Mặc định</option>
+                        <option value="price-low">Giá thấp nhất</option>
+                        <option value="price-high">Giá cao nhất</option>
+                        <option value="date-early">Giờ đi sớm nhất</option>
+                        <option value="date-late">Giờ đi muộn nhất</option>
+                    </select>
+                </div>
+
+                <!-- Price Filter -->
+                <div style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #1f2937;">💰 Giá Vé Max</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="range" id="priceRange" min="0" max="5000000" step="100000" value="5000000" style="flex: 1;">
+                        <span id="priceDisplay" style="font-weight: 600; color: #2d5a8c; min-width: 100px; text-align: right;">5.000.000 đ</span>
+                    </div>
+                </div>
+
+                <!-- Bus Type Filter -->
+                <div style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #1f2937;">🚌 Loại Xe</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #374151; font-weight: 500;">
+                            <input type="checkbox" name="busType" value="standard" style="cursor: pointer; width: 16px; height: 16px;"> 
+                            <span style="color: #374151; font-weight: 500;">Xe Thường</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #374151; font-weight: 500;">
+                            <input type="checkbox" name="busType" value="vip" style="cursor: pointer; width: 16px; height: 16px;"> 
+                            <span style="color: #374151; font-weight: 500;">Xe VIP</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">
+                    <i class="bi bi-ticket2"></i> Tất Cả Vé
+                </button>
+                <button class="filter-tab" data-filter="today">
+                    <i class="bi bi-calendar-event"></i> Hôm Nay
+                </button>
+                <button class="filter-tab" data-filter="week">
+                    <i class="bi bi-calendar-week"></i> Tuần Này
+                </button>
+                <button class="filter-tab" data-filter="month">
+                    <i class="bi bi-calendar-month"></i> Tháng Này
+                </button>
+            </div>
+        </div>
+
+        <!-- Promotional Section -->
+        <div class="promo-section">
+            <div class="promo-badge">
+                <span class="badge-icon">✨</span>
+                <span class="badge-text">Chất Lượng Cao</span>
+            </div>
+            <div class="promo-badge">
+                <span class="badge-icon">🎯</span>
+                <span class="badge-text">Quản Lý Dễ Dàng</span>
+            </div>
+            <div class="promo-badge">
+                <span class="badge-icon">⚡</span>
+                <span class="badge-text">Nhanh Chóng</span>
+            </div>
+            <div class="promo-badge">
+                <span class="badge-icon">✅</span>
+                <span class="badge-text">An Toàn</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Statistics Cards -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-icon">
+                    <i class="bi bi-ticket2"></i>
+                </div>
+                <div class="stat-content">
+                    <h5>Tổng Vé Bán</h5>
+                    <p class="stat-number">@(tickets?.Count ?? 0)</p>
+                    <span class="stat-label">vé</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+                <div class="stat-content">
+                    <h5>Tổng Doanh Thu</h5>
+                    <p class="stat-number">@{
+                        decimal revenue = (tickets?.Sum(t => t.GiaVe) ?? 0m);
+                        var formatted = revenue.ToString("N0");
+                        if (formatted.Length > 10)
+                        {
+                            @Html.Raw(formatted.Substring(0, formatted.Length - 3) + "K");
+                        }
+                        else
+                        {
+                            @Html.Raw(formatted);
+                        }
+                    }</p>
+                    <span class="stat-label">đ</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-content">
+                    <h5>Khách Hàng</h5>
+                    <p class="stat-number">@(tickets?.Select(t => t.TenKhachHang).Distinct().Count() ?? 0)</p>
+                    <span class="stat-label">người</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h5>Trung Bình/Vé</h5>
+                    <p class="stat-number">@{
+                        int totalCount = tickets?.Count ?? 0;
+                        decimal totalRevenue = tickets?.Sum(t => t.GiaVe) ?? 0m;
+                        if (totalCount > 0 && totalRevenue > 0)
+                        {
+                            decimal avg = totalRevenue / totalCount;
+                            var avgFormatted = avg.ToString("N0");
+                            if (avgFormatted.Length > 8)
+                            {
+                                @Html.Raw(avgFormatted.Substring(0, avgFormatted.Length - 3) + "K");
+                            }
+                            else
+                            {
+                                @Html.Raw(avgFormatted);
+                            }
+                        }
+                        else
+                        {
+                            <text>0</text>
+                        }
+                    }</p>
+                    <span class="stat-label">đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tickets Section -->
+    <div class="tickets-section">
+        <div class="section-header">
+            <div class="header-left">
+                <h2>📋 Danh Sách Vé</h2>
+                <span class="ticket-count">@(tickets?.Count ?? 0) vé</span>
+            </div>
+            <a href="@Url.Action("Index", "Admin")" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Quay Lại Dashboard
+            </a>
+        </div>
+
+        @if (tickets == null || tickets.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3>Chưa có vé nào</h3>
+                <p>Bắt đầu bán vé mới để xem danh sách tại đây</p>
+            </div>
+        }
+        else
+        {
+            <div class="tickets-grid">
+                @foreach (var ticket in tickets)
+                {
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <div class="route-badge">
+                                <span class="from">@ticket.DiemDi</span>
+                                <span class="arrow">→</span>
+                                <span class="to">@ticket.DiemDen</span>
+                            </div>
+                            <div class="ticket-id">
+                                <span class="badge">ID #@ticket.Id</span>
+                            </div>
+                        </div>
+
+                        <div class="ticket-body">
+                            <div class="ticket-info-row">
+                                <span class="label">👤 Khách Hàng:</span>
+                                <span class="value">@ticket.TenKhachHang</span>
+                            </div>
+                            <div class="ticket-info-row">
+                                <span class="label">📱 SĐT:</span>
+                                <span class="value">@ticket.SoDienThoai</span>
+                            </div>
+                            <div class="ticket-info-row">
+                                <span class="label">📅 Ngày Đi:</span>
+                                <span class="value">@ticket.NgayDi.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="ticket-info-row">
+                                <span class="label">💺 Ghế:</span>
+                                <span class="value">
+                                    @{
+                                        if (!string.IsNullOrEmpty(ticket.SoGhe))
+                                        {
+                                            var seats = ticket.SoGhe.Split(',').Select(s => s.Trim()).ToList();
+                                            @foreach (var seat in seats)
+                                            {
+                                                <span class="seat-badge">@seat</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="seat-badge">Chưa chọn</span>
+                                        }
+                                    }
+                                </span>
+                            </div>
+                            <div class="ticket-info-row">
+                                <span class="label">🚌 Hạng:</span>
+                                <span class="value">
+                                    @if (ticket.HangXe == BusClass.Standard)
+                                    {
+                                        <span class="class-badge standard">Thường</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="class-badge vip">VIP</span>
+                                    }
+                                </span>
+                            </div>
+                            <div class="ticket-info-row price-row">
+                                <span class="label">💰 Giá:</span>
+                                <span class="price">@ticket.GiaVe.ToString("N0") đ</span>
+                            </div>
+                        </div>
+
+                        <div class="ticket-footer">
+                            <a href="@Url.Action("EditTicketPrice", "Admin", new { id = ticket.Id })" class="btn btn-edit">
+                                <i class="bi bi-pencil"></i> Sửa Giá
+                            </a>
+                            <a href="@Url.Action("DeleteTicket", "Admin", new { id = ticket.Id })" 
+                               class="btn btn-delete" 
+                               onclick="return confirm('Xóa vé này?');">
+                                <i class="bi bi-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .tickets-admin-container {
+        padding: 0;
+        background: #f8f9fc;
+        min-height: 100vh;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, #1a365d 0%, #2d5a8c 50%, #1e3a5f 100%);
+        color: white;
+        padding: 60px 20px 40px 20px;
+        position: relative;
+        overflow: hidden;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="1200" height="600" fill="url(%23pattern)"/></svg>');
+        z-index: 1;
+    }
+
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .hero-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 40px;
+    }
+
+    .hero-title {
+        margin: 0 0 15px 0;
+        font-size: 48px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .hero-title i {
+        font-size: 56px;
+        animation: bounce 2s infinite;
+    }
+
+    .hero-subtitle {
+        margin: 0;
+        font-size: 18px;
+        opacity: 0.95;
+        font-weight: 500;
+    }
+
+    @@keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* Search & Filter Section */
+    .search-filter-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+        width: 100%;
+    }
+
+    .search-form {
+        background: white;
+        border-radius: 16px;
+        padding: 28px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        align-items: flex-end;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        margin-bottom: 25px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-input-group {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-input {
+        padding: 14px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        background: #f9fafb;
+        position: relative;
+        z-index: 10;
+        cursor: text;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #2d5a8c;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(45, 90, 140, 0.08);
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #2d5a8c 0%, #1e3a5f 100%);
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        height: fit-content;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(45, 90, 140, 0.25);
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .filter-tab {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        color: white;
+        padding: 11px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
+    }
+
+    .filter-tab:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .filter-tab.active {
+        background: white;
+        color: #2d5a8c;
+        border-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Promotional Section */
+    .promo-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .promo-badge {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 20px 22px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s ease;
+    }
+
+    .promo-badge:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-4px);
+    }
+
+    .badge-icon {
+        font-size: 30px;
+        flex-shrink: 0;
+    }
+
+    .badge-text {
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+    }
+
+    /* Statistics Section */
+    .stats-section {
+        padding: 40px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 14px;
+        padding: 28px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border-left: 5px solid #2563eb;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-icon {
+        font-size: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        border-radius: 14px;
+        flex-shrink: 0;
+    }
+
+    .stat-card-primary {
+        border-left-color: #2d5a8c;
+    }
+
+    .stat-card-primary .stat-icon {
+        background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+        color: #2d5a8c;
+    }
+
+    .stat-card-success {
+        border-left-color: #059669;
+    }
+
+    .stat-card-success .stat-icon {
+        background: linear-gradient(135deg, #d1fae5 0%, #dcfce7 100%);
+        color: #059669;
+    }
+
+    .stat-card-info {
+        border-left-color: #0891b2;
+    }
+
+    .stat-card-info .stat-icon {
+        background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+        color: #0891b2;
+    }
+
+    .stat-card-warning {
+        border-left-color: #d97706;
+    }
+
+    .stat-card-warning .stat-icon {
+        background: linear-gradient(135deg, #fed7aa 0%, #fef3c7 100%);
+        color: #d97706;
+    }
+
+    .stat-content h5 {
+        margin: 0 0 8px 0;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-number {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 800;
+        color: #1f2937;
+    }
+
+    .stat-label {
+        color: #9ca3af;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Tickets Section */
+    .tickets-section {
+        background: white;
+        border-radius: 16px;
+        padding: 35px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        margin: 0 20px 30px 20px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        border-top: 3px solid #2d5a8c;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+        padding-bottom: 25px;
+        border-bottom: 2px solid #f3f4f6;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .section-header h2 {
+        margin: 0;
+        color: #1f2937;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .ticket-count {
+        background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: #2d5a8c;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .btn-back {
+        background: linear-gradient(135deg, #2d5a8c 0%, #1e3a5f 100%);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-back:hover {
+        transform: translateX(-3px);
+        box-shadow: 0 6px 16px rgba(45, 90, 140, 0.25);
+        text-decoration: none;
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-icon {
+        font-size: 100px;
+        color: #d1d5db;
+        margin-bottom: 20px;
+        opacity: 0.6;
+    }
+
+    .empty-state h3 {
+        color: #1f2937;
+        margin-bottom: 10px;
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+    .empty-state p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 15px;
+    }
+
+    /* Alerts */
+    .alert {
+        margin: 0 20px 20px 20px;
+        border-radius: 12px;
+        border: none;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d1fae5 0%, #dcfce7 100%);
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #7f1d1d;
+        border: 1px solid #fca5a5;
+    }
+
+    .alert-dismissible .btn-close {
+        padding: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: inherit;
+    }
+
+    /* Ticket Cards Grid */
+    .tickets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 24px;
+        margin-top: 20px;
+    }
+
+    .ticket-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .ticket-card:hover {
+        border-color: #2d5a8c;
+        box-shadow: 0 12px 32px rgba(45, 90, 140, 0.15);
+        transform: translateY(-4px);
+    }
+
+    .ticket-header {
+        background: linear-gradient(135deg, #f0f4f8 0%, #e5eef7 100%);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #e5e7eb;
+        gap: 15px;
+    }
+
+    .route-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .route-badge .from,
+    .route-badge .to {
+        background: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        border: 1px solid #d1d5db;
+    }
+
+    .route-badge .arrow {
+        color: #2d5a8c;
+        font-weight: 800;
+        font-size: 16px;
+    }
+
+    .ticket-id {
+        text-align: right;
+    }
+
+    .ticket-id .badge {
+        background: linear-gradient(135deg, #2d5a8c 0%, #1e3a5f 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .ticket-body {
+        padding: 24px;
+    }
+
+    .ticket-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 14px;
+        gap: 12px;
+    }
+
+    .ticket-info-row:last-of-type {
+        border-bottom: none;
+    }
+
+    .ticket-info-row.price-row {
+        padding-top: 16px;
+        border-top: 2px solid #f3f4f6;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .ticket-info-row .label {
+        color: #6b7280;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .ticket-info-row .value {
+        color: #1f2937;
+        text-align: right;
+        flex: 1;
+    }
+
+    .ticket-info-row .price {
+        color: #059669;
+        font-weight: 800;
+    }
+
+    .seat-badge {
+        display: inline-block;
+        background: #f3f4f6;
+        color: #374151;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 4px;
+        border: 1px solid #d1d5db;
+    }
+
+    .class-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .class-badge.standard {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .class-badge.vip {
+        background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+        color: #92400e;
+    }
+
+    .ticket-footer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 24px;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .ticket-footer .btn {
+        flex: 1;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        background: #e0e7ff;
+        color: #2d5a8c;
+    }
+
+    .btn-edit:hover {
+        background: #c7d2fe;
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .btn-delete:hover {
+        background: #fca5a5;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 1024px) {
+        .search-form {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .hero-title {
+            font-size: 36px;
+        }
+
+        .tickets-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .hero-banner {
+            padding: 40px 20px 30px 20px;
+            min-height: auto;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            gap: 10px;
+        }
+
+        .hero-title i {
+            font-size: 36px;
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+        }
+
+        .search-form {
+            grid-template-columns: 1fr;
+            padding: 15px;
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+
+        .filter-tabs {
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .promo-section {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card {
+            padding: 20px;
+        }
+
+        .tickets-section {
+            margin: 0 15px 30px 15px;
+            padding: 20px;
+        }
+
+        .tickets-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .header-left {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-back {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .hero-banner {
+            padding: 30px 15px 20px 15px;
+        }
+
+        .hero-title {
+            font-size: 22px;
+            flex-direction: column;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+        }
+
+        .filter-tabs {
+            flex-direction: column;
+        }
+
+        .filter-tab {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .promo-section {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px 16px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 32px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+        }
+
+        .ticket-header {
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .route-badge {
+            width: 100%;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .route-badge .from,
+        .route-badge .to {
+            width: 100%;
+            text-align: center;
+        }
+
+        .ticket-id {
+            width: 100%;
+            text-align: left;
+        }
+
+        .search-form {
+            padding: 12px;
+            gap: 10px;
+        }
+
+        .badge-text {
+            font-size: 12px;
+        }
+
+        .ticket-footer {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ticket-footer .btn {
+            width: 100%;
+        }
+
+        .ticket-info-row {
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ticket-info-row .value {
+            text-align: left;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('🎫 Ticket management initialized');
+
+        const filterButtons = document.querySelectorAll('.filter-tab');
+        const searchBtn = document.getElementById('searchBtn');
+        const ticketsGrid = document.querySelector('.tickets-grid');
+
+        // Helper function to get all visible cards
+        function getVisibleCards() {
+            if (!ticketsGrid) return [];
+            return Array.from(ticketsGrid.querySelectorAll('.ticket-card')).filter(card => card.style.display !== 'none');
+        }
+
+        // Helper function to extract date from ticket card
+        function extractDate(card) {
+            const dateElements = card.querySelectorAll('.ticket-info-row .value');
+            if (dateElements.length >= 3) {
+                const dateText = dateElements[2].textContent.trim(); // 3rd value is date
+                const parts = dateText.match(/(\d+)\/(\d+)\/(\d+)/);
+                if (parts) {
+                    return new Date(parts[3], parts[2] - 1, parts[1]);
+                }
+            }
+            return null;
+        }
+
+        // Helper function to extract price from ticket card
+        function extractPrice(card) {
+            const priceElement = card.querySelector('.price');
+            if (priceElement) {
+                const priceText = priceElement.textContent;
+                const price = parseInt(priceText.replace(/\D/g, ''));
+                return isNaN(price) ? 0 : price;
+            }
+            return 0;
+        }
+
+        // 1. FILTER BY DATE RANGE (Hôm Nay, Tuần Này, Tháng Này)
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                const filterType = this.getAttribute('data-filter');
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+                let weekStart = new Date(todayStart);
+                weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                let weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 7);
+
+                let monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                let monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+                if (ticketsGrid) {
+                    const cards = ticketsGrid.querySelectorAll('.ticket-card');
+                    cards.forEach(card => {
+                        const ticketDate = extractDate(card);
+                        let show = true;
+
+                        if (filterType !== 'all' && ticketDate) {
+                            if (filterType === 'today') {
+                                show = ticketDate >= todayStart && ticketDate < todayEnd;
+                            } else if (filterType === 'week') {
+                                show = ticketDate >= weekStart && ticketDate < weekEnd;
+                            } else if (filterType === 'month') {
+                                show = ticketDate >= monthStart && ticketDate <= monthEnd;
+                            }
+                        }
+
+                        card.style.display = show ? 'block' : 'none';
+                    });
+                }
+            });
+        });
+
+        // 2. SEARCH FUNCTIONALITY
+        if (searchBtn) {
+            searchBtn.addEventListener('click', performSearch);
+
+            // Allow Enter key to search
+            ['searchFrom', 'searchTo', 'searchDate', 'searchCustomer'].forEach(id => {
+                const elem = document.getElementById(id);
+                if (elem) {
+                    elem.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') performSearch();
+                    });
+                }
+            });
+        }
+
+        function performSearch() {
+            const from = document.getElementById('searchFrom')?.value.toLowerCase().trim() || '';
+            const to = document.getElementById('searchTo')?.value.toLowerCase().trim() || '';
+            const date = document.getElementById('searchDate')?.value || '';
+            const customer = document.getElementById('searchCustomer')?.value.toLowerCase().trim() || '';
+
+            if (ticketsGrid) {
+                const cards = ticketsGrid.querySelectorAll('.ticket-card');
+                cards.forEach(card => {
+                    let show = true;
+
+                    // Filter by departure point (flexible matching)
+                    if (from) {
+                        const fromElement = card.querySelector('.route-badge .from');
+                        const fromText = fromElement?.textContent.toLowerCase().trim() || '';
+                        // Match with substring, handles variations like HCM, Sài Gòn, etc.
+                        show = show && (fromText.includes(from) || from.includes(fromText));
+                    }
+
+                    // Filter by destination point (flexible matching)
+                    if (to) {
+                        const toElement = card.querySelector('.route-badge .to');
+                        const toText = toElement?.textContent.toLowerCase().trim() || '';
+                        // Match with substring, handles variations
+                        show = show && (toText.includes(to) || to.includes(toText));
+                    }
+
+                    // Filter by customer (first .value is customer name)
+                    if (customer) {
+                        const values = card.querySelectorAll('.ticket-info-row .value');
+                        const customerText = values[0]?.textContent.toLowerCase() || '';
+                        show = show && customerText.includes(customer);
+                    }
+
+                    // Filter by date
+                    if (date) {
+                        const ticketDate = extractDate(card);
+                        if (ticketDate) {
+                            const selectedDate = new Date(date);
+                            show = show && ticketDate.toDateString() === selectedDate.toDateString();
+                        } else {
+                            show = false;
+                        }
+                    }
+
+                    card.style.display = show ? 'block' : 'none';
+                });
+            }
+        }
+
+        // 3. SORT FUNCTIONALITY
+        const sortSelect = document.getElementById('sortOptions');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function () {
+                if (!ticketsGrid) return;
+
+                const cards = getVisibleCards();
+                const sortType = this.value;
+
+                if (sortType === 'price-low') {
+                    cards.sort((a, b) => extractPrice(a) - extractPrice(b));
+                } else if (sortType === 'price-high') {
+                    cards.sort((a, b) => extractPrice(b) - extractPrice(a));
+                } else if (sortType === 'date-early') {
+                    cards.sort((a, b) => {
+                        const dateA = extractDate(a);
+                        const dateB = extractDate(b);
+                        return (dateA || new Date(0)) - (dateB || new Date(0));
+                    });
+                } else if (sortType === 'date-late') {
+                    cards.sort((a, b) => {
+                        const dateA = extractDate(a);
+                        const dateB = extractDate(b);
+                        return (dateB || new Date(0)) - (dateA || new Date(0));
+                    });
+                }
+
+                // Reorder cards in grid
+                cards.forEach(card => ticketsGrid.appendChild(card));
+                console.log('✅ Sorted:', sortType);
+            });
+        }
+
+        // 4. BUS TYPE FILTER
+        const busTypeCheckboxes = document.querySelectorAll('input[name="busType"]');
+        busTypeCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const selectedTypes = Array.from(busTypeCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (ticketsGrid) {
+                    const cards = ticketsGrid.querySelectorAll('.ticket-card');
+                    cards.forEach(card => {
+                        if (selectedTypes.length === 0) {
+                            card.style.display = 'block';
+                        } else {
+                            const classBadge = card.querySelector('.class-badge');
+                            const busClass = classBadge?.textContent.toLowerCase() || '';
+                            const show = selectedTypes.some(type => {
+                                return (type === 'standard' && busClass.includes('thường')) ||
+                                       (type === 'vip' && busClass.includes('vip'));
+                            });
+                            card.style.display = show ? 'block' : 'none';
+                        }
+                    });
+                }
+                console.log('✅ Bus type filtered:', selectedTypes);
+            });
+        });
+
+        // 5. PRICE RANGE FILTER
+        const priceSlider = document.getElementById('priceRange');
+        const priceDisplay = document.getElementById('priceDisplay');
+
+        if (priceSlider) {
+            priceSlider.addEventListener('input', function () {
+                const maxPrice = parseInt(this.value);
+
+                if (priceDisplay) {
+                    priceDisplay.textContent = maxPrice.toLocaleString('vi-VN') + ' đ';
+                }
+
+                if (ticketsGrid) {
+                    const cards = ticketsGrid.querySelectorAll('.ticket-card');
+                    cards.forEach(card => {
+                        const price = extractPrice(card);
+                        card.style.display = price <= maxPrice ? 'block' : 'none';
+                    });
+                }
+                console.log('✅ Price filtered: Max', maxPrice);
+            });
+        }
+
+        console.log('✅ All ticket filters ready');
+    });
+</script>

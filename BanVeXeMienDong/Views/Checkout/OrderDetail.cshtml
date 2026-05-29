@@ -1,0 +1,352 @@
+@model BanVeXeMienDong.Models.Order
+
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
+}
+
+<div class="order-detail-container">
+    <div class="order-detail-header">
+        <a href="/Checkout/MyOrders" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Quay Lại
+        </a>
+        <h1>Chi Tiết Đơn Hàng</h1>
+        <span class="status-badge @("status-" + Model.Status.ToLower())">
+            @Model.Status
+        </span>
+    </div>
+
+    <!-- Order Information -->
+    <div class="order-info-section">
+        <div class="info-card">
+            <h3>Thông Tin Đơn Hàng</h3>
+            <div class="info-row">
+                <label>Mã Đơn:</label>
+                <span class="value">@Model.OrderCode</span>
+            </div>
+            <div class="info-row">
+                <label>Ngày Đặt:</label>
+                <span class="value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</span>
+            </div>
+            <div class="info-row">
+                <label>Trạng Thái:</label>
+                <span class="value">
+                    <span class="status-badge @("status-" + Model.Status.ToLower())">
+                        @Model.Status
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>Thông Tin Thanh Toán</h3>
+            <div class="info-row">
+                <label>Phương Thức:</label>
+                <span class="value">@Model.PaymentMethod</span>
+            </div>
+            <div class="info-row">
+                <label>Số Điện Thoại:</label>
+                <span class="value">@Model.PhoneNumber</span>
+            </div>
+            <div class="info-row">
+                <label>Email:</label>
+                <span class="value">@Model.Email</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="order-items-section">
+        <h3>Vé Xe Đã Đặt</h3>
+        @{
+            var items = ViewBag.Items as List<BanVeXeMienDong.Models.CartItem>;
+            if (items != null && items.Count > 0)
+            {
+                <div class="items-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tuyến Đường</th>
+                                <th>Ghế</th>
+                                <th>Loại Xe</th>
+                                <th>Giờ Khởi Hành</th>
+                                <th>Giá</th>
+                                <th>Số Lượng</th>
+                                <th>Thành Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in items)
+                            {
+                                <tr>
+                                    <td>@item.Route</td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">@item.Seats</span>
+                                    </td>
+                                    <td>@item.BusClass</td>
+                                    <td>@item.DepartureTime</td>
+                                    <td>@item.Price.ToString("N0") đ</td>
+                                    <td>@item.Quantity</td>
+                                    <td><strong>@(item.Price * item.Quantity).ToString("N0") đ</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Order Total -->
+    <div class="order-total-section">
+        <div class="total-box">
+            <span class="total-label">Tổng Tiền:</span>
+            <span class="total-amount">@Model.TotalAmount.ToString("N0") đ</span>
+        </div>
+    </div>
+
+    <!-- Order Actions -->
+    <div class="order-actions">
+        @if (Model.Status == "Confirmed")
+        {
+            <a href="/Checkout/CancelOrder/@Model.Id" class="btn btn-danger" onclick="return confirm('Bạn chắc chắn muốn hủy đơn hàng?')">
+                <i class="bi bi-x-circle"></i> Hủy Đơn Hàng
+            </a>
+        }
+        <a href="/Checkout/MyOrders" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Quay Lại Danh Sách
+        </a>
+    </div>
+</div>
+
+<style>
+    .order-detail-container {
+        padding: 30px 0;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .order-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .order-detail-header h1 {
+        margin: 0;
+        font-weight: 700;
+        color: #333;
+        flex: 1;
+    }
+
+    .order-detail-header .btn {
+        order: -1;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        display: inline-block;
+    }
+
+    .status-badge.status-confirmed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .order-info-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-card h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-row label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .info-row .value {
+        color: #333;
+        text-align: right;
+    }
+
+    .order-items-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .order-items-section h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .items-table {
+        overflow-x: auto;
+    }
+
+    .items-table table {
+        margin-bottom: 0;
+    }
+
+    .items-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .items-table td {
+        padding: 15px 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .items-table tbody tr:hover {
+        background: #f9f9f9;
+    }
+
+    .order-total-section {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 30px;
+    }
+
+    .total-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px 40px;
+        border-radius: 8px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        min-width: 300px;
+        justify-content: space-between;
+    }
+
+    .total-label {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .total-amount {
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .order-actions .btn {
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-danger {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background: #ee5a5a;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #868e96;
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background: #748088;
+        color: white;
+    }
+
+    @@media (max-width: 768px) {
+        .order-detail-container {
+            padding: 15px;
+        }
+
+        .order-detail-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .order-detail-header h1 {
+            order: 1;
+        }
+
+        .order-detail-header .btn {
+            order: 0;
+        }
+
+        .order-info-section {
+            grid-template-columns: 1fr;
+        }
+
+        .total-box {
+            width: 100%;
+            min-width: unset;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .items-table {
+            font-size: 14px;
+        }
+
+        .items-table td {
+            padding: 10px 5px;
+        }
+    }
+</style>

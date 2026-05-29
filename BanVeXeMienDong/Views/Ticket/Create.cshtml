@@ -1,0 +1,442 @@
+@model BanVeXeMienDong.Models.BusInfo
+
+@{
+    ViewData["Title"] = "Bán vé xe";
+    var busClassName = Model.BusClass == BusClass.Standard ? "Xe Thường" : "Xe Cao Cấp";
+}
+
+<link rel="stylesheet" href="~/css/seats.css" asp-append-version="true" />
+
+<style>
+    .trip-info-header {
+        background: linear-gradient(135deg, #ffe8e8 0%, #fff5f5 100%);
+        border: 2px solid #e74c3c;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .trip-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .trip-item {
+        text-align: center;
+    }
+
+    .trip-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.3rem;
+    }
+
+    .trip-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #ddd;
+        color: #666;
+        font-weight: bold;
+        margin: 0 auto 0.3rem;
+        font-size: 0.9rem;
+    }
+
+    .step.completed .step-number {
+        background: #27ae60;
+        color: white;
+    }
+
+    .step.active .step-number {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
+        color: #666;
+    }
+</style>
+
+<div class="page-title">
+    <i class="bi bi-plus-circle"></i>
+    <span>Chọn Ghế - <span class="bus-class-badge" style="background: @(Model.BusClass == BusClass.Standard ? "#3498db" : "#f39c12"); padding: 0.3rem 0.8rem; border-radius: 10px; font-size: 0.85rem;">@busClassName</span></span>
+</div>
+
+<!-- Step Indicator -->
+<div class="step-indicator">
+    <div class="step completed">
+        <div class="step-number">1</div>
+        <div class="step-label">Ngày & Giờ</div>
+    </div>
+    <div class="step completed">
+        <div class="step-number">2</div>
+        <div class="step-label">Tuyến</div>
+    </div>
+    <div class="step completed">
+        <div class="step-number">3</div>
+        <div class="step-label">Hạng Xe</div>
+    </div>
+    <div class="step active">
+        <div class="step-number">4</div>
+        <div class="step-label">Chọn Ghế</div>
+    </div>
+</div>
+
+<!-- Trip Information Header -->
+<div class="trip-info-header">
+    <div class="trip-info">
+        <div class="trip-item">
+            <div class="trip-label">📍 Tuyến Đường</div>
+            <div class="trip-value">@ViewBag.DiemDi → @ViewBag.DiemDen</div>
+        </div>
+        <div class="trip-item">
+            <div class="trip-label">📅 & ⏰ Khởi Hành</div>
+            <div class="trip-value">@ViewBag.NgayGio.ToString("dd/MM/yyyy HH:mm")</div>
+        </div>
+        <div class="trip-item">
+            <div class="trip-label">🚌 Hạng Xe</div>
+            <div class="trip-value">@busClassName</div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.Errors != null && ((List<string>)ViewBag.Errors).Count > 0)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle"></i> <strong>⚠️ Thông báo!</strong> 
+        <ul class="mb-0 mt-2">
+            @foreach (var error in (List<string>)ViewBag.Errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bi bi-info-circle"></i> @ViewBag.Message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Ticket Form Section -->
+        <form method="post" class="needs-validation" id="ticketForm">
+            <input type="hidden" id="selectedSeat" name="SoGhe" />
+            <input type="hidden" name="busClassValue" value="@(ViewBag.BusClassValue ?? 0)" />
+            <input type="hidden" id="busClassHidden" value="@(ViewBag.BusClassValue ?? 0)" />
+            <input type="hidden" id="diemDi" name="DiemDi" value="@ViewBag.DiemDi" />
+            <input type="hidden" id="diemDen" name="DiemDen" value="@ViewBag.DiemDen" />
+            <input type="hidden" id="ngayGio" name="NgayDi" value="@ViewBag.NgayGio.ToString("yyyy-MM-ddTHH:mm:ss")" />
+
+        <!-- Seat Selection Section -->
+        <div class="seat-container @(Model.BusClass == BusClass.Premium ? "premium" : "")">
+            <h5 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">
+                <i class="bi bi-bus-front"></i> Chọn ghế ngồi
+            </h5>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-seat legend-available"></div>
+                    <span>Trống</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-seat legend-selected"></div>
+                    <span>Đã chọn</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-seat legend-booked"><i class="bi bi-check"></i></div>
+                    <span>Đã bán</span>
+                </div>
+                @if (ViewBag.SelectedSeatsFromCart != null && ((List<string>)ViewBag.SelectedSeatsFromCart).Count > 0)
+                {
+                    <div class="legend-item">
+                        <div class="legend-seat" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); border-color: #d68910;"><span style="font-size: 0.8rem;">📌</span></div>
+                        <span>Đã chọn trước</span>
+                    </div>
+                }
+            </div>
+
+            <div style="text-align: center; margin-bottom: 1rem; background: #fff3cd; padding: 1rem; border-radius: 8px; color: #856404;">
+                <i class="bi bi-info-circle"></i> <strong>Mẹo:</strong> Bạn có thể nhấn Ctrl (hoặc Cmd) và chọn nhiều ghế cùng lúc
+            </div>
+
+            <div class="bus-visualization @(Model.BusClass == BusClass.Premium ? "premium" : "")">
+                <div style="text-align: center; margin-bottom: 1rem; color: #7f8c8d; font-weight: 600;">
+                    <i class="bi bi-front"></i> PHÍA TRƯỚC <i class="bi bi-front"></i>
+                </div>
+
+                @{
+                    var rows = Model.Seats.GroupBy(s => s.SeatCode[0]).OrderBy(g => g.Key);
+                    
+                    foreach (var row in rows)
+                    {
+                        <div class="seat-row-label">Hàng @row.Key</div>
+                        <div class="seat-row @(Model.BusClass == BusClass.Premium ? "premium" : "")">
+                            @foreach (var seat in row.OrderBy(s => s.SeatCode))
+                            {
+                                var isBooked = !seat.IsAvailable;
+                                var seatClass = isBooked ? "seat-booked" : "seat-available";
+
+                                <button type="button" 
+                                        class="seat @seatClass @(Model.BusClass == BusClass.Premium ? "premium" : "")" 
+                                        data-seat="@seat.SeatCode"
+                                        @(isBooked ? "disabled" : "")
+                                        onclick="selectSeat('@seat.SeatCode', event)">
+                                    @seat.SeatCode
+                                </button>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="selected-seat-display" id="seatDisplay" style="display: none;">
+                <span>Ghế đã chọn:</span>
+                <div class="seat-code" id="seatCode"></div>
+                <small style="display: block; margin-top: 0.5rem; opacity: 0.9;">Chọn Ctrl + ghế để chọn nhiều ghế cùng lúc</small>
+            </div>
+        </div>
+
+            <!-- Customer & Ticket Details Section -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="TenKhachHang">
+                            <i class="bi bi-person-fill"></i> Tên khách hàng
+                        </label>
+                        <input id="TenKhachHang" name="TenKhachHang" type="text" class="form-control" placeholder="Nhập tên khách hàng" required />
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="SoDienThoai">
+                            <i class="bi bi-telephone-fill"></i> Số điện thoại
+                        </label>
+                        <input id="SoDienThoai" name="SoDienThoai" type="text" class="form-control" placeholder="Nhập số điện thoại" required />
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="bi bi-currency-dollar"></i> Giá vé (đồng)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">💵</span>
+                            <input type="text" class="form-control" id="priceDisplay" value="@(Model.BusClass == BusClass.Standard ? "300,000 VND" : "400,000 VND")" disabled />
+                        </div>
+                        <small class="form-text text-muted">
+                            @if (Model.BusClass == BusClass.Standard)
+                            {
+                                <span>Giá vé xe thường: 300,000 VND</span>
+                            }
+                            else
+                            {
+                                <span>Giá vé xe cao cấp: 400,000 VND</span>
+                            }
+                        </small>
+                        <input type="hidden" name="GiaVe" value="@(Model.BusClass == BusClass.Standard ? "300000" : "400000")" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" name="submitType" value="addToCart" class="btn btn-primary-custom flex-grow-1">
+                    <i class="bi bi-bag-plus"></i> Thêm vào giỏ
+                </button>
+                <button type="submit" name="submitType" value="checkout" class="btn btn-success flex-grow-1" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-weight: 600;">
+                    <i class="bi bi-arrow-right-circle"></i> Tiếp tục thanh toán
+                </button>
+                <a href="/Ticket/Index" class="btn btn-outline-secondary flex-grow-1">
+                    <i class="bi bi-x-circle"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let selectedSeats = new Set();
+    let bookedSeatsForDate = [];
+    let previouslySelectedSeats = new Set();  // 👈 GHẾ ĐÃ CHỌN TRƯỚC ĐÓ (HIỂN THỊ NHƯ ĐÃ BÁN)
+
+    // 🔄 Khởi tạo: Fetch booked seats khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+        // 👉 NẾU CÓ GHẾ ĐÃ CHỌN TRƯỚC ĐÓ → KHÔI PHỤC
+        @if (ViewBag.SelectedSeatsFromCart != null)
+        {
+            var seatsArray = (List<string>)ViewBag.SelectedSeatsFromCart;
+            <text>
+            previouslySelectedSeats = new Set(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(seatsArray)));
+            selectedSeats = new Set(previouslySelectedSeats);  // Copy vào selectedSeats
+
+            // Highlight các ghế đã chọn trước đó trên form → HIỂN THỊ NHƯ ĐÃ BÁN
+            previouslySelectedSeats.forEach(seatCode => {
+                const seatBtn = document.querySelector(`button[data-seat="${seatCode}"]`);
+                if (seatBtn) {
+                    seatBtn.classList.add('seat-booked');  // 👈 HIỂN THỊ NHƯ ĐÃ BÁN
+                    seatBtn.classList.add('seat-previously-selected');
+                    seatBtn.disabled = true;  // 👈 KHÔNG CHO THAY ĐỔI
+                }
+            });
+
+            // Cập nhật display
+            const seatsArray = Array.from(selectedSeats).sort();
+            document.getElementById('selectedSeat').value = seatsArray.join(',');
+            document.getElementById('seatCode').textContent = seatsArray.join(', ');
+            document.getElementById('seatDisplay').style.display = 'block';
+            </text>
+        }
+
+        fetchBookedSeats();
+    });
+
+    // Function to fetch booked seats based on date and route
+    function fetchBookedSeats() {
+        const selectedDate = document.getElementById('NgayDi').value;
+        const diemDi = document.getElementById('DiemDi').value;
+        const diemDen = document.getElementById('DiemDen').value;
+
+        if (!selectedDate || !diemDi || !diemDen) return;
+
+        const busClass = document.getElementById('busClassHidden').value;
+
+        // Fetch booked seats for this date and route
+        fetch(`/Ticket/GetBookedSeats?date=${selectedDate}&busClass=${busClass}&diemDi=${encodeURIComponent(diemDi)}&diemDen=${encodeURIComponent(diemDen)}`)
+            .then(response => response.json())
+            .then(data => {
+                bookedSeatsForDate = data;
+
+                // 👉 THÊM CÁC GHẾ ĐÃ CHỌN TRƯỚC VÀO DANH SÁCH BOOKED
+                // Để chúng được hiển thị như "đã bán"
+                previouslySelectedSeats.forEach(seat => {
+                    if (!bookedSeatsForDate.includes(seat)) {
+                        bookedSeatsForDate.push(seat);
+                    }
+                });
+
+                console.log('📌 Ghế đã đặt:', bookedSeatsForDate);
+                updateSeatVisuals();
+            })
+            .catch(error => console.error('❌ Lỗi lấy ghế:', error));
+    }
+
+    // When date changes, reload booked seats for that date and route
+    document.getElementById('NgayDi').addEventListener('change', fetchBookedSeats);
+
+    // When route changes, reload booked seats for that route
+    document.getElementById('DiemDi').addEventListener('change', fetchBookedSeats);
+    document.getElementById('DiemDen').addEventListener('change', fetchBookedSeats);
+
+    function updateSeatVisuals() {
+        // Update all seat visuals based on booked seats for selected date
+        document.querySelectorAll('.seat').forEach(seatBtn => {
+            const seatCode = seatBtn.getAttribute('data-seat');
+            const isBooked = bookedSeatsForDate.includes(seatCode);
+
+            // Remove all seat status classes
+            seatBtn.classList.remove('seat-available', 'seat-booked', 'seat-selected');
+
+            // Re-apply status classes
+            if (selectedSeats.has(seatCode)) {
+                seatBtn.classList.add('seat-selected');
+                seatBtn.disabled = false;
+            } else if (isBooked) {
+                seatBtn.classList.add('seat-booked');
+                seatBtn.disabled = true;
+            } else {
+                seatBtn.classList.add('seat-available');
+                seatBtn.disabled = false;
+            }
+        });
+    }
+
+    function selectSeat(seatCode, event) {
+        event.preventDefault();
+
+        // ⚠️ KIỂM TRA: Không cho phép thay đổi ghế đã chọn trước đó
+        if (previouslySelectedSeats.has(seatCode)) {
+            alert('⚠️ Ghế ' + seatCode + ' đã được chọn trước đó và không thể thay đổi!');
+            return;
+        }
+
+        // ⚠️ Kiểm tra: Không cho phép chọn ghế đã đặt
+        if (bookedSeatsForDate.includes(seatCode)) {
+            alert('❌ Ghế ' + seatCode + ' đã được đặt!');
+            return;
+        }
+
+        // Check if Ctrl or Cmd is pressed for multiple selection
+        const isMultipleSelection = event.ctrlKey || event.metaKey;
+
+        if (!isMultipleSelection) {
+            // Single selection mode - clear previous (nhưng giữ những ghế đã chọn trước đó)
+            document.querySelectorAll('.seat-selected:not(.seat-previously-selected)').forEach(seat => {
+                seat.classList.remove('seat-selected');
+            });
+            // Remove từ selectedSeats những ghế mới chọn (không xóa ghế cũ)
+            for (let seat of selectedSeats) {
+                if (!previouslySelectedSeats.has(seat)) {
+                    selectedSeats.delete(seat);
+                }
+            }
+        }
+
+        // Toggle current seat (nhưng chỉ nếu không phải ghế cũ)
+        if (selectedSeats.has(seatCode) && !previouslySelectedSeats.has(seatCode)) {
+            selectedSeats.delete(seatCode);
+            event.target.classList.remove('seat-selected');
+        } else if (!previouslySelectedSeats.has(seatCode)) {
+            selectedSeats.add(seatCode);
+            event.target.classList.add('seat-selected');
+        }
+
+        // Update hidden input and display
+        const seatsArray = Array.from(selectedSeats).sort();
+        document.getElementById('selectedSeat').value = seatsArray.join(',');
+        document.getElementById('seatCode').textContent = seatsArray.join(', ');
+        document.getElementById('seatDisplay').style.display = seatsArray.length > 0 ? 'block' : 'none';
+    }
+
+    document.getElementById('ticketForm').addEventListener('submit', function(e) {
+        if (selectedSeats.size === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn ít nhất một ghế ngồi trước khi đặt vé!');
+            return false;
+        }
+    });
+</script>

@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bán Vé Xe Miền Đông</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/navbar-modern.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/animations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style-modern.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BanVeXeMienDong.styles.css" asp-append-version="true" />
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark modern-navbar">
+            <div class="container-fluid navbar-container">
+
+                <!-- Logo -->
+                <a class="navbar-brand modern-brand" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-bus-front"></i>
+                    <span>Bán Vé Xe</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-end">
+                    <ul class="navbar-nav ms-auto align-items-center navbar-menu">
+
+                        <!-- Mua vé mới -->
+                        <li class="nav-item">
+                            <a class="nav-link menu-item" asp-controller="Ticket" asp-action="SelectDateTime">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Mua vé mới</span>
+                            </a>
+                        </li>
+
+                        @if (Context.Session.GetString("user") != null)
+                        {
+                            <!-- Giỏ Hàng -->
+                            <li class="nav-item">
+                                <a class="nav-link menu-item cart-menu-item" href="/Cart/Index">
+                                    <i class="bi bi-bag"></i>
+                                    <span>Giỏ Hàng</span>
+                                    <span class="cart-badge">
+                                        @await Component.InvokeAsync("CartCount")
+                                    </span>
+                                </a>
+                            </li>
+
+                            <!-- Admin Menu -->
+                            @if (Context.Session.GetString("role") == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link menu-item admin-item" href="/Admin/Index">
+                                        <i class="bi bi-shield-check"></i>
+                                        <span>Admin</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+
+                        <!-- Divider -->
+                        @if (Context.Session.GetString("user") != null)
+                        {
+                            <li class="nav-item divider"></li>
+                        }
+
+                        <!-- User Section -->
+                        @if (Context.Session.GetString("user") == null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link menu-item login-btn" href="/Account/Login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    <span>Đăng nhập</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link menu-item register-btn" href="/Account/Register">
+                                    <i class="bi bi-person-plus"></i>
+                                    <span>Đăng ký</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- User Badge -->
+                            <li class="nav-item user-section">
+                                <div class="user-info-badge">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span class="username">@Context.Session.GetString("user")</span>
+                                </div>
+                            </li>
+
+                            <!-- Đăng xuất -->
+                            <li class="nav-item">
+                                <a class="nav-link menu-item logout-btn" href="/Account/Logout">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Đăng xuất</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <style>
+        .admin-link {
+            background-color: #f5576c;
+            color: white !important;
+            border-radius: 6px;
+            padding: 8px 12px !important;
+            transition: all 0.3s;
+        }
+
+        .admin-link:hover {
+            background-color: #e74c63;
+            transform: scale(1.05);
+        }
+
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-badge {
+            background-color: #e7f5ff;
+            color: #1971c2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+    </style>
+
+
+    <main role="main" class="pb-3">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- FIX LỖI SCRIPT -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/cart-update.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+@model BanVeXeMienDong.Models.Order
+
+@{
+    ViewData["Title"] = "Xác Nhận Đơn Hàng";
+}
+
+<div class="confirmation-container">
+    <div class="success-box">
+        <div class="success-icon">
+            <i class="bi bi-check-circle"></i>
+        </div>
+
+        <h1>✅ Thanh Toán Thành Công!</h1>
+
+        <p class="message">
+            Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được xác nhận.
+        </p>
+
+        <div class="order-details">
+            <h3>📋 Chi Tiết Đơn Hàng</h3>
+
+            <div class="detail-row">
+                <span class="label">Mã Đơn Hàng:</span>
+                <span class="value">@Model.OrderCode</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Ngày Đặt:</span>
+                <span class="value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Phương Thức Thanh Toán:</span>
+                <span class="value">@Model.PaymentMethod</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Số Điện Thoại:</span>
+                <span class="value">@Model.PhoneNumber</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Email:</span>
+                <span class="value">@Model.Email</span>
+            </div>
+
+            <div class="detail-row total">
+                <span class="label">Tổng Cộng:</span>
+                <span class="value">@Model.TotalAmount.ToString("N0") VND</span>
+            </div>
+        </div>
+
+        <div class="order-items">
+            <h3>🎫 Thông Tin Vé</h3>
+
+            @if (ViewBag.Items != null)
+            {
+                @foreach (var item in ViewBag.Items)
+                {
+                    <div class="item-card">
+                        <div class="item-route">
+                            <i class="bi bi-bus-front"></i>
+                            <strong>@item.Route</strong>
+                        </div>
+                        <div class="item-details">
+                            <p><span class="label">Ghế:</span> @item.Seats</p>
+                            <p><span class="label">Loại Xe:</span> @item.BusClass</p>
+                            <p><span class="label">Giờ Khởi Hành:</span> @item.DepartureTime</p>
+                            <p><span class="label">Giá:</span> @item.Price.ToString("N0") VND x @item.Quantity</p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="next-steps">
+            <h3>📝 Bước Tiếp Theo</h3>
+            <ul>
+                <li>✅ Vé của bạn sẽ được gửi qua email trong vòng 5 phút</li>
+                <li>✅ Quý khách vui lòng kiểm tra email để nhận vé</li>
+                <li>✅ Xuất trình vé khi lên xe hoặc tại quầy vé</li>
+                <li>✅ Lưu mã đơn hàng để theo dõi trạng thái</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/Checkout/MyOrders" class="btn btn-primary">
+                <i class="bi bi-list-check"></i> Xem Đơn Hàng của Tôi
+            </a>
+            <a href="/Ticket/Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Tiếp Tục Mua Vé
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .confirmation-container {
+        padding: 30px 0;
+    }
+
+    .success-box {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        padding: 40px;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .success-icon {
+        margin-bottom: 20px;
+    }
+
+    .success-icon i {
+        font-size: 80px;
+        color: #51cf66;
+    }
+
+    h1 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .order-details,
+    .order-items,
+    .next-steps {
+        margin-bottom: 30px;
+        text-align: left;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-row.total {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .label {
+        color: #666;
+        font-weight: 600;
+    }
+
+    .value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .item-card {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        border-left: 4px solid #667eea;
+    }
+
+    .item-route {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .item-route i {
+        font-size: 20px;
+        color: #667eea;
+    }
+
+    .item-details p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .next-steps ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .next-steps li {
+        padding: 10px 0;
+        color: #333;
+        border-bottom: 1px solid #eee;
+    }
+
+    .next-steps li:last-child {
+        border-bottom: none;
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+
+    .btn-secondary {
+        background: #868e96;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #748088;
+    }
+
+    @@media (max-width: 600px) {
+        .success-box {
+            padding: 20px;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

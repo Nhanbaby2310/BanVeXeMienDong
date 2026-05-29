@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Chọn hạng xe";
+}
+
+<link rel="stylesheet" href="~/css/bus-class.css" asp-append-version="true" />
+
+<div class="page-title">
+    <i class="bi bi-bus-front"></i>
+    <span>Chọn Hạng Xe</span>
+</div>
+
+<div class="bus-class-selection">
+    <div class="row">
+        <div class="col-md-6">
+            <a href="/Ticket/CreateStandard" class="bus-class-card standard-card">
+                <div class="bus-class-icon">
+                    <i class="bi bi-bus-front"></i>
+                </div>
+                <h3>Xe Thường</h3>
+                <p class="description">Xe khách tiêu chuẩn</p>
+                <ul class="features-list">
+                    <li><i class="bi bi-check-circle"></i> 10 hàng ghế</li>
+                    <li><i class="bi bi-check-circle"></i> 4 ghế mỗi hàng</li>
+                    <li><i class="bi bi-check-circle"></i> Tổng 40 ghế</li>
+                    <li><i class="bi bi-check-circle"></i> Giá cố định</li>
+                </ul>
+                <div class="price-badge" style="font-size: 1.3rem; font-weight: bold; color: #3498db; margin-top: 1rem;">💰 300,000 VND</div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="/Ticket/CreatePremium" class="bus-class-card premium-card">
+                <div class="premium-badge">
+                    <i class="bi bi-star-fill"></i> VIP
+                </div>
+                <div class="bus-class-icon">
+                    <i class="bi bi-bus-front"></i>
+                </div>
+                <h3>Xe Cao Cấp</h3>
+                <p class="description">Xe khách cao cấp VIP</p>
+                <ul class="features-list">
+                    <li><i class="bi bi-check-circle"></i> 8 hàng ghế</li>
+                    <li><i class="bi bi-check-circle"></i> 2 ghế mỗi hàng</li>
+                    <li><i class="bi bi-check-circle"></i> Tổng 16 ghế</li>
+                    <li><i class="bi bi-check-circle"></i> Ghế rộng rãi</li>
+                </ul>
+                <div class="price-badge premium" style="font-size: 1.3rem; font-weight: bold; color: #f39c12; margin-top: 1rem;">💰 400,000 VND</div>
+            </a>
+        </div>
+    </div>
+}

@@ -1,0 +1,462 @@
+@model List<BanVeXeMienDong.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+}
+
+<div class="cart-container">
+    <h1>🛒 Giỏ Hàng của Bạn</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-cart">
+            <i class="bi bi-cart-x"></i>
+            <h3>Giỏ hàng của bạn trống</h3>
+            <p>Hãy thêm vé để tiếp tục mua sắm</p>
+            <a href="/Ticket/SelectRoute" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Tiếp tục mua hàng
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-content">
+            <div class="cart-items">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Tuyến Đường</th>
+                            <th>Ghế</th>
+                            <th>Loại Xe</th>
+                            <th>Giờ Khởi Hành</th>
+                            <th>Giá</th>
+                            <th>Số Lượng</th>
+                            <th>Tổng</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Route</td>
+                                <td>@item.Seats</td>
+                                <td>
+                                    <span class="badge badge-info">@item.BusClass</span>
+                                </td>
+                                <td>@item.DepartureTime</td>
+                                <td>
+                                    <input type="number" class="price-input" value="@item.Price" 
+                                           data-item-id="@item.Id" step="1000" min="0"
+                                           onchange="updatePrice(this)" />
+                                </td>
+                                <td>
+                                    <input type="number" class="quantity-input" value="@item.Quantity" 
+                                           data-item-id="@item.Id" min="1" max="10"
+                                           onchange="updateQuantity(this)" />
+                                </td>
+                                <td class="item-total">@((item.Price * item.Quantity).ToString("N0")) VND</td>
+                                <td>
+                                    <a href="/Cart/RemoveFromCart/@item.Id" class="btn-delete" onclick="return confirm('Bạn có chắc chắn?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cart-summary">
+                <h3>Tóm Tắt Đơn Hàng</h3>
+                
+                <div class="summary-row">
+                    <span>Số mục:</span>
+                    <span>@ViewBag.CartCount</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Tổng Cộng:</span>
+                    <span>@ViewBag.Total.ToString("N0") VND</span>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="/Ticket/SelectRoute" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Tiếp Tục Mua
+                    </a>
+                    <a href="/Checkout/Index" class="btn btn-primary">
+                        <i class="bi bi-credit-card"></i> Thanh Toán
+                    </a>
+                    <a href="/Cart/ClearCart" class="btn btn-danger" onclick="return confirm('Xóa toàn bộ giỏ hàng?')">
+                        <i class="bi bi-trash"></i> Xóa Tất Cả
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .cart-container {
+        padding: 30px 0;
+    }
+
+    .cart-container h1 {
+        margin-bottom: 30px;
+        color: #333;
+        font-weight: 700;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-cart i {
+        font-size: 80px;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+
+    .empty-cart h3 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .empty-cart p {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+
+    .cart-content {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 30px;
+    }
+
+    .cart-items {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cart-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .cart-table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    .cart-table tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+    }
+
+    .cart-table tbody tr:hover {
+        background: #f9f9f9;
+    }
+
+    .cart-table td {
+        padding: 15px;
+        vertical-align: middle;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-info {
+        background-color: #e7f5ff;
+        color: #1971c2;
+    }
+
+    .quantity-form {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .quantity-input {
+        width: 60px;
+        padding: 6px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .price-input {
+        width: 100px;
+        padding: 6px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: right;
+        font-weight: 600;
+        color: #667eea;
+    }
+
+    .quantity-input:focus,
+    .price-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-update {
+        padding: 6px 10px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-update:hover {
+        background: #5568d3;
+    }
+
+    .item-total {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .btn-delete {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #ffe0e0;
+        color: #c92a2a;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-delete:hover {
+        background: #c92a2a;
+        color: white;
+    }
+
+    .cart-summary {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .cart-summary h3 {
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 700;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        color: #666;
+    }
+
+    .summary-row.total {
+        border-bottom: none;
+        border-top: 2px solid #667eea;
+        font-weight: 700;
+        font-size: 18px;
+        color: #333;
+        padding-top: 15px;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+
+    .btn-secondary {
+        background: #868e96;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #748088;
+    }
+
+    .btn-danger {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #ee5a5a;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    @@media (max-width: 768px) {
+        .cart-content {
+            grid-template-columns: 1fr;
+        }
+
+        .cart-summary {
+            position: static;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 10px 5px;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            flex-direction: row;
+            gap: 5px;
+        }
+
+        .btn {
+            padding: 10px 8px;
+            font-size: 12px;
+        }
+    }
+</style>
+
+<script>
+    function updateQuantity(input) {
+        const itemId = input.getAttribute('data-item-id');
+        const newQuantity = parseInt(input.value);
+
+        if (newQuantity < 1) {
+            alert('Số lượng phải >= 1');
+            location.reload();
+            return;
+        }
+
+        // Gửi request cập nhật
+        fetch(`/Cart/UpdateQuantity?itemId=${itemId}&quantity=${newQuantity}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Lỗi cập nhật số lượng');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Lỗi cập nhật số lượng');
+            location.reload();
+        });
+    }
+
+    function updatePrice(input) {
+        const itemId = input.getAttribute('data-item-id');
+        const newPrice = parseInt(input.value);
+
+        if (newPrice < 0) {
+            alert('Giá không thể âm');
+            location.reload();
+            return;
+        }
+
+        // Gửi request cập nhật giá
+        fetch(`/Cart/UpdatePrice?itemId=${itemId}&price=${newPrice}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Lỗi cập nhật giá');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Lỗi cập nhật giá');
+            location.reload();
+        });
+    }
+</script>

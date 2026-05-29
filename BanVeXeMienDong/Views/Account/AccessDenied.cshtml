@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Không Có Quyền";
+}
+
+<div class="access-denied-container">
+    <div class="alert-box alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        <h2>🚫 Không Có Quyền Truy Cập</h2>
+        
+        <p class="message">
+            Xin lỗi, bạn không có quyền để truy cập trang này.
+        </p>
+
+        <div class="alert-text">
+            <strong>Lý do:</strong>
+            <ul>
+                <li>Bạn chưa đăng nhập</li>
+                <li>Tài khoản của bạn không có quyền để truy cập tài nguyên này</li>
+                <li>Phiên đăng nhập của bạn đã hết hạn</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/Account/Login" class="btn btn-primary">
+                <i class="bi bi-box-arrow-in-right"></i> Đăng Nhập
+            </a>
+            <a href="/Home/Index" class="btn btn-secondary">
+                <i class="bi bi-house"></i> Về Trang Chủ
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .access-denied-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 20px;
+    }
+
+    .alert-box {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border: 2px solid #ffc107;
+        border-radius: 10px;
+        padding: 40px;
+        max-width: 500px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+    }
+
+    .alert-box i {
+        font-size: 48px;
+        color: #ff6b6b;
+        margin-bottom: 15px;
+    }
+
+    .alert-box h2 {
+        color: #333;
+        margin: 20px 0;
+        font-size: 28px;
+    }
+
+    .message {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .alert-text {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .alert-text strong {
+        color: #333;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .alert-text ul {
+        margin: 10px 0;
+        padding-left: 20px;
+        color: #666;
+    }
+
+    .alert-text li {
+        margin: 8px 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background-color: #ff6b6b;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #ee5a5a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-secondary {
+        background-color: #868e96;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #748088;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 142, 150, 0.4);
+    }
+
+    @@media (max-width: 600px) {
+        .alert-box {
+            padding: 25px;
+        }
+
+        .alert-box h2 {
+            font-size: 24px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>

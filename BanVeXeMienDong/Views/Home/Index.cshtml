@@ -1,0 +1,405 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ - Bán Vé Xe Miền Đông";
+}
+
+<link rel="stylesheet" href="~/css/home-modern.css" asp-append-version="true" />
+
+<!-- Header Promo Banner -->
+<div class="promo-banner">
+    <div class="promo-container">
+        <span class="promo-text">🌟 Cam kết hoàn tiền nếu nhà xe không cung cấp dịch vụ vận chuyển ✈️ | 💎 Đón hàng của tôi</span>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <!-- Flash Sale Banner -->
+        <div class="flash-sale-banner">
+            <div class="sale-text">
+                <span class="sale-label">FLASH SALE</span>
+                <span class="sale-label sale-label-secondary">Mừng Đại Lễ</span>
+                <span class="sale-discount">Giảm đến 50%</span>
+            </div>
+        </div>
+
+        <!-- Search Form -->
+        <div class="search-box">
+            <!-- Service Tabs -->
+            <div class="service-tabs">
+                <button class="tab-btn active" data-service="bus">
+                    <i class="bi bi-bus-front"></i> Xe khách
+                    <span class="tab-badge">-30k</span>
+                </button>
+            </div>
+
+            <!-- Search Inputs -->
+            <form class="search-form" method="GET" action="/Ticket/SelectRoute">
+                <div class="search-row">
+                    <div class="search-group autocomplete-group">
+                        <label class="search-label">
+                            <i class="bi bi-dot"></i> Nơi xuất phát
+                        </label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" name="diemDi" id="searchFrom" placeholder="Chọn nơi xuất phát" class="search-input autocomplete-input" required autocomplete="off">
+                            <div id="fromSuggestions" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="swap-btn" title="Đổi chiều">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </button>
+
+                    <div class="search-group autocomplete-group">
+                        <label class="search-label">
+                            <i class="bi bi-geo-fill"></i> Nơi đến
+                        </label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" name="diemDen" id="searchTo" placeholder="Chọn nơi đến" class="search-input autocomplete-input" required autocomplete="off">
+                            <div id="toSuggestions" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-row">
+                    <div class="search-group">
+                        <label class="search-label">
+                            <i class="bi bi-calendar-event"></i> Ngày đi
+                        </label>
+                        <input type="date" name="ngayDi" id="searchDate" class="search-input" required>
+                    </div>
+
+                    <div class="search-group">
+                        <label class="search-label">
+                            <i class="bi bi-plus-lg"></i> Thêm ngày về
+                        </label>
+                        <input type="date" id="returnDate" class="search-input">
+                    </div>
+
+                    <button type="submit" class="search-btn">
+                        <i class="bi bi-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="benefits-section">
+            <div class="benefit-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Chắc chắn có chỗ</span>
+            </div>
+            <div class="benefit-item">
+                <i class="bi bi-headphones"></i>
+                <span>Hỗ trợ 24/7</span>
+            </div>
+            <div class="benefit-item">
+                <i class="bi bi-star-fill"></i>
+                <span>Nhiều ưu đãi</span>
+            </div>
+            <div class="benefit-item">
+                <i class="bi bi-check2-all"></i>
+                <span>Thanh toán đa dạng</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Routes Section -->
+<div class="popular-routes-section">
+    <h2 class="section-title">Tuyến Đường Phổ Biến</h2>
+
+    <div class="routes-grid">
+        @{
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+        }
+
+        <a href="/Ticket/Index?diemDi=HCM&diemDen=Cần Thơ&ngayDi=@today" class="route-card route-link">
+            <div class="route-image">
+                <img src="/images/routes/sai-gon-can-tho.svg" alt="Sài Gòn - Cần Thơ" loading="lazy">
+            </div>
+            <div class="route-content">
+                <h3>Sài Gòn → Cần Thơ</h3>
+                <p class="route-price">Từ 150.000đ</p>
+            </div>
+        </a>
+
+        <a href="/Ticket/Index?diemDi=Hà Nội&diemDen=Hải Phòng&ngayDi=@today" class="route-card route-link">
+            <div class="route-image">
+                <img src="/images/routes/ha-noi-hai-phong.svg" alt="Hà Nội - Hải Phòng" loading="lazy">
+            </div>
+            <div class="route-content">
+                <h3>Hà Nội → Hải Phòng</h3>
+                <p class="route-price">Từ 100.000đ</p>
+            </div>
+        </a>
+
+        <a href="/Ticket/Index?diemDi=Đà Nẵng&diemDen=HCM&ngayDi=@today" class="route-card route-link">
+            <div class="route-image">
+                <img src="/images/routes/da-nang-hcm.svg" alt="Đà Nẵng - TP.HCM" loading="lazy">
+            </div>
+            <div class="route-content">
+                <h3>Đà Nẵng → TP.HCM</h3>
+                <p class="route-price">Từ 450.000đ</p>
+            </div>
+        </a>
+
+        <a href="/Ticket/Index?diemDi=Hà Nội&diemDen=Đà Nẵng&ngayDi=@today" class="route-card route-link">
+            <div class="route-image">
+                <img src="/images/routes/hue-sai-gon.svg" alt="Huế - Sài Gòn" loading="lazy">
+            </div>
+            <div class="route-content">
+                <h3>Hà Nội → Đà Nẵng</h3>
+                <p class="route-price">Từ 350.000đ</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <h2 class="section-title">Tại Sao Chọn Chúng Tôi?</h2>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h3>100% An Toàn</h3>
+            <p>Đảm bảo an toàn hành khách với các tiêu chí chất lượng cao</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <h3>Đúng Giờ</h3>
+            <p>Xuất phát đúng thời gian với tài xế chuyên nghiệp</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-telephone"></i>
+            </div>
+            <h3>Hỗ Trợ 24/7</h3>
+            <p>Đội ngũ hỗ trợ khách hàng sẵn sàng giúp đỡ bất cứ lúc nào</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-cash-coin"></i>
+            </div>
+            <h3>Giá Tốt Nhất</h3>
+            <p>Cạnh tranh giá và các chương trình khuyến mãi hấp dẫn</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-airplane"></i>
+            </div>
+            <h3>Nhiều Chuyến</h3>
+            <p>Hàng ngàn chuyến xe mỗi ngày đến khắp nơi</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-star-fill"></i>
+            </div>
+            <h3>4.8/5 Sao</h3>
+            <p>Được tin tưởng bởi hàng triệu hành khách Việt Nam</p>
+        </div>
+    </div>
+</div>
+
+<!-- Download App Section -->
+<div class="download-app-section">
+    <div class="download-content">
+        <h2>Tải Ứng Dụng Ngay</h2>
+        <p>Mua vé xe dễ dàng hơn với ứng dụng di động</p>
+        <div class="download-buttons">
+            <a href="#" class="download-btn">
+                <i class="bi bi-apple"></i> App Store
+            </a>
+            <a href="#" class="download-btn">
+                <i class="bi bi-google-play"></i> Google Play
+            </a>
+        </div>
+    </div>
+    <div class="download-image">
+        <img src="/images/app-mockup.png" alt="App Mockup" onerror="this.src='https://via.placeholder.com/250x400?text=App'">
+    </div>
+</div>
+
+<!-- Quick Access Section -->
+<div class="quick-access-section">
+    <h2 class="section-title">Truy Cập Nhanh</h2>
+
+    <div class="quick-access-grid">
+        <a href="/Ticket/Index" class="quick-access-card">
+            <div class="quick-icon">
+                <i class="bi bi-list-check"></i>
+            </div>
+            <h3>Danh Sách Vé</h3>
+            <p>Xem tất cả vé đã bán</p>
+            <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+        </a>
+
+        <a href="/Ticket/SelectDateTime" class="quick-access-card">
+            <div class="quick-icon">
+                <i class="bi bi-plus-circle-fill"></i>
+            </div>
+            <h3>Mua Vé Mới</h3>
+            <p>Mua vé mới cho khách hàng</p>
+            <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+        </a>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <h2 class="section-title">Hệ Thống Bán Vé</h2>
+
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">40</div>
+            <div class="stat-label">Ghế Xe</div>
+            <div class="stat-description">Sức chứa tối đa trên mỗi chuyến</div>
+        </div>
+
+        <div class="stat-item">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Tuyến Đi</div>
+            <div class="stat-description">Hỗ trợ vô hạn lộ trình</div>
+        </div>
+
+        <div class="stat-item">
+            <div class="stat-value">📱</div>
+            <div class="stat-label">Responsive</div>
+            <div class="stat-description">Tương thích tất cả thiết bị</div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    let allCities = [];
+
+    // Fetch available cities when page loads
+    fetch('/Ticket/GetAvailableCities')
+        .then(response => response.json())
+        .then(data => {
+            allCities = data;
+        })
+        .catch(error => console.error('Error fetching cities:', error));
+
+    // Autocomplete function
+    function setupAutocomplete(inputId, suggestionsId) {
+        const input = document.getElementById(inputId);
+        const suggestionsDiv = document.getElementById(suggestionsId);
+
+        if (!input) return;
+
+        input.addEventListener('input', function () {
+            const value = this.value.trim().toLowerCase();
+
+            if (value.length === 0) {
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+
+            const filtered = allCities.filter(city =>
+                city.toLowerCase().includes(value)
+            );
+
+            if (filtered.length === 0) {
+                suggestionsDiv.innerHTML = '<div class="suggestion-item no-results">Không tìm thấy kết quả</div>';
+                return;
+            }
+
+            suggestionsDiv.innerHTML = filtered.map(city =>
+                `<div class="suggestion-item" data-value="${city}">${city}</div>`
+            ).join('');
+
+            // Add click handlers to suggestions
+            document.querySelectorAll(`#${suggestionsId} .suggestion-item`).forEach(item => {
+                item.addEventListener('click', function () {
+                    input.value = this.getAttribute('data-value');
+                    suggestionsDiv.innerHTML = '';
+                });
+            });
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                suggestionsDiv.innerHTML = '';
+            }
+        });
+
+        // Show all cities when input is focused
+        input.addEventListener('focus', function () {
+            if (this.value.trim().length === 0 && allCities.length > 0) {
+                suggestionsDiv.innerHTML = allCities.map(city =>
+                    `<div class="suggestion-item" data-value="${city}">${city}</div>`
+                ).join('');
+
+                document.querySelectorAll(`#${suggestionsId} .suggestion-item`).forEach(item => {
+                    item.addEventListener('click', function () {
+                        input.value = this.getAttribute('data-value');
+                        suggestionsDiv.innerHTML = '';
+                    });
+                });
+            }
+        });
+    }
+
+    // Setup autocomplete for both inputs
+    setupAutocomplete('searchFrom', 'fromSuggestions');
+    setupAutocomplete('searchTo', 'toSuggestions');
+
+    // Swap button functionality
+    const swapBtn = document.querySelector('.swap-btn');
+    if (swapBtn) {
+        swapBtn.addEventListener('click', function () {
+            const from = document.getElementById('searchFrom');
+            const to = document.getElementById('searchTo');
+            const temp = from.value;
+            from.value = to.value;
+            to.value = temp;
+        });
+    }
+
+    // Set default date to today
+    const dateInput = document.getElementById('searchDate');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        dateInput.min = today;
+    }
+
+    // Set return date constraints
+    const returnDateInput = document.getElementById('returnDate');
+    if (returnDateInput && dateInput) {
+        dateInput.addEventListener('change', function () {
+            returnDateInput.min = this.value;
+        });
+    }
+
+    // Search form submission
+    const searchForm = document.querySelector('.search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function (e) {
+            const from = document.getElementById('searchFrom').value;
+            const to = document.getElementById('searchTo').value;
+            const date = document.getElementById('searchDate').value;
+
+            if (!from || !to || !date) {
+                e.preventDefault();
+                alert('Vui lòng điền đầy đủ thông tin tìm kiếm!');
+            }
+        });
+    }
+});
+</script>

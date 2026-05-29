@@ -1,0 +1,1359 @@
+@model List<BanVeXeMienDong.Models.Ticket>
+@using BanVeXeMienDong.Models
+
+@{
+    ViewData["Title"] = "Danh sách vé xe - Bán Vé Xe Miền Đông";
+}
+
+<link rel="stylesheet" href="~/css/search-results-vexere.css" asp-append-version="true" />
+
+<div class="page-container">
+    <!-- Header -->
+    <div class="vexere-header">
+        <div class="header-left">
+            <h1>🚌 Bán Vé Xe Miền Đông</h1>
+        </div>
+        <div class="header-right">
+            <a href="/" class="header-btn">← Quay Lại</a>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="search-section" style="max-width: 1400px; margin: 0 auto 20px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+        <form method="get" action="/Ticket/SelectRoute" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-weight: 600; color: #374151; font-size: 13px;">Điểm đi</label>
+                <select name="diemDi" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #1f2937;">
+                    <option value="">-- Chọn điểm đi --</option>
+                    @if (ViewBag.Routes != null)
+                    {
+                        var routesList = (IEnumerable<dynamic>)ViewBag.Routes;
+                        var fromPoints = routesList.Cast<dynamic>().Select(r => (string)r.DiemDi).Distinct().ToList();
+                        foreach (var point in fromPoints)
+                        {
+                            if (ViewBag.DiemDi == point)
+                            {
+                                <option value="@point" selected>@point</option>
+                            }
+                            else
+                            {
+                                <option value="@point">@point</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-weight: 600; color: #374151; font-size: 13px;">Điểm đến</label>
+                <select name="diemDen" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #1f2937;">
+                    <option value="">-- Chọn điểm đến --</option>
+                    @if (ViewBag.Routes != null)
+                    {
+                        var routesList = (IEnumerable<dynamic>)ViewBag.Routes;
+                        var toPoints = routesList.Cast<dynamic>().Select(r => (string)r.DiemDen).Distinct().ToList();
+                        foreach (var point in toPoints)
+                        {
+                            if (ViewBag.DiemDen == point)
+                            {
+                                <option value="@point" selected>@point</option>
+                            }
+                            else
+                            {
+                                <option value="@point">@point</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-weight: 600; color: #374151; font-size: 13px;">Ngày đi</label>
+                <input type="date" name="ngayDi" value="@ViewBag.NgayDi" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #1f2937;">
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="search-btn" style="flex: 1; background: #fbbf24; color: #78350f; padding: 10px 16px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 14px;">
+                    <i class="bi bi-search"></i> Tìm Kiếm
+                </button>
+                <a href="/Ticket/SelectRoute" style="flex: 1; background: #6b7280; color: white; padding: 10px 16px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 14px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i class="bi bi-arrow-clockwise"></i> Xóa Lọc
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="search-results-container">
+        <!-- Sidebar Filter -->
+        <aside class="sidebar-filter">
+            <div class="filter-section">
+                <div class="filter-title expandable" onclick="toggleFilter(this)">
+                    Giá Vé
+                    <span class="expand-icon expanded">▼</span>
+                </div>
+                <div class="range-slider-container">
+                    <div class="price-inputs">
+                        <input type="number" id="minPrice" placeholder="Min" value="0">
+                        <input type="number" id="maxPrice" placeholder="Max" value="5000000">
+                    </div>
+                    <input type="range" class="range-slider" id="priceRange" min="0" max="5000000" value="5000000">
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title expandable" onclick="toggleFilter(this)">
+                    Loại Xe
+                    <span class="expand-icon expanded">▼</span>
+                </div>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" value="limousine">
+                        <span>Limousine</span>
+                        <span class="count">12</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="giuong">
+                        <span>Giường nằm</span>
+                        <span class="count">8</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="thuong">
+                        <span>Xe thường</span>
+                        <span class="count">15</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title expandable" onclick="toggleFilter(this)">
+                    Tiện Ích
+                    <span class="expand-icon expanded">▼</span>
+                </div>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" value="wifi">
+                        <span>WiFi</span>
+                        <span class="count">18</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="toilet">
+                        <span>Toilet</span>
+                        <span class="count">14</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="water">
+                        <span>Nước uống</span>
+                        <span class="count">10</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="food">
+                        <span>Đồ ăn</span>
+                        <span class="count">7</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title expandable" onclick="toggleFilter(this)">
+                    Điểm Đón
+                    <span class="expand-icon expanded">▼</span>
+                </div>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" value="center">
+                        <span>Trung tâm thành phố</span>
+                        <span class="count">20</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="airport">
+                        <span>Sân bay</span>
+                        <span class="count">5</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="station">
+                        <span>Bến xe</span>
+                        <span class="count">12</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title expandable" onclick="toggleFilter(this)">
+                    Đánh Giá
+                    <span class="expand-icon expanded">▼</span>
+                </div>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" value="5star">
+                        <span>★★★★★ 4.5+</span>
+                        <span class="count">8</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="4star">
+                        <span>★★★★☆ 4.0-4.5</span>
+                        <span class="count">12</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" value="3star">
+                        <span>★★★☆☆ 3.5-4.0</span>
+                        <span class="count">7</span>
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <!-- Promotion Banner -->
+            <div class="promotion-banner">
+                <span class="promo-icon">⚡</span>
+                <span class="promo-text">FLASH SALE: Giảm đến 50% các chuyến xe trong 24 giờ tới</span>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="results-toolbar">
+                <span class="results-count" id="resultsCount">Kết quả: ... chuyến xe</span>
+                <div class="sort-options">
+                    <button type="button" class="sort-btn active" onclick="sortResults('default')">Mặc định</button>
+                    <button type="button" class="sort-btn" onclick="sortResults('price-asc')">Giá thấp</button>
+                    <button type="button" class="sort-btn" onclick="sortResults('price-desc')">Giá cao</button>
+                    <button type="button" class="sort-btn" onclick="sortResults('time-asc')">Sớm nhất</button>
+                </div>
+            </div>
+
+            <!-- Result Cards -->
+            <div id="resultsContainer">
+                @if (Model != null && Model.Count > 0)
+                {
+                    var tickets = Model;
+                    <script>
+                        document.getElementById('resultsCount').textContent = `Kết quả: ${@tickets.Count} chuyến xe`;
+                    </script>
+
+                    @foreach (var ticket in tickets)
+                    {
+                        var rating = 4.5 + (Random.Shared.NextDouble() * 0.5);
+                        var bookedCount = tickets.Count(t => t.DiemDi == ticket.DiemDi && t.DiemDen == ticket.DiemDen && t.NgayDi.Date == ticket.NgayDi.Date && t.NgayDi.TimeOfDay == ticket.NgayDi.TimeOfDay);
+                        var tripKey = $"{ticket.DiemDi}-{ticket.DiemDen}-{ticket.NgayDi:yyyy-MM-dd HH:mm}";
+
+                        <div class="result-card">
+                            <!-- Image -->
+                            <div class="card-image">
+                                <div class="card-image-placeholder">🚌</div>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="card-info">
+                                <!-- Header: Company & Rating -->
+                                <div class="card-header">
+                                    <div class="bus-company">
+                                        <span class="company-logo">VX</span>
+                                        <span class="company-name">Vé Xe Miền Đông</span>
+                                    </div>
+                                    <div class="rating">
+                                        <span class="rating-stars">★ @rating.ToString("F1")</span>
+                                        <span class="rating-count">(@ticket.HangXe.ToString())</span>
+                                    </div>
+                                </div>
+
+                                <!-- Bus Type -->
+                                <div class="bus-type">@(ticket.HangXe == BusClass.Premium ? "Xe Cao Cấp VIP" : "Xe Tiêu Chuẩn") 40 Chỗ</div>
+
+                                <!-- Trip Details -->
+                                <div class="trip-details">
+                                    <div class="trip-time">
+                                        <div class="time-badge">
+                                            <div class="time">@ticket.NgayDi.ToString("HH:mm")</div>
+                                            <div class="location-point">@ticket.DiemDi</div>
+                                        </div>
+                                    </div>
+                                    <div class="trip-time">
+                                        <div class="time-badge">
+                                            <div class="time">@ticket.NgayDi.AddHours(5).ToString("HH:mm")</div>
+                                            <div class="location-point">@ticket.DiemDen</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="duration" style="text-align: center;">⏱ 5h 30m</div>
+
+                                <!-- Amenities -->
+                                <div class="amenities">
+                                    <span class="amenity-tag">📶 WiFi</span>
+                                    <span class="amenity-tag">🚽 Toilet</span>
+                                    <span class="amenity-tag highlight">💧 Nước</span>
+                                </div>
+                            </div>
+
+                            <!-- Action -->
+                            <div class="card-action">
+                                <div class="price">
+                                    <div class="price-label">Từ</div>
+                                    <div class="price-value">@ticket.GiaVe.ToString("N0")đ</div>
+                                </div>
+                                <div class="seats-remaining">
+                                    Còn <span class="seats-count">39</span> chỗ
+                                </div>
+                                <button type="button" class="choose-btn" onclick="showSeatSelector(this, '@ticket.DiemDi', '@ticket.DiemDen', '@ticket.NgayDi.ToString("yyyy-MM-dd HH:mm:ss")', '@ticket.GiaVe')">Chọn Chuyến</button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">Không tìm thấy chuyến xe</div>
+                        <div class="empty-text">Vui lòng thử thay đổi ngày, nơi xuất phát hoặc nơi đến.</div>
+                    </div>
+                }
+            </div>
+
+            <!-- Inline Seat Selector Section -->
+            <div id="seatSelectorContainer" class="seat-selector-container" style="display: none;">
+                <div class="seat-selector-header">
+                    <h2>Chọn Ghế - <span id="seatTripInfo"></span></h2>
+                    <button type="button" class="close-seat-selector" onclick="closeSeatSelector()">✕</button>
+                </div>
+
+                <div class="seat-selector-content">
+                    <!-- Trip Info Summary -->
+                    <div class="trip-summary">
+                        <div class="trip-info-item">
+                            <span class="trip-label">Tuyến đường:</span>
+                            <span class="trip-value" id="seatTripRoute"></span>
+                        </div>
+                        <div class="trip-info-item">
+                            <span class="trip-label">Ngày giờ:</span>
+                            <span class="trip-value" id="seatTripDateTime"></span>
+                        </div>
+                        <div class="trip-info-item">
+                            <span class="trip-label">Giá vé:</span>
+                            <span class="trip-value" id="seatTripPrice"></span>
+                        </div>
+                    </div>
+
+                    <!-- Seat Map -->
+                    <div class="seat-map-wrapper">
+                        <div class="seat-legend">
+                            <div class="legend-item">
+                                <span class="legend-color available"></span>
+                                <span>Ghế trống</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color selected"></span>
+                                <span>Ghế đã chọn</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color booked"></span>
+                                <span>Ghế đã bán</span>
+                            </div>
+                        </div>
+
+                        <div class="seat-map">
+                            <!-- Bus driver -->
+                            <div class="driver-seat">🚘</div>
+
+                            <!-- Seats Grid -->
+                            <div class="seats-grid" id="seatsGrid">
+                                <!-- Generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Seats Info -->
+                    <div class="selected-seats-info">
+                        <div class="selected-seats-count">
+                            Đã chọn: <span id="selectedSeatsCount">0</span> ghế
+                        </div>
+                        <div class="selected-seats-list" id="selectedSeatsList"></div>
+                    </div>
+
+                    <!-- Purchase Summary Section -->
+                    <div class="purchase-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">Số lượng ghế:</span>
+                            <span class="summary-value" id="summarySeats">0</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-item total">
+                            <span class="summary-label">Tổng cộng:</span>
+                            <span class="summary-value total-price" id="totalPrice">0đ</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Wrapper -->
+                    <div style="display: flex; gap: 12px; align-items: center; width: 100%; box-sizing: border-box; padding: 16px 24px; background: #f9fafb; border-top: 1px solid #e5e7eb; border-radius: 0 0 10px 10px;">
+                        <!-- Continue Button Form -->
+                        <form method="post" action="/Ticket/SelectBusClass" id="continueForm" style="flex: 1;">
+                            <input type="hidden" name="diemDi" id="formDiemDi">
+                            <input type="hidden" name="diemDen" id="formDiemDen">
+                            <input type="hidden" name="ngayGio" id="formNgayGio">
+                            <input type="hidden" name="selectedSeats" id="formSelectedSeats">
+                            <input type="hidden" name="submitType" value="selectBusClass">
+                            <button type="submit" id="continueButton" disabled style="flex: 1; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; opacity: 0.6; width: 100%;">
+                                <span>➜</span>
+                                <span>Tiếp Tục</span>
+                            </button>
+                        </form>
+
+                        <!-- Checkout Button (will add to cart then redirect) -->
+                        <button type="button" id="checkoutButton" disabled style="flex: 1; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; opacity: 0.6; width: 100%;" onclick="handleCheckout()">
+                            <span>💳</span>
+                            <span>Thanh Toán</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // Track selected seats
+    let selectedSeats = [];
+    let currentTrip = null;
+
+    function toggleFilter(element) {
+        const icon = element.querySelector('.expand-icon');
+        const options = element.nextElementSibling;
+
+        if (icon.classList.contains('expanded')) {
+            icon.classList.remove('expanded');
+            options.style.display = 'none';
+        } else {
+            icon.classList.add('expanded');
+            options.style.display = 'flex';
+        }
+    }
+
+    function sortResults(type) {
+        // Add sorting logic here
+        console.log('Sorting by:', type);
+        document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // Seat Selector Functions
+    function showSeatSelector(button, diemDi, diemDen, ngayGio, giaVe) {
+        selectedSeats = [];
+        currentTrip = { diemDi, diemDen, ngayGio, giaVe };
+
+        // Update form hidden fields
+        document.getElementById('formDiemDi').value = diemDi;
+        document.getElementById('formDiemDen').value = diemDen;
+        document.getElementById('formNgayGio').value = ngayGio;
+
+        // Update trip info display
+        const date = new Date(ngayGio);
+        document.getElementById('seatTripInfo').textContent = `${diemDi} → ${diemDen}`;
+        document.getElementById('seatTripRoute').textContent = `${diemDi} → ${diemDen}`;
+        document.getElementById('seatTripDateTime').textContent = date.toLocaleString('vi-VN');
+        document.getElementById('seatTripPrice').textContent = `${parseInt(giaVe).toLocaleString('vi-VN')}đ`;
+
+        // Generate seat map
+        generateSeatMap();
+
+        // Show container and scroll to it
+        const container = document.getElementById('seatSelectorContainer');
+        container.style.display = 'block';
+
+        // Animate slide down
+        container.classList.remove('hidden');
+        container.classList.add('visible');
+
+        // Scroll to seat selector
+        setTimeout(() => {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+
+        console.log('✅ Seat selector opened for:', diemDi, diemDen);
+    }
+
+    function closeSeatSelector() {
+        const container = document.getElementById('seatSelectorContainer');
+        container.classList.remove('visible');
+        container.classList.add('hidden');
+
+        setTimeout(() => {
+            container.style.display = 'none';
+            selectedSeats = [];
+            document.getElementById('selectedSeatsCount').textContent = '0';
+            document.getElementById('selectedSeatsList').innerHTML = '';
+        }, 300);
+    }
+
+    function setSubmitType(type) {
+        document.getElementById('submitTypeInput').value = type;
+
+        // If checkout is selected and user not logged in, redirect to login
+        if (type === 'checkout') {
+            const userId = getSessionUserId();
+            if (!userId) {
+                event.preventDefault();
+                // Store the form data to restore after login
+                const formData = {
+                    diemDi: document.getElementById('formDiemDi').value,
+                    diemDen: document.getElementById('formDiemDen').value,
+                    ngayGio: document.getElementById('formNgayGio').value,
+                    selectedSeats: document.getElementById('formSelectedSeats').value
+                };
+                sessionStorage.setItem('checkoutFormData', JSON.stringify(formData));
+                window.location.href = '/Account/Login';
+                return false;
+            }
+        }
+    }
+
+    function getSessionUserId() {
+        // Check if user is logged in by looking for a data attribute in the page
+        // This should be set by the server in the layout
+        const userElement = document.querySelector('[data-user-id]');
+        return userElement ? userElement.getAttribute('data-user-id') : null;
+    }
+
+    function generateSeatMap() {
+        const seatsGrid = document.getElementById('seatsGrid');
+        seatsGrid.innerHTML = '';
+        selectedSeats = [];
+
+        // Generate 40 seats (8 rows x 5 columns - typical bus layout)
+        const rows = 8;
+        const cols = 5;
+        const bookedSeats = [3, 7, 12, 15, 22, 28, 35, 38]; // Sample booked seats
+
+        for (let i = 1; i <= rows * cols; i++) {
+            const seatDiv = document.createElement('div');
+            seatDiv.className = 'seat';
+            seatDiv.textContent = i;
+
+            // Check if seat is booked
+            if (bookedSeats.includes(i)) {
+                seatDiv.classList.add('booked');
+                seatDiv.style.pointerEvents = 'none';
+            } else {
+                seatDiv.addEventListener('click', function () {
+                    toggleSeatSelection(this, i);
+                });
+                seatDiv.style.cursor = 'pointer';
+            }
+
+            seatsGrid.appendChild(seatDiv);
+        }
+    }
+
+    function toggleSeatSelection(seatElement, seatNumber) {
+        if (seatElement.classList.contains('booked')) return;
+
+        if (seatElement.classList.contains('selected')) {
+            seatElement.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+        } else {
+            seatElement.classList.add('selected');
+            selectedSeats.push(seatNumber);
+        }
+
+        updateSelectedSeatsDisplay();
+    }
+
+    function updateSelectedSeatsDisplay() {
+        document.getElementById('selectedSeatsCount').textContent = selectedSeats.length;
+        document.getElementById('summarySeats').textContent = selectedSeats.length;
+
+        const selectedList = document.getElementById('selectedSeatsList');
+        const continueButton = document.getElementById('continueButton');
+        const checkoutButton = document.getElementById('checkoutButton');
+
+        // Calculate and display total price
+        if (selectedSeats.length > 0) {
+            selectedList.innerHTML = '<strong>Ghế:</strong> ' + selectedSeats.sort((a, b) => a - b).join(', ');
+
+            // Update continue form fields
+            document.getElementById('formSelectedSeats').value = selectedSeats.join(',');
+
+            // Calculate total price
+            const ticketPrice = parseInt(currentTrip.giaVe);
+            const totalPrice = selectedSeats.length * ticketPrice;
+            document.getElementById('totalPrice').textContent = totalPrice.toLocaleString('vi-VN') + 'đ';
+
+            // Enable continue buttons
+            continueButton.disabled = false;
+            checkoutButton.disabled = false;
+
+            // Update button styles when enabled
+            continueButton.style.opacity = '1';
+            continueButton.style.cursor = 'pointer';
+            checkoutButton.style.opacity = '1';
+            checkoutButton.style.cursor = 'pointer';
+        } else {
+            selectedList.innerHTML = '';
+            document.getElementById('formSelectedSeats').value = '';
+
+            // Reset summary display
+            document.getElementById('totalPrice').textContent = '0đ';
+
+            // Disable continue buttons
+            continueButton.disabled = true;
+            checkoutButton.disabled = true;
+
+            // Reset button styles when disabled
+            continueButton.style.opacity = '0.6';
+            continueButton.style.cursor = 'not-allowed';
+            checkoutButton.style.opacity = '0.6';
+            checkoutButton.style.cursor = 'not-allowed';
+        }
+    }
+
+    // Update price filter
+    document.getElementById('priceRange')?.addEventListener('change', function() {
+        document.getElementById('maxPrice').value = this.value;
+    });
+
+    // Update results count
+    window.addEventListener('load', function() {
+        const cardCount = document.querySelectorAll('.result-card').length;
+        document.getElementById('resultsCount').textContent = `Kết quả: ${cardCount} chuyến xe`;
+    });
+
+    // Handle checkout - add to cart then redirect
+    function handleCheckout() {
+        if (!currentTrip) {
+            alert('Vui lòng chọn chuyến xe');
+            return;
+        }
+
+        if (selectedSeats.length === 0) {
+            alert('Vui lòng chọn ghế');
+            return;
+        }
+
+        const diemDi = document.getElementById('formDiemDi').value;
+        const diemDen = document.getElementById('formDiemDen').value;
+        const ngayGio = document.getElementById('formNgayGio').value;
+        const selectedSeatsList = selectedSeats.join(', ');
+        const ticketPrice = parseInt(currentTrip.giaVe);
+        const totalPrice = selectedSeats.length * ticketPrice;
+
+        // Create route string
+        const route = `${diemDi} → ${diemDen}`;
+
+        // Build the AddToCart URL with parameters
+        const params = new URLSearchParams({
+            ticketCode: `VE-${Date.now()}`,
+            route: route,
+            seats: selectedSeatsList,
+            price: ticketPrice,
+            busClass: 'Standard',
+            departureTime: ngayGio
+        });
+
+        // First, add to cart
+        fetch(`/Cart/AddToCart?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // After successfully adding to cart, redirect to checkout
+                window.location.href = '/Checkout/Index';
+            } else {
+                alert('Lỗi khi thêm vào giỏ hàng');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Lỗi: ' + error.message);
+        });
+    }
+</script>
+
+<style>
+    .search-btn {
+        background: #fbbf24 !important;
+        color: #78350f !important;
+    }
+
+    .search-btn:hover {
+        background: #f59e0b !important;
+    }
+
+    /* Continue and Checkout Button Styles */
+    #continueButton:not(:disabled),
+    #checkoutButton:not(:disabled) {
+        opacity: 1 !important;
+        cursor: pointer !important;
+    }
+
+    #continueButton:not(:disabled):hover,
+    #checkoutButton:not(:disabled):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    #continueButton:not(:disabled):active,
+    #checkoutButton:not(:disabled):active {
+        transform: translateY(0);
+    }
+
+    /* Seat Selector Styles */
+    .seat-selector-container {
+        background: white;
+        border-radius: 12px;
+        border: 2px solid #e5e7eb;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        margin: 20px auto;
+        max-width: 850px;
+        overflow: visible;
+        animation: slideDown 0.4s ease-out;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 40px);
+        width: 95%;
+        min-height: auto;
+    }
+
+    .seat-selector-container.hidden {
+        animation: slideUp 0.3s ease-in forwards;
+    }
+
+    .seat-selector-container.visible {
+        animation: slideDown 0.4s ease-out forwards;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+        }
+    }
+
+    .seat-selector-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #5568d3;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .seat-selector-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .close-seat-selector {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .close-seat-selector:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: scale(1.1);
+    }
+
+    .seat-selector-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .trip-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        padding: 14px 16px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        order: 1;
+    }
+
+    .trip-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .trip-label {
+        font-size: 10px;
+        color: #6b7280;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .trip-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+        font-size: 15px;
+        color: #1f2937;
+        font-weight: 700;
+    }
+
+    .seat-map-wrapper {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .seat-legend {
+        display: flex;
+        gap: 16px;
+        padding: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #4b5563;
+        font-weight: 500;
+    }
+
+    .legend-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        border: 2px solid #d1d5db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .legend-color.available {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+    }
+
+    .legend-color.selected {
+        background: #667eea;
+        border-color: #5568d3;
+    }
+
+    .legend-color.booked {
+        background: #9ca3af;
+        border-color: #6b7280;
+    }
+
+    .seat-map {
+        background: white;
+        border-radius: 10px;
+        padding: 16px 12px;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .driver-seat {
+        text-align: center;
+        margin-bottom: 12px;
+        font-size: 20px;
+        color: #6b7280;
+    }
+
+    .seats-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        max-width: 280px;
+        margin: 0 auto;
+    }
+
+    .seat {
+        aspect-ratio: 1;
+        background: #f3f4f6;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #4b5563;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+
+    .seat:not(.booked):hover {
+        background: #e5e7eb;
+        border-color: #9ca3af;
+        transform: scale(1.05);
+    }
+
+    .seat.selected {
+        background: #667eea;
+        border-color: #5568d3;
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .seat.booked {
+        background: #9ca3af;
+        border-color: #6b7280;
+        color: white;
+        opacity: 0.6;
+    }
+
+    .selected-seats-info {
+        background: linear-gradient(135deg, #f0f4ff 0%, #f5f7ff 100%);
+        border: 2px solid #c7d2fe;
+        border-left: 4px solid #667eea;
+        border-radius: 10px;
+        padding: 12px 14px;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    }
+
+    .selected-seats-count {
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 6px;
+        font-size: 13px;
+    }
+
+    #selectedSeatsList {
+        font-size: 13px;
+        color: #4b5563;
+        font-weight: 500;
+    }
+
+    .purchase-summary {
+        background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+        border: 2px solid #86efac;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+        margin: 8px 0;
+    }
+
+    .summary-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .summary-item.total {
+        padding-left: 16px;
+        border-left: 3px solid #22c55e;
+    }
+    }
+
+    .summary-label {
+        display: block;
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+        display: block;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .total-price {
+        color: #10b981;
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .summary-divider {
+        width: 2px;
+        height: 60px;
+        background: linear-gradient(to bottom, transparent, #d1d5db, transparent);
+    }
+
+
+    .seat-selector-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px 24px;
+        border-top: 2px solid #e5e7eb;
+        background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
+        flex-shrink: 0;
+        position: relative;
+        z-index: 20;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        flex-wrap: wrap;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .btn-cancel {
+        padding: 12px 32px;
+        border: 2px solid #d1d5db;
+        background: white;
+        color: #4b5563;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-cancel:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-cancel:active {
+        transform: translateY(0);
+    }
+        background: #e5e7eb;
+        border-color: #9ca3af;
+        transform: translateY(-1px);
+    }
+
+    .btn-cancel:active {
+        transform: translateY(0);
+    }
+
+    .btn-buy {
+        padding: 16px 40px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 200px;
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-continue {
+        padding: 14px 40px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 150px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        white-space: nowrap;
+    }
+
+    .btn-continue::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .btn-continue::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 2px;
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .btn-continue:hover:not(:disabled)::before {
+        left: 100%;
+    }
+
+    .btn-continue:hover:not(:disabled)::after {
+        opacity: 1;
+    }
+
+    .btn-continue:hover:not(:disabled) {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 14px 35px rgba(59, 130, 246, 0.6);
+        background: linear-gradient(135deg, #60a5fa 0%, #2563eb 50%, #1e3a8a 100%);
+    }
+
+    .btn-continue:active:not(:disabled) {
+        transform: translateY(-1px) scale(0.99);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-continue:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-continue-icon {
+        font-size: 20px;
+        animation: continueBounce 2s ease-in-out infinite;
+    }
+
+    .btn-continue:disabled .btn-continue-icon {
+        animation: none;
+    }
+
+    @@keyframes continueBounce {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(4px); }
+    }
+
+    .btn-continue-text {
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .seat-selector-header {
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .close-seat-selector {
+            align-self: flex-end;
+        }
+
+        .seat-selector-header h2 {
+            font-size: 18px;
+        }
+
+        .purchase-summary {
+            flex-direction: column;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-item.total {
+            padding-left: 0;
+            border-left: none;
+            border-top: 3px solid #22c55e;
+            padding-top: 16px;
+        }
+
+        .summary-divider {
+            display: none;
+        }
+
+        .trip-summary {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .seats-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .seat-legend {
+            gap: 12px;
+        }
+
+        .seat-selector-actions {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #seatSelectionForm {
+            width: 100%;
+            flex-direction: column !important;
+        }
+
+        .btn-cancel {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-buy {
+            width: 100%;
+            justify-content: center;
+            min-width: auto;
+            padding: 14px 32px;
+            font-size: 15px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            justify-content: center;
+            min-width: auto;
+            padding: 14px 32px;
+            font-size: 15px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .seat-selector-content {
+            padding: 16px;
+        }
+
+        .trip-summary {
+            padding: 12px;
+        }
+
+        .seats-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .seat {
+            font-size: 12px;
+        }
+
+        .seat-map {
+            padding: 16px;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+        }
+
+        .seat-selector-actions {
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        .btn-buy {
+            padding: 12px 24px;
+            font-size: 14px;
+            gap: 8px;
+        }
+
+        .btn-buy-icon {
+            font-size: 18px;
+        }
+
+        .btn-continue {
+            padding: 12px 24px;
+            font-size: 14px;
+            gap: 8px;
+        }
+
+        .btn-continue-icon {
+            font-size: 18px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+
+        .purchase-summary {
+            padding: 16px 12px;
+            gap: 12px;
+        }
+
+        .summary-value {
+            font-size: 18px;
+        }
+
+        .total-price {
+            font-size: 22px;
+        }
+
+        .summary-label {
+            font-size: 11px;
+        }
+    }
+</style>

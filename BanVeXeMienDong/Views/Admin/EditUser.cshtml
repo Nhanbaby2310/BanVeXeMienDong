@@ -1,0 +1,164 @@
+@model BanVeXeMienDong.Models.User
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Người Dùng";
+}
+
+<div class="edit-user-container">
+    <div class="edit-user-box">
+        <h1>✏️ Chỉnh Sửa Người Dùng</h1>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-circle"></i> @TempData["Error"]
+            </div>
+        }
+
+        <form method="post" class="edit-form">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" class="form-control" value="@Model.Username" />
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role" class="form-control">
+                    <option value="Admin" selected="@(Model.Role == "Admin")">Admin</option>
+                    <option value="User" selected="@(Model.Role == "User")">User</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Lưu Thay Đổi
+                </button>
+                <a href="/Admin/Users" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .edit-user-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 20px;
+    }
+
+    .edit-user-box {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .edit-user-box h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+        font-size: 26px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background-color: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #5568d3;
+    }
+
+    .btn-secondary {
+        background-color: #868e96;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #748088;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+
+    @@media (max-width: 600px) {
+        .edit-user-box {
+            padding: 25px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>

@@ -1,0 +1,161 @@
+@model BanVeXeMienDong.Models.Ticket
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Giá Vé";
+}
+
+<div class="container mt-5" style="max-width: 600px;">
+    <h1 class="mb-4">
+        <i class="bi bi-pencil-square"></i> Chỉnh Sửa Giá Vé
+    </h1>
+
+    <!-- Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Ticket Info Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Thông Tin Vé</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="text-muted">ID Vé:</label>
+                    <p><strong>#@Model.Id</strong></p>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted">Khách Hàng:</label>
+                    <p><strong>@Model.TenKhachHang</strong></p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="text-muted">Số Điện Thoại:</label>
+                    <p><strong>@Model.SoDienThoai</strong></p>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted">Ngày Đi:</label>
+                    <p><strong>@Model.NgayDi.ToString("dd/MM/yyyy HH:mm")</strong></p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="text-muted">Tuyến Đường:</label>
+                    <p><strong>@Model.DiemDi → @Model.DiemDen</strong></p>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted">Ghế:</label>
+                    <p>
+                        @{
+                            var seats = Model.SoGhe.Split(',').Select(s => s.Trim()).ToList();
+                            @foreach (var seat in seats)
+                            {
+                                <span class="badge bg-warning text-dark">@seat</span>
+                            }
+                        }
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="text-muted">Hạng Xe:</label>
+                    <p>
+                        @if (Model.HangXe == BusClass.Standard)
+                        {
+                            <span class="badge bg-info">Xe Thường</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Xe Cao Cấp (VIP)</span>
+                        }
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted">Giá Hiện Tại:</label>
+                    <p><strong class="text-danger" style="font-size: 18px;">@Model.GiaVe.ToString("N0") VND</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Cập Nhật Giá Vé</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="EditTicketPrice" asp-controller="Admin" asp-route-id="@Model.Id">
+                <div class="mb-3">
+                    <label class="form-label" for="giaVe">
+                        <i class="bi bi-currency-dollar"></i> Giá Vé Mới (VND)
+                    </label>
+                    <input 
+                        type="number" 
+                        class="form-control form-control-lg" 
+                        id="giaVe" 
+                        name="giaVe" 
+                        value="@Model.GiaVe" 
+                        min="1" 
+                        step="1000"
+                        required
+                        oninput="updatePreview()"
+                    />
+                    <small class="form-text text-muted d-block mt-2">
+                        Nhập giá mới (phải lớn hơn 0)
+                    </small>
+                </div>
+
+                <!-- Price Preview -->
+                <div class="alert alert-info">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <small class="text-muted">1 Vé</small>
+                            <p class="mb-0"><strong id="price1">@Model.GiaVe.ToString("N0")</strong> đ</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <small class="text-muted">2 Vé</small>
+                            <p class="mb-0"><strong id="price2">@((Model.GiaVe * 2).ToString("N0"))</strong> đ</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <small class="text-muted">3 Vé</small>
+                            <p class="mb-0"><strong id="price3">@((Model.GiaVe * 3).ToString("N0"))</strong> đ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success btn-lg flex-grow-1">
+                        <i class="bi bi-check-circle"></i> Lưu Thay Đổi
+                    </button>
+                    <a href="@Url.Action("Tickets", "Admin")" class="btn btn-secondary btn-lg flex-grow-1">
+                        <i class="bi bi-x-circle"></i> Hủy
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function updatePreview() {
+    const input = document.getElementById('giaVe');
+    const price = parseFloat(input.value) || 0;
+    
+    const formatNumber = (num) => {
+        return Math.round(num).toLocaleString('vi-VN');
+    };
+    
+    document.getElementById('price1').textContent = formatNumber(price);
+    document.getElementById('price2').textContent = formatNumber(price * 2);
+    document.getElementById('price3').textContent = formatNumber(price * 3);
+}
+</script>
