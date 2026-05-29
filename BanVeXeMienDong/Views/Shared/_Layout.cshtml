@@ -43,6 +43,14 @@
 
                         @if (Context.Session.GetString("user") != null)
                         {
+                            <!-- Đơn Hàng -->
+                            <li class="nav-item">
+                                <a class="nav-link menu-item" href="/Checkout/MyOrders">
+                                    <i class="bi bi-receipt"></i>
+                                    <span>Đơn hàng</span>
+                                </a>
+                            </li>
+
                             <!-- Giỏ Hàng -->
                             <li class="nav-item">
                                 <a class="nav-link menu-item cart-menu-item" href="/Cart/Index">
@@ -178,6 +186,154 @@
     <script src="~/js/cart-update.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Toast Notification System -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: white;
+            border-radius: 10px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 420px;
+            animation: toastSlideIn 0.4s ease;
+            pointer-events: all;
+            border-left: 4px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast-item.toast-success { border-left-color: #28a745; }
+        .toast-item.toast-error { border-left-color: #dc3545; }
+        .toast-item.toast-info { border-left-color: #17a2b8; }
+
+        .toast-item.toast-hide {
+            animation: toastSlideOut 0.3s ease forwards;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon { color: #28a745; }
+        .toast-error .toast-icon { color: #dc3545; }
+        .toast-info .toast-icon { color: #17a2b8; }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover { color: #333; }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #667eea;
+            animation: toastProgress 4s linear forwards;
+            border-radius: 0 0 0 10px;
+        }
+
+        .toast-success .toast-progress { background: #28a745; }
+        .toast-error .toast-progress { background: #dc3545; }
+
+        @@keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @@keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @@keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @@media (max-width: 480px) {
+            .toast-container { left: 10px; right: 10px; top: 10px; }
+            .toast-item { min-width: unset; width: 100%; }
+        }
+    </style>
+
+    <script>
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const iconMap = {
+                'success': 'bi-check-circle-fill',
+                'error': 'bi-exclamation-circle-fill',
+                'info': 'bi-info-circle-fill'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast-item toast-${type}`;
+            toast.innerHTML = `
+                <i class="bi ${iconMap[type] || iconMap.info} toast-icon"></i>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.classList.add('toast-hide'); setTimeout(() => this.parentElement.remove(), 300);">&times;</button>
+                <div class="toast-progress"></div>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('toast-hide');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+
+        // Auto-show toasts from TempData (server-side messages)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find and convert existing alert divs to toasts
+            document.querySelectorAll('.alert-success, .alert-danger').forEach(alert => {
+                const message = alert.textContent.trim();
+                const type = alert.classList.contains('alert-success') ? 'success' : 'error';
+                if (message) {
+                    showToast(message, type);
+                    alert.style.display = 'none'; // Hide the original alert
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

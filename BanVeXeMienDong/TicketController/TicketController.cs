@@ -135,58 +135,6 @@ namespace BanVeXeMienDong.Controllers
             return View("SelectDateTime");
         }
 
-        // 🚌 BƯỚC 3: Chọn hạng xe (cũ - dùng cho backward compatibility)
-        [Authorize("Admin", "User")]
-        public IActionResult SelectBusClassOld()
-        {
-            return View("ChooseBusClass");
-        }
-
-        // 👉 CHỈ CHO ADMIN & USER - Tạo vé (Xe Standard) - cũ
-        [Authorize("Admin", "User")]
-        public IActionResult CreateStandard()
-        {
-            TempData["SelectedBusClass"] = 0;
-            return RedirectToAction("Create");
-        }
-
-        // 👉 CHỈ CHO ADMIN & USER - Tạo vé (Xe Premium) - cũ
-        [Authorize("Admin", "User")]
-        public IActionResult CreatePremium()
-        {
-            TempData["SelectedBusClass"] = 1;
-            return RedirectToAction("Create");
-        }
-
-        // 📅 BƯỚC 2 (cũ): Chọn ngày đi - KHÔNG DÙNG NỮA
-        [Authorize("Admin", "User")]
-        [HttpPost]
-        public IActionResult SelectDateOld(string diemDi, string diemDen)
-        {
-            if (string.IsNullOrEmpty(diemDi) || string.IsNullOrEmpty(diemDen))
-            {
-                TempData["Error"] = "Vui lòng chọn tuyến đường";
-                return RedirectToAction("SelectRoute");
-            }
-
-            TempData["DiemDi"] = diemDi;
-            TempData["DiemDen"] = diemDen;
-            TempData.Keep("DiemDi");
-            TempData.Keep("DiemDen");
-
-            var dates = _repository.GetAll()
-                .Where(t => t.DiemDi == diemDi && t.DiemDen == diemDen)
-                .Select(t => t.NgayDi.Date)
-                .Distinct()
-                .OrderBy(d => d)
-                .ToList();
-
-            ViewBag.DiemDi = diemDi;
-            ViewBag.DiemDen = diemDen;
-            ViewBag.Dates = dates;
-            return View("SelectDate");
-        }
-
         // 🚌 BƯỚC 3: Chọn hạng xe
         [HttpPost]
         public IActionResult SelectBusClass(string diemDi, string diemDen, DateTime ngayGio, string selectedSeats = "", string submitType = "selectBusClass")
