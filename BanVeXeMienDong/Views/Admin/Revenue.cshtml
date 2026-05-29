@@ -1,0 +1,274 @@
+@{
+    ViewData["Title"] = "Thống Kê Doanh Thu";
+    ViewBag.Breadcrumbs = new List<(string Title, string Url)>
+    {
+        ("Admin", "/Admin/Index"),
+        ("Thống kê doanh thu", "/Admin/Revenue")
+    };
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-900"><i class="bi bi-graph-up text-blue-600"></i> Thống Kê Doanh Thu</h1>
+        <a href="/Admin/Index" class="text-sm text-gray-500 hover:text-blue-600 font-medium"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover-lift">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                    <i class="bi bi-cash-stack text-2xl text-green-600"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 font-medium uppercase">Tổng doanh thu</div>
+                    <div class="text-xl font-black text-gray-900">@(((decimal)ViewBag.TotalRevenue).ToString("N0"))đ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover-lift">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <i class="bi bi-calendar-check text-2xl text-blue-600"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 font-medium uppercase">Hôm nay</div>
+                    <div class="text-xl font-black text-blue-600">@(((decimal)ViewBag.TodayRevenue).ToString("N0"))đ</div>
+                    <div class="text-xs text-gray-400">@ViewBag.TodayOrders đơn</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover-lift">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+                    <i class="bi bi-calendar-week text-2xl text-purple-600"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 font-medium uppercase">Tuần này</div>
+                    <div class="text-xl font-black text-purple-600">@(((decimal)ViewBag.WeekRevenue).ToString("N0"))đ</div>
+                    <div class="text-xs text-gray-400">@ViewBag.WeekOrders đơn</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover-lift">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <i class="bi bi-calendar-month text-2xl text-amber-600"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 font-medium uppercase">Tháng này</div>
+                    <div class="text-xl font-black text-amber-600">@(((decimal)ViewBag.MonthRevenue).ToString("N0"))đ</div>
+                    <div class="text-xs text-gray-400">@ViewBag.MonthOrders đơn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extra Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-5 text-white text-center">
+            <div class="text-3xl font-black">@ViewBag.TotalOrders</div>
+            <div class="text-sm text-blue-200 mt-1">Tổng đơn thành công</div>
+        </div>
+        <div class="bg-gradient-to-br from-green-600 to-green-800 rounded-2xl p-5 text-white text-center">
+            <div class="text-3xl font-black">@(((decimal)ViewBag.AvgOrderValue).ToString("N0"))đ</div>
+            <div class="text-sm text-green-200 mt-1">Giá trị TB / đơn</div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl p-5 text-white text-center">
+            @{
+                var topRoutes = ViewBag.TopRoutes as dynamic;
+                var topCount = topRoutes != null ? ((System.Collections.IList)topRoutes).Count : 0;
+            }
+            <div class="text-3xl font-black">@topCount</div>
+            <div class="text-sm text-purple-200 mt-1">Tuyến đường có doanh thu</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Daily Revenue Chart (Bar) -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-bar-chart text-blue-600 me-2"></i>Doanh Thu 7 Ngày Gần Nhất</h3>
+            @{
+                var dailyRevenue = ViewBag.DailyRevenue as List<(string Date, decimal Amount, int Count)>;
+                decimal maxDaily = dailyRevenue != null && dailyRevenue.Count > 0 ? dailyRevenue.Max(d => d.Amount) : 1;
+                if (maxDaily == 0) maxDaily = 1;
+            }
+            <div class="space-y-3">
+                @if (dailyRevenue != null)
+                {
+                    foreach (var day in dailyRevenue)
+                    {
+                        var percentage = (int)(day.Amount / maxDaily * 100);
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 text-xs font-medium text-gray-500 text-right">@day.Date</div>
+                            <div class="flex-1 relative">
+                                <div class="h-8 bg-gray-100 rounded-lg overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg transition-all duration-500 flex items-center justify-end px-2"
+                                         style="width: @(percentage)%">
+                                        @if (day.Amount > 0)
+                                        {
+                                            <span class="text-xs font-bold text-white whitespace-nowrap">@day.Amount.ToString("N0")đ</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-10 text-xs text-gray-400 font-medium">@day.Count đơn</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Monthly Revenue Chart -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-graph-up text-green-600 me-2"></i>Doanh Thu 6 Tháng Gần Nhất</h3>
+            @{
+                var monthlyRevenue = ViewBag.MonthlyRevenue as List<(string Month, decimal Amount, int Count)>;
+                decimal maxMonthly = monthlyRevenue != null && monthlyRevenue.Count > 0 ? monthlyRevenue.Max(m => m.Amount) : 1;
+                if (maxMonthly == 0) maxMonthly = 1;
+            }
+            <div class="flex items-end gap-3 h-48">
+                @if (monthlyRevenue != null)
+                {
+                    foreach (var month in monthlyRevenue)
+                    {
+                        var height = (int)(month.Amount / maxMonthly * 100);
+                        if (height < 5 && month.Amount > 0) height = 5;
+                        <div class="flex-1 flex flex-col items-center justify-end">
+                            <div class="text-xs font-bold text-gray-700 mb-1">@(month.Amount > 0 ? (month.Amount / 1000).ToString("N0") + "K" : "0")</div>
+                            <div class="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t-lg transition-all duration-500"
+                                 style="height: @(height)%"></div>
+                            <div class="text-xs text-gray-400 mt-2 font-medium">@month.Month</div>
+                            <div class="text-xs text-gray-300">@month.Count đơn</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Top Routes -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-trophy text-amber-600 me-2"></i>Top Tuyến Doanh Thu Cao</h3>
+            @if (topRoutes != null)
+            {
+                var index = 0;
+                foreach (var route in topRoutes)
+                {
+                    index++;
+                    var medalColor = index switch { 1 => "text-yellow-500", 2 => "text-gray-400", 3 => "text-orange-600", _ => "text-gray-300" };
+                    <div class="flex items-center gap-3 py-3 @(index < ((System.Collections.IList)topRoutes).Count ? "border-b border-gray-50" : "")">
+                        <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+                            @if (index <= 3)
+                            {
+                                <i class="bi bi-trophy-fill @medalColor"></i>
+                            }
+                            else
+                            {
+                                <span class="text-xs font-bold text-gray-400">@index</span>
+                            }
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-semibold text-gray-900 truncate">@route.Route</div>
+                            <div class="text-xs text-gray-400">@route.Count đơn hàng</div>
+                        </div>
+                        <div class="text-sm font-bold text-blue-600">@(((decimal)route.Total).ToString("N0"))đ</div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-8 text-gray-400 text-sm">Chưa có dữ liệu</div>
+            }
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-credit-card text-purple-600 me-2"></i>Phương Thức Thanh Toán</h3>
+            @{
+                var paymentMethods = ViewBag.PaymentMethods as dynamic;
+            }
+            @if (paymentMethods != null)
+            {
+                var totalPay = 0m;
+                foreach (var pm in paymentMethods) { totalPay += (decimal)pm.Total; }
+                if (totalPay == 0) totalPay = 1;
+
+                foreach (var pm in paymentMethods)
+                {
+                    var pct = (int)((decimal)pm.Total / totalPay * 100);
+                    var icon = ((string)pm.Method) switch { "Cash" => "bi-cash-coin text-green-600", "Card" => "bi-credit-card text-blue-600", "Bank" => "bi-bank text-purple-600", "Wallet" => "bi-phone text-pink-600", _ => "bi-circle text-gray-400" };
+                    var barColor = ((string)pm.Method) switch { "Cash" => "from-green-400 to-green-500", "Card" => "from-blue-400 to-blue-500", "Bank" => "from-purple-400 to-purple-500", "Wallet" => "from-pink-400 to-pink-500", _ => "from-gray-400 to-gray-500" };
+                    var methodName = ((string)pm.Method) switch { "Cash" => "Tiền mặt", "Card" => "Thẻ tín dụng", "Bank" => "Chuyển khoản", "Wallet" => "Ví điện tử", _ => (string)pm.Method };
+
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <i class="bi @icon"></i>
+                                <span class="text-sm font-medium text-gray-700">@methodName</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="font-bold text-gray-900">@(((decimal)pm.Total).ToString("N0"))đ</span>
+                                <span class="text-gray-400 ml-1">(@pm.Count đơn)</span>
+                            </div>
+                        </div>
+                        <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r @barColor rounded-full transition-all duration-700" style="width: @(pct)%"></div>
+                        </div>
+                        <div class="text-right text-xs text-gray-400 mt-0.5">@pct%</div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-8 text-gray-400 text-sm">Chưa có dữ liệu</div>
+            }
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-clock-history text-blue-600 me-2"></i>Đơn Hàng Gần Nhất</h3>
+        @{
+            var recentOrders = ViewBag.RecentOrders as List<BanVeXeMienDong.Models.Order>;
+        }
+        @if (recentOrders != null && recentOrders.Count > 0)
+        {
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2.5 text-left text-xs font-bold text-gray-500 uppercase">Mã đơn</th>
+                            <th class="px-4 py-2.5 text-left text-xs font-bold text-gray-500 uppercase">Ngày</th>
+                            <th class="px-4 py-2.5 text-left text-xs font-bold text-gray-500 uppercase">Khách hàng</th>
+                            <th class="px-4 py-2.5 text-left text-xs font-bold text-gray-500 uppercase">Thanh toán</th>
+                            <th class="px-4 py-2.5 text-right text-xs font-bold text-gray-500 uppercase">Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @foreach (var order in recentOrders)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">@order.OrderCode</td>
+                                <td class="px-4 py-3 text-gray-500">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="px-4 py-3 text-gray-500">@order.Email</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">@order.PaymentMethod</span>
+                                </td>
+                                <td class="px-4 py-3 text-right font-bold text-blue-600">@order.TotalAmount.ToString("N0")đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-8 text-gray-400 text-sm">Chưa có đơn hàng</div>
+        }
+    </div>
+</div>
