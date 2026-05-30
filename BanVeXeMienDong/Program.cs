@@ -29,12 +29,13 @@ builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 var app = builder.Build();
 
-// 👉 Tự động tạo database nếu chưa có + Seed dữ liệu mẫu
+// 👉 XÓA database cũ và tạo lại mới với dữ liệu mẫu đầy đủ
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated(); // Tạo DB tự động (không cần migration)
-    DbSeeder.SeedTickets(context);
+    context.Database.EnsureDeleted(); // Xóa DB cũ
+    context.Database.EnsureCreated(); // Tạo DB mới
+    DbSeeder.SeedTickets(context);    // Seed vé + đơn hàng mẫu
 }
 
 app.UseHttpsRedirection();
