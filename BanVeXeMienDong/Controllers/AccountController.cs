@@ -198,10 +198,21 @@ namespace BanVeXeMienDong.Controllers
         [HttpPost]
         public IActionResult ForgotPassword(string username, string email)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username && u.Email == email);
+            // Tìm user bằng username (email là tùy chọn - nếu có thì kiểm tra thêm)
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+
+            // Nếu có nhập email và user có email → kiểm tra khớp
+            if (user != null && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(user.Email))
+            {
+                if (user.Email.ToLower() != email.ToLower())
+                {
+                    user = null; // Email không khớp
+                }
+            }
+
             if (user == null)
             {
-                ViewBag.Error = "Không tìm thấy tài khoản với thông tin này";
+                ViewBag.Error = "Không tìm thấy tài khoản với thông tin này. Vui lòng kiểm tra lại tên đăng nhập.";
                 return View();
             }
 
@@ -211,9 +222,10 @@ namespace BanVeXeMienDong.Controllers
             user.ResetTokenExpiry = DateTime.Now.AddHours(1);
             _context.SaveChanges();
 
-            ViewBag.Success = $"Mã đặt lại mật khẩu của bạn là: {token} (có hiệu lực 1 giờ)";
+            ViewBag.Success = $"Mã đặt lại mật khẩu của bạn là: {token} (có hiệu lực 1 giờ). Hãy nhập mã này bên dưới.";
             ViewBag.ShowResetForm = true;
             ViewBag.Username = username;
+            ViewBag.Token = token; // Hiển thị token trực tiếp (vì đây là demo, không gửi email thật)
             return View();
         }
 
