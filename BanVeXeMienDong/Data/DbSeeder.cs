@@ -104,6 +104,66 @@ namespace BanVeXeMienDong.Data
 
             context.Tickets.AddRange(sampleTickets);
             context.SaveChanges();
+
+            // === SEED ĐƠN HÀNG MẪU ĐỂ TRANG REVENUE CÓ DỮ LIỆU ===
+            SeedOrders(context);
+        }
+
+        private static void SeedOrders(AppDbContext context)
+        {
+            if (context.Orders.Any())
+                return;
+
+            var now = DateTime.Now;
+            var random = new Random(42);
+            var sampleOrders = new List<Order>();
+
+            var routes = new[]
+            {
+                ("HCM → Cần Thơ", 150000m), ("HCM → Vũng Tàu", 120000m), ("HCM → Đà Lạt", 250000m),
+                ("HCM → Nha Trang", 280000m), ("HCM → Phan Thiết", 180000m), ("Hà Nội → Hải Phòng", 100000m),
+                ("Hà Nội → Đà Nẵng", 380000m), ("Đà Nẵng → HCM", 450000m), ("HCM → Bến Tre", 130000m),
+                ("Hà Nội → Sapa", 280000m), ("HCM → Kiên Giang", 250000m), ("Huế → HCM", 500000m),
+                ("HCM → Quy Nhơn", 350000m), ("Hà Nội → Quảng Ninh", 150000m), ("HCM → Cà Mau", 300000m)
+            };
+
+            var paymentMethods = new[] { "Cash", "Card", "Bank", "Wallet" };
+            var statuses = new[] { "Confirmed", "Confirmed", "Confirmed", "Confirmed", "Cancelled" };
+
+            for (int i = 0; i < 50; i++)
+            {
+                var daysAgo = random.Next(0, 30);
+                var hoursAgo = random.Next(0, 24);
+                var orderDate = now.AddDays(-daysAgo).AddHours(-hoursAgo);
+
+                var routeIdx = random.Next(routes.Length);
+                var route = routes[routeIdx].Item1;
+                var basePrice = routes[routeIdx].Item2;
+                var numSeats = random.Next(1, 5);
+                var totalAmount = basePrice * numSeats;
+
+                var seats = string.Join(",", Enumerable.Range(1, numSeats).Select(s => $"{(char)('A' + random.Next(0, 8))}{random.Next(1, 40)}"));
+                var status = statuses[random.Next(statuses.Length)];
+                var payment = paymentMethods[random.Next(paymentMethods.Length)];
+
+                var itemsJson = $"[{{\"Id\":1,\"TicketCode\":\"TK{i:D4}\",\"Route\":\"{route}\",\"Seats\":\"{seats}\",\"Price\":{totalAmount},\"Quantity\":{numSeats},\"BusClass\":\"{(random.Next(3) == 0 ? "Premium" : "Standard")}\",\"DepartureTime\":\"{orderDate.AddDays(random.Next(1, 7)):dd/MM/yyyy HH:mm}\"}}]";
+
+                sampleOrders.Add(new Order
+                {
+                    UserId = random.Next(1, 3),
+                    OrderCode = $"ORD{orderDate:yyyyMMddHHmm}{i:D2}",
+                    OrderDate = orderDate,
+                    TotalAmount = totalAmount,
+                    Status = status,
+                    ItemsJson = itemsJson,
+                    PaymentMethod = payment,
+                    PhoneNumber = $"09{random.Next(10000000, 99999999)}",
+                    Email = $"khach{i + 1}@email.com"
+                });
+            }
+
+            context.Orders.AddRange(sampleOrders);
+            context.SaveChanges();
         }
     }
 }
