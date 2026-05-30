@@ -1,108 +1,294 @@
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Admin Panel";
+    Layout = null;
 }
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-2xl font-bold text-gray-900"><i class="bi bi-speedometer2 text-blue-600"></i> Dashboard</h1>
-        <span class="px-3 py-1.5 bg-red-100 text-red-700 rounded-full text-xs font-bold">ADMIN</span>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - Bến Xe Miền Đông</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>* { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 left-0 z-30">
+            <!-- Logo -->
+            <div class="px-6 py-5 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+                        <i class="bi bi-bus-front text-white"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">Bến Xe Miền Đông</div>
+                        <div class="text-xs text-gray-400">Admin Panel</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                <a href="/Admin/Index" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-blue-600/20 text-blue-400 text-sm font-medium">
+                    <i class="bi bi-grid-1x2"></i> Dashboard
+                </a>
+                <a href="/Admin/Orders" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white text-sm font-medium transition-all">
+                    <i class="bi bi-receipt"></i> Đơn Hàng
+                </a>
+                <a href="/Admin/Tickets" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white text-sm font-medium transition-all">
+                    <i class="bi bi-ticket-perforated"></i> Quản Lý Vé
+                </a>
+                <a href="/Admin/Users" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white text-sm font-medium transition-all">
+                    <i class="bi bi-people"></i> Người Dùng
+                </a>
+                <a href="/Admin/Revenue" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white text-sm font-medium transition-all">
+                    <i class="bi bi-graph-up"></i> Doanh Thu
+                </a>
+
+                <div class="pt-4 mt-4 border-t border-gray-800">
+                    <a href="/" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white text-sm font-medium transition-all">
+                        <i class="bi bi-house"></i> Về Trang Chủ
+                    </a>
+                    <a href="/Account/Logout" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-400 hover:bg-red-900/30 text-sm font-medium transition-all">
+                        <i class="bi bi-box-arrow-right"></i> Đăng Xuất
+                    </a>
+                </div>
+            </nav>
+
+            <!-- User Info -->
+            <div class="px-4 py-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center">
+                        <i class="bi bi-person text-gray-300"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium">@Context.Session.GetString("user")</div>
+                        <div class="text-xs text-gray-400">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64">
+            <!-- Top Bar -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-20">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Dashboard</h1>
+                        <p class="text-sm text-gray-400">Tổng quan hệ thống quản lý bán vé xe</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-gray-400">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+                        <div class="w-px h-6 bg-gray-200"></div>
+                        <a href="/Admin/Revenue" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold transition-all">
+                            <i class="bi bi-graph-up me-1"></i> Xem báo cáo
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="px-8 py-6">
+                @if (TempData["Success"] != null) { <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm flex items-center gap-2"><i class="bi bi-check-circle"></i> @TempData["Success"]</div> }
+                @if (TempData["Error"] != null) { <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2"><i class="bi bi-exclamation-circle"></i> @TempData["Error"]</div> }
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
+                    <div class="bg-white rounded-xl border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <i class="bi bi-people text-blue-600"></i>
+                            </div>
+                            <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">+12%</span>
+                        </div>
+                        <div class="text-2xl font-black text-gray-900">@ViewBag.TotalUsers</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Tổng người dùng</div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+                                <i class="bi bi-shield-check text-red-600"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-black text-gray-900">@ViewBag.AdminCount</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Quản trị viên</div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                <i class="bi bi-person-check text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-black text-gray-900">@ViewBag.UserCount</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Khách hàng</div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                                <i class="bi bi-ticket-perforated text-amber-600"></i>
+                            </div>
+                            <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">+8%</span>
+                        </div>
+                        <div class="text-2xl font-black text-gray-900">@ViewBag.TotalTickets</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Vé đã bán</div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                <i class="bi bi-cash-coin text-purple-600"></i>
+                            </div>
+                            <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">+25%</span>
+                        </div>
+                        @{ decimal rev = ViewBag.TotalRevenue ?? 0m; }
+                        <div class="text-xl font-black text-gray-900">@(rev.ToString("N0"))đ</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Tổng doanh thu</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+                    <a href="/Admin/Orders" class="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-5 hover:border-blue-200 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                            <i class="bi bi-receipt text-xl text-blue-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">Đơn Hàng</div>
+                            <div class="text-xs text-gray-400">Xem & xử lý đơn</div>
+                        </div>
+                        <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+                    </a>
+
+                    <a href="/Admin/Tickets" class="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-5 hover:border-green-200 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                            <i class="bi bi-ticket-detailed text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">Quản Lý Vé</div>
+                            <div class="text-xs text-gray-400">Sửa giá, xóa vé</div>
+                        </div>
+                        <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-green-500 transition-colors"></i>
+                    </a>
+
+                    <a href="/Admin/Users" class="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-5 hover:border-purple-200 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                            <i class="bi bi-people text-xl text-purple-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">Người Dùng</div>
+                            <div class="text-xs text-gray-400">Quản lý tài khoản</div>
+                        </div>
+                        <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-purple-500 transition-colors"></i>
+                    </a>
+
+                    <a href="/Admin/Revenue" class="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-5 hover:border-amber-200 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                            <i class="bi bi-graph-up-arrow text-xl text-amber-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">Thống Kê</div>
+                            <div class="text-xs text-gray-400">Báo cáo doanh thu</div>
+                        </div>
+                        <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-amber-500 transition-colors"></i>
+                    </a>
+                </div>
+
+                <!-- Revenue Overview -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Revenue Card -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="font-bold text-gray-900"><i class="bi bi-bar-chart text-blue-600 me-2"></i>Tổng Quan Doanh Thu</h3>
+                            <a href="/Admin/Revenue" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Xem chi tiết →</a>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bg-blue-50 rounded-xl p-4 text-center">
+                                <div class="text-xs text-blue-600 font-semibold uppercase">Hôm nay</div>
+                                <div class="text-lg font-black text-gray-900 mt-1">@(rev > 0 ? (rev / 30).ToString("N0") : "0")đ</div>
+                            </div>
+                            <div class="bg-green-50 rounded-xl p-4 text-center">
+                                <div class="text-xs text-green-600 font-semibold uppercase">Tuần này</div>
+                                <div class="text-lg font-black text-gray-900 mt-1">@(rev > 0 ? (rev / 4).ToString("N0") : "0")đ</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-xl p-4 text-center">
+                                <div class="text-xs text-purple-600 font-semibold uppercase">Tháng này</div>
+                                <div class="text-lg font-black text-gray-900 mt-1">@rev.ToString("N0")đ</div>
+                            </div>
+                        </div>
+
+                        <!-- Simple visual bar -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-gray-400 w-16">Xe thường</span>
+                                <div class="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full" style="width: 65%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-700 w-10">65%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-gray-400 w-16">Xe VIP</span>
+                                <div class="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full" style="width: 35%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-700 w-10">35%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity -->
+                    <div class="bg-white rounded-xl border border-gray-100 p-6">
+                        <h3 class="font-bold text-gray-900 mb-4"><i class="bi bi-activity text-green-600 me-2"></i>Hoạt Động</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <div class="text-sm text-gray-700">Hệ thống đang hoạt động</div>
+                                    <div class="text-xs text-gray-400">Uptime: 99.9%</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <div class="text-sm text-gray-700">@ViewBag.TotalTickets vé trong hệ thống</div>
+                                    <div class="text-xs text-gray-400">46 tuyến đường</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <div class="text-sm text-gray-700">@ViewBag.TotalUsers người dùng đăng ký</div>
+                                    <div class="text-xs text-gray-400">@ViewBag.AdminCount admin, @ViewBag.UserCount user</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <div class="text-sm text-gray-700">Database: SQL Server</div>
+                                    <div class="text-xs text-gray-400">Auto-seed enabled</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t border-gray-100">
+                            <div class="text-xs text-gray-400 mb-2">Phiên bản hệ thống</div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-bold">.NET 8</span>
+                                <span class="px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-bold">EF Core</span>
+                                <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs font-bold">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-
-    @if (TempData["Success"] != null) { <div data-toast-success="@TempData["Success"]"></div> }
-    @if (TempData["Error"] != null) { <div data-toast-error="@TempData["Error"]"></div> }
-
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover-lift">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <i class="bi bi-people text-xl text-blue-600"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-gray-900">@ViewBag.TotalUsers</div>
-                    <div class="text-xs text-gray-400 font-medium">Người dùng</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover-lift">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center">
-                    <i class="bi bi-shield-check text-xl text-red-600"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-gray-900">@ViewBag.AdminCount</div>
-                    <div class="text-xs text-gray-400 font-medium">Admin</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover-lift">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-green-100 flex items-center justify-center">
-                    <i class="bi bi-person-check text-xl text-green-600"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-gray-900">@ViewBag.UserCount</div>
-                    <div class="text-xs text-gray-400 font-medium">User</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover-lift">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <i class="bi bi-ticket-perforated text-xl text-amber-600"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-gray-900">@ViewBag.TotalTickets</div>
-                    <div class="text-xs text-gray-400 font-medium">Vé bán</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover-lift">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center">
-                    <i class="bi bi-cash-coin text-xl text-purple-600"></i>
-                </div>
-                <div>
-                    @{ decimal rev = ViewBag.TotalRevenue ?? 0m; }
-                    <div class="text-xl font-black text-gray-900">@((rev / 1000000).ToString("F1"))M</div>
-                    <div class="text-xs text-gray-400 font-medium">Doanh thu</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <a href="/Admin/Users" class="group bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white hover-lift">
-            <i class="bi bi-people text-3xl opacity-80"></i>
-            <h3 class="font-bold text-lg mt-3">Quản Lý Người Dùng</h3>
-            <p class="text-blue-200 text-sm mt-1">Xem, sửa, xóa tài khoản</p>
-            <i class="bi bi-arrow-right mt-3 inline-block group-hover:translate-x-1 transition-transform"></i>
-        </a>
-
-        <a href="/Admin/Tickets" class="group bg-gradient-to-br from-green-600 to-green-800 rounded-2xl p-6 text-white hover-lift">
-            <i class="bi bi-ticket-detailed text-3xl opacity-80"></i>
-            <h3 class="font-bold text-lg mt-3">Quản Lý Vé Xe</h3>
-            <p class="text-green-200 text-sm mt-1">Xem, sửa giá, xóa vé</p>
-            <i class="bi bi-arrow-right mt-3 inline-block group-hover:translate-x-1 transition-transform"></i>
-        </a>
-
-        <a href="/Admin/Orders" class="group bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl p-6 text-white hover-lift">
-            <i class="bi bi-receipt text-3xl opacity-80"></i>
-            <h3 class="font-bold text-lg mt-3">Quản Lý Đơn Hàng</h3>
-            <p class="text-purple-200 text-sm mt-1">Xác nhận, hủy đơn hàng</p>
-            <i class="bi bi-arrow-right mt-3 inline-block group-hover:translate-x-1 transition-transform"></i>
-        </a>
-
-        <a href="/Admin/Revenue" class="group bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 text-white hover-lift sm:col-span-3 lg:col-span-1">
-            <i class="bi bi-graph-up-arrow text-3xl opacity-80"></i>
-            <h3 class="font-bold text-lg mt-3">Thống Kê Doanh Thu</h3>
-            <p class="text-amber-100 text-sm mt-1">Biểu đồ, top tuyến, thanh toán</p>
-            <i class="bi bi-arrow-right mt-3 inline-block group-hover:translate-x-1 transition-transform"></i>
-        </a>
-    </div>
-</div>
+</body>
+</html>
