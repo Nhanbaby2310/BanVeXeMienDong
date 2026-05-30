@@ -391,14 +391,19 @@ namespace BanVeXeMienDong.Controllers
                 ModelState.AddModelError("NgayDi", "Ngày đi là bắt buộc");
             }
 
-            // 👉 TÍNH GIÁ VÉ DỰA TRÊN SỐ GHẾ VÀ LOẠI XE
+            // 👉 TÍNH GIÁ VÉ DỰA TRÊN SỐ GHẾ VÀ LOẠI XE (lấy giá thực từ DB)
             int numberOfSeats = 0;
             if (!string.IsNullOrEmpty(ticket.SoGhe))
             {
                 numberOfSeats = ticket.SoGhe.Split(',').Length;
             }
 
-            decimal pricePerSeat = TicketRepository.GetTicketPrice(selectedClass);
+            // Lấy giá vé thực từ database theo tuyến + hạng xe (không dùng giá cố định)
+            var matchingTicket = _repository.GetAll()
+                .FirstOrDefault(t => t.DiemDi == ticket.DiemDi 
+                    && t.DiemDen == ticket.DiemDen 
+                    && t.HangXe == selectedClass);
+            decimal pricePerSeat = matchingTicket != null ? matchingTicket.GiaVe : TicketRepository.GetTicketPrice(selectedClass);
             ticket.GiaVe = pricePerSeat * numberOfSeats;
 
             if (ticket.GiaVe <= 0)
@@ -567,8 +572,10 @@ namespace BanVeXeMienDong.Controllers
             var route = $"{diemDi} → {diemDen}";
             var departureTimeStr = ((DateTime)ngayGio).ToString("dd/MM/yyyy HH:mm");
 
-            // 👉 MẶC ĐỊNH XE THƯỜNG (300,000 VND)
-            decimal ticketPrice = 300000;
+            // 👉 Lấy giá vé thực từ database theo tuyến
+            var matchingTicket = _repository.GetAll()
+                .FirstOrDefault(t => t.DiemDi == diemDi && t.DiemDen == diemDen);
+            decimal ticketPrice = matchingTicket != null ? matchingTicket.GiaVe : 300000;
             decimal totalPrice = ticketPrice * seats.Count;
 
             // Tạo ticket code
